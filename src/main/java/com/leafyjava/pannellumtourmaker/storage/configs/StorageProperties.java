@@ -1,12 +1,16 @@
 package com.leafyjava.pannellumtourmaker.storage.configs;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("storage")
 public class StorageProperties {
 
-    private String location = "upload-dir";
-    private String extractedLocation = location + "/extracted";
+    @Value("${upload.directory}")
+    private String location;
+
+    @Value("${upload.tours}")
+    private String tourLocation;
 
     public String getLocation() {
         return location;
@@ -16,11 +20,11 @@ public class StorageProperties {
         this.location = location;
     }
 
-    public String getExtractedLocation() {
-        return extractedLocation;
+    public String getTourLocation() {
+        return tourLocation;
     }
 
-    public void setExtractedLocation(final String extractedLocation) {
-        this.extractedLocation = extractedLocation;
+    public void setTourLocation(final String tourLocation) {
+        this.tourLocation = tourLocation;
     }
 }

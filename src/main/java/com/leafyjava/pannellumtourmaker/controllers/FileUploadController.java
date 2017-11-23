@@ -3,6 +3,7 @@ package com.leafyjava.pannellumtourmaker.controllers;
 import com.leafyjava.pannellumtourmaker.domains.UploadedFile;
 import com.leafyjava.pannellumtourmaker.exceptions.UnsupportedFileExtensionException;
 import com.leafyjava.pannellumtourmaker.services.FileUploadService;
+import com.leafyjava.pannellumtourmaker.services.TourService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -23,10 +24,13 @@ import java.util.List;
 public class FileUploadController {
 
     private FileUploadService fileUploadService;
+    private TourService tourService;
 
     @Autowired
-    public FileUploadController(final FileUploadService fileUploadService) {
+    public FileUploadController(final FileUploadService fileUploadService,
+                                final TourService tourService) {
         this.fileUploadService = fileUploadService;
+        this.tourService = tourService;
     }
 
     @GetMapping("")
@@ -43,12 +47,13 @@ public class FileUploadController {
             .body(resource);
     }
 
-    @PostMapping("/zip")
-    public UploadedFile uploadFile(@RequestParam("name") String name, @RequestParam("file") MultipartFile file) {
+    @PostMapping("/tours")
+    public void uploadFile(@RequestParam("name") String name, @RequestParam("file") MultipartFile file) {
         if (!StringUtils.getFilenameExtension(file.getOriginalFilename()).equalsIgnoreCase("zip")) {
             throw new UnsupportedFileExtensionException("The uploaded file must be a zip file.");
         }
-        return fileUploadService.store(name, file);
+        fileUploadService.store(name, file);
+        tourService.createTourFromFiles(name);
     }
 
 }
