@@ -11,21 +11,33 @@ public class ExceptionHandlingController {
 
     @ExceptionHandler(StorageFileNotFoundException.class)
     public ResponseEntity<ExceptionResponse> storageFileNotFound(StorageFileNotFoundException ex) {
-        ExceptionResponse response = new ExceptionResponse();
-        response.setStatus(HttpStatus.NOT_FOUND.value());
-        response.setError(HttpStatus.NOT_FOUND.getReasonPhrase());
-        response.setMessage(ex.getMessage());
-
-        return new ResponseEntity<ExceptionResponse>(response, HttpStatus.NOT_FOUND);
+        return getResponseEntity(ex, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(UnsupportedFileExtensionException.class)
-    public ResponseEntity<ExceptionResponse> unsupportedFileFor(UnsupportedFileExtensionException ex) {
+    public ResponseEntity<ExceptionResponse> unsupportedFileExtension(UnsupportedFileExtensionException ex) {
+        return getResponseEntity(ex, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UnsupportedFileTreeException.class)
+    public ResponseEntity<ExceptionResponse> unsupportedFileTree(UnsupportedFileTreeException ex) {
+        return getResponseEntity(ex, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(TourAlreadyExistsException.class)
+    public ResponseEntity<ExceptionResponse> tourAlreadyExists(TourAlreadyExistsException ex) {
+        return getResponseEntity(ex, HttpStatus.BAD_REQUEST);
+    }
+
+    private ResponseEntity<ExceptionResponse> getResponseEntity(final RuntimeException ex, HttpStatus httpStatus) {
         ExceptionResponse response = new ExceptionResponse();
-        response.setStatus(HttpStatus.BAD_REQUEST.value());
-        response.setError(HttpStatus.BAD_REQUEST.getReasonPhrase());
+        response.setStatus(httpStatus.value());
+        response.setError(httpStatus.getReasonPhrase());
         response.setMessage(ex.getMessage());
 
-        return new ResponseEntity<ExceptionResponse>(response, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<ExceptionResponse>(response, httpStatus);
     }
+
+
 }
+

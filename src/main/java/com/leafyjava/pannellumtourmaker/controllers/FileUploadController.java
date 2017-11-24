@@ -1,5 +1,6 @@
 package com.leafyjava.pannellumtourmaker.controllers;
 
+import com.leafyjava.pannellumtourmaker.domains.Tour;
 import com.leafyjava.pannellumtourmaker.domains.UploadedFile;
 import com.leafyjava.pannellumtourmaker.exceptions.UnsupportedFileExtensionException;
 import com.leafyjava.pannellumtourmaker.services.FileUploadService;
@@ -54,6 +55,16 @@ public class FileUploadController {
         }
         fileUploadService.store(name, file);
         tourService.createTourFromFiles(name);
+    }
+
+    @GetMapping("/tours")
+    public List<Tour> getTours() {
+        return tourService.findAllTours();
+    }
+
+    @GetMapping("/tours/{name}")
+    public Tour getTourByName(@PathVariable(value = "name") String name) {
+        return tourService.findOne(name);
     }
 
 }

@@ -1,9 +1,29 @@
 spring:
+  profiles:
+    active: dev
+
+upload:
+  directory: upload-dir
+  tours: upload-dir/tours
+
+---
+spring:
+  profiles: dev
   http:
     multipart:
       max-file-size: 50MB
       max-request-size: 50MB
 
-upload:
-  directory: upload-dir
-  tours: upload-dir/tours
+---
+spring:
+  profiles: prod
+  data:
+      mongodb:
+        host: localhost
+        port: 27017
+        database: test
+  http:
+      multipart:
+        max-file-size: 100MB
+        max-request-size: 100MB
+

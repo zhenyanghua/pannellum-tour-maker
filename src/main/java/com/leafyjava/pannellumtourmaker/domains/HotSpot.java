@@ -1,6 +1,9 @@
 package com.leafyjava.pannellumtourmaker.domains;
 
+import org.springframework.data.annotation.Id;
+
 public class HotSpot {
+    @Id
     private String id;
     private float pitch;
     private float yaw;

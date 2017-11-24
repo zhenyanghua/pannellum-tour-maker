@@ -1,7 +1,11 @@
 package com.leafyjava.pannellumtourmaker.domains;
 
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+
 public class MultiRes {
-    private String id;
+//    @Id
+//    private ObjectId multiResId;
     private String basePath;
     private String path;
     private String fallbackPath;
@@ -9,14 +13,18 @@ public class MultiRes {
     private int tileResolution;
     private int maxLevel;
     private int cubeResolution;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(final String id) {
-        this.id = id;
-    }
+//
+//    public MultiRes() {
+//        this.multiResId = ObjectId.get();
+//    }
+//
+//    public ObjectId getMultiResId() {
+//        return multiResId;
+//    }
+//
+//    public void setMultiResId(final ObjectId multiResId) {
+//        this.multiResId = multiResId;
+//    }
 
     public String getBasePath() {
         return basePath;

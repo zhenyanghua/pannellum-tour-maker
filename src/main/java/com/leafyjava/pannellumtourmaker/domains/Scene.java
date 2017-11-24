@@ -1,14 +1,27 @@
 package com.leafyjava.pannellumtourmaker.domains;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.List;
 
 public class Scene {
+    @Id
+    private String id;
     private String title;
     private float pitch;
     private float yaw;
     private String type;
     private MultiRes multiRes;
     private List<HotSpot> hotSpots;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(final String id) {
+        this.id = id;
+    }
 
     public String getTitle() {
         return title;
