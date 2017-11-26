@@ -11,4 +11,6 @@ public interface TourService {
     List<Tour> findAllTours();
 
     Tour findOne(String name);
+
+    Tour save(Tour tour);
 }

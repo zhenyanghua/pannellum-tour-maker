@@ -2,6 +2,7 @@ package com.leafyjava.pannellumtourmaker.controllers;
 
 import com.leafyjava.pannellumtourmaker.domains.Tour;
 import com.leafyjava.pannellumtourmaker.domains.UploadedFile;
+import com.leafyjava.pannellumtourmaker.exceptions.InvalidTourException;
 import com.leafyjava.pannellumtourmaker.exceptions.UnsupportedFileExtensionException;
 import com.leafyjava.pannellumtourmaker.services.FileUploadService;
 import com.leafyjava.pannellumtourmaker.services.TourService;
@@ -13,6 +14,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -67,4 +70,11 @@ public class FileUploadController {
         return tourService.findOne(name);
     }
 
+    @PutMapping("/tours/{name}")
+    public Tour saveTourByName(@PathVariable(value = "name") String name, @RequestBody Tour tour) {
+        if (!name.equalsIgnoreCase(tour.getName()))
+            throw new InvalidTourException("Tour name must match in the path and the request body.");
+
+        return tourService.save(tour);
+    }
 }

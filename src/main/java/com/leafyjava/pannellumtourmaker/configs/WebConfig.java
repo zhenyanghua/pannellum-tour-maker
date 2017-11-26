@@ -3,6 +3,7 @@ package com.leafyjava.pannellumtourmaker.configs;
 import com.leafyjava.pannellumtourmaker.storage.configs.StorageProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -21,5 +22,13 @@ public class WebConfig extends WebMvcConfigurerAdapter{
         registry.addResourceHandler("/tours/**")
             .addResourceLocations("file://" + storageProperties.getTourLocation() + "/");
         super.addResourceHandlers(registry);
+    }
+
+    @Override
+    public void addCorsMappings(final CorsRegistry registry) {
+        registry.addMapping("/**")
+            .allowedOrigins("*")
+            .allowedMethods("*");
+        super.addCorsMappings(registry);
     }
 }

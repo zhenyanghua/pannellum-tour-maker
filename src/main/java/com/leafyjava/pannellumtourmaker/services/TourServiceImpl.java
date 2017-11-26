@@ -69,6 +69,11 @@ public class TourServiceImpl implements TourService{
         return tourRepository.findOne(name);
     }
 
+    @Override
+    public Tour save(final Tour tour) {
+        return tourRepository.save(tour);
+    }
+
 
     private Scene mapConfigToScene(Path scenePath) {
         ObjectMapper mapper = new ObjectMapper();

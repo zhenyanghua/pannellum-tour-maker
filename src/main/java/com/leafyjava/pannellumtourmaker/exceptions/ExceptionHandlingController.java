@@ -29,6 +29,11 @@ public class ExceptionHandlingController {
         return getResponseEntity(ex, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(InvalidTourException.class)
+    public ResponseEntity<ExceptionResponse> invalidTour(InvalidTourException ex) {
+        return getResponseEntity(ex, HttpStatus.BAD_REQUEST);
+    }
+
     private ResponseEntity<ExceptionResponse> getResponseEntity(final RuntimeException ex, HttpStatus httpStatus) {
         ExceptionResponse response = new ExceptionResponse();
         response.setStatus(httpStatus.value());
