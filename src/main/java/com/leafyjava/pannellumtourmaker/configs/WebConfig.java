@@ -19,7 +19,7 @@ public class WebConfig extends WebMvcConfigurerAdapter{
     @Override
     public void addResourceHandlers(final ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/tours/**")
-            .addResourceLocations("classpath:/" +  storageProperties.getTourLocation());
+            .addResourceLocations("file://" + storageProperties.getTourLocation() + "/");
         super.addResourceHandlers(registry);
     }
 }

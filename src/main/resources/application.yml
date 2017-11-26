@@ -1,10 +1,10 @@
 spring:
   profiles:
-    active: dev
+    active: default, dev
 
 upload:
-  directory: upload-dir
-  tours: upload-dir/tours
+  directory: /Users/hua/IdeaProjects/pannellum-tour-maker-service/upload-dir
+  tours: /Users/hua/IdeaProjects/pannellum-tour-maker-service/upload-dir/tours
 
 ---
 spring:

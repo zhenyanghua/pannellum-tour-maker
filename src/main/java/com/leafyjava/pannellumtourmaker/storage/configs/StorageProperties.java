@@ -12,6 +12,7 @@ public class StorageProperties {
     @Value("${upload.tours}")
     private String tourLocation;
 
+
     public String getLocation() {
         return location;
     }
@@ -27,4 +28,5 @@ public class StorageProperties {
     public void setTourLocation(final String tourLocation) {
         this.tourLocation = tourLocation;
     }
+
 }
