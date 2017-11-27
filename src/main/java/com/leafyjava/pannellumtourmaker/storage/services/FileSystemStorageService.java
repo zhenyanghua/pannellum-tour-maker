@@ -67,27 +67,32 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public void storeZipContent(final String name, final MultipartFile file) {
+    public File convertToFile(final MultipartFile file) {
         try {
             File zip = File.createTempFile(UUID.randomUUID().toString(), "temp");
             FileOutputStream outputStream = new FileOutputStream(zip);
             IOUtils.copy(file.getInputStream(), outputStream);
             outputStream.close();
 
-            try {
-                ZipFile zipFile = new ZipFile(zip);
-                Path destination = extractedLocation.resolve(name);
-                zipFile.extractAll(destination.toString());
-                FileSystemUtils.deleteRecursively(destination.resolve("__MACOSX").toFile());
-
-            } catch (ZipException e) {
-                throw new StorageException("Fail to save zip file", e);
-            } finally {
-                zip.delete();
-            }
+            return zip;
 
         } catch (IOException e) {
             throw new StorageException("Fail to create a temporary space to save the zip file", e);
+        }
+    }
+
+    @Override
+    public void storeZipContent(final String name, final File file) {
+        try {
+            ZipFile zipFile = new ZipFile(file);
+            Path destination = extractedLocation.resolve(name);
+            zipFile.extractAll(destination.toString());
+            FileSystemUtils.deleteRecursively(destination.resolve("__MACOSX").toFile());
+
+        } catch (ZipException e) {
+            throw new StorageException("Fail to save zip file", e);
+        } finally {
+            file.delete();
         }
     }
 

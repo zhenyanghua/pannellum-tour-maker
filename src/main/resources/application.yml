@@ -2,9 +2,11 @@ spring:
   profiles:
     active: default, dev
 
-upload:
-  directory: /Users/hua/IdeaProjects/pannellum-tour-maker-service/upload-dir
-  tours: /Users/hua/IdeaProjects/pannellum-tour-maker-service/upload-dir/tours
+application:
+  baseUrl: http://localhost:8080/
+  upload:
+    directory: /Users/hua/IdeaProjects/pannellum-tour-maker-service/upload-dir
+    tours: /Users/hua/IdeaProjects/pannellum-tour-maker-service/upload-dir/tours
 
 ---
 spring:

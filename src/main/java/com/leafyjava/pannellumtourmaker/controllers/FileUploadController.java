@@ -1,9 +1,11 @@
 package com.leafyjava.pannellumtourmaker.controllers;
 
 import com.leafyjava.pannellumtourmaker.domains.Tour;
+import com.leafyjava.pannellumtourmaker.domains.TourMessage;
 import com.leafyjava.pannellumtourmaker.domains.UploadedFile;
 import com.leafyjava.pannellumtourmaker.exceptions.InvalidTourException;
 import com.leafyjava.pannellumtourmaker.exceptions.UnsupportedFileExtensionException;
+import com.leafyjava.pannellumtourmaker.services.AsyncTourService;
 import com.leafyjava.pannellumtourmaker.services.FileUploadService;
 import com.leafyjava.pannellumtourmaker.services.TourService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.List;
 
 @RestController
@@ -29,12 +32,15 @@ public class FileUploadController {
 
     private FileUploadService fileUploadService;
     private TourService tourService;
+    private AsyncTourService asyncTourService;
 
     @Autowired
     public FileUploadController(final FileUploadService fileUploadService,
-                                final TourService tourService) {
+                                final TourService tourService,
+                                final AsyncTourService asyncTourService) {
         this.fileUploadService = fileUploadService;
         this.tourService = tourService;
+        this.asyncTourService = asyncTourService;
     }
 
     @GetMapping("")
@@ -56,8 +62,8 @@ public class FileUploadController {
         if (!StringUtils.getFilenameExtension(file.getOriginalFilename()).equalsIgnoreCase("zip")) {
             throw new UnsupportedFileExtensionException("The uploaded file must be a zip file.");
         }
-        fileUploadService.store(name, file);
-        tourService.createTourFromFiles(name);
+        File zip = fileUploadService.convertToFile(file);
+        asyncTourService.send(new TourMessage(name, zip));
     }
 
     @GetMapping("/tours")

@@ -2,23 +2,15 @@ package com.leafyjava.pannellumtourmaker.services;
 
 import com.leafyjava.pannellumtourmaker.controllers.FileUploadController;
 import com.leafyjava.pannellumtourmaker.domains.UploadedFile;
-import com.leafyjava.pannellumtourmaker.exceptions.ExceptionResponse;
-import com.leafyjava.pannellumtourmaker.storage.exceptions.StorageFileNotFoundException;
 import com.leafyjava.pannellumtourmaker.storage.services.StorageService;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileSystemUtils;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
-import java.nio.file.Path;
+import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,19 +44,12 @@ public class FileUploadServiceImpl implements FileUploadService {
     }
 
     @Override
-    public UploadedFile store(final String name, final MultipartFile file) {
+    public void store(final String name, final File file) {
         storageService.storeZipContent(name, file);
+    }
 
-        String extension = StringUtils.getFilenameExtension(file.getOriginalFilename());
-        String filename = StringUtils.cleanPath(name + "." + extension);
-
-        Path path = storageService.load(filename);
-        return new UploadedFile(
-            name,
-            MvcUriComponentsBuilder.fromMethodName(
-                FileUploadController.class,
-                "serveFile",
-                path.getFileName().toString())
-                .build().toString());
+    @Override
+    public File convertToFile(final MultipartFile file) {
+        return storageService.convertToFile(file);
     }
 }

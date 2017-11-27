@@ -9,6 +9,7 @@ import com.leafyjava.pannellumtourmaker.exceptions.UnsupportedFileTreeException;
 import com.leafyjava.pannellumtourmaker.repositories.TourRepository;
 import com.leafyjava.pannellumtourmaker.storage.configs.StorageProperties;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.util.UriComponents;
@@ -23,6 +24,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class TourServiceImpl implements TourService{
+
+    @Value("${application.baseUrl}")
+    private String baseUrl;
 
     private StorageProperties storageProperties;
     private TourRepository tourRepository;
@@ -85,10 +89,7 @@ public class TourServiceImpl implements TourService{
             scene.setTitle(sceneId);
             scene.setType("multires");
 
-            UriComponents uriComponents = MvcUriComponentsBuilder.fromController(FileUploadController.class)
-                .build();
-            String base = uriComponents.toString().replace(uriComponents.getPath(), "");
-            String basePath = base + "/" + scenePath.toString().replace(storageProperties.getTourLocation(), "tours");
+            String basePath = baseUrl + "/" + scenePath.toString().replace(storageProperties.getTourLocation(), "tours");
 
             scene.getMultiRes().setBasePath(basePath);
             scene.setHotSpots(new ArrayList<>());

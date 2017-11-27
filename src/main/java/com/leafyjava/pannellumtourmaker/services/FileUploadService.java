@@ -4,6 +4,7 @@ import com.leafyjava.pannellumtourmaker.domains.UploadedFile;
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.List;
 
 public interface FileUploadService {
@@ -11,5 +12,7 @@ public interface FileUploadService {
 
     Resource loadAsResource(String filename);
 
-    UploadedFile store(String name, MultipartFile file);
+    void store(String name, File file);
+
+    File convertToFile(MultipartFile file);
 }

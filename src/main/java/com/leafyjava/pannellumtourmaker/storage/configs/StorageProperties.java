@@ -6,10 +6,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("storage")
 public class StorageProperties {
 
-    @Value("${upload.directory}")
+    @Value("${application.upload.directory}")
     private String location;
 
-    @Value("${upload.tours}")
+    @Value("${application.upload.tours}")
     private String tourLocation;
 
 
