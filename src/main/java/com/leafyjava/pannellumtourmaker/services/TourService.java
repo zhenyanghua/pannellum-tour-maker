@@ -5,7 +5,8 @@ import com.leafyjava.pannellumtourmaker.domains.Tour;
 import java.util.List;
 
 public interface TourService {
-    void createTourFromFiles(String tour);
+    void createTourFromMultires(String tourName);
+    void convertToMultiresFromEquirectangular(String tourName);
 
     List<Tour> findAllTours();
 

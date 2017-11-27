@@ -1,18 +1,20 @@
 package com.leafyjava.pannellumtourmaker.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.leafyjava.pannellumtourmaker.controllers.FileUploadController;
 import com.leafyjava.pannellumtourmaker.domains.Scene;
 import com.leafyjava.pannellumtourmaker.domains.Tour;
 import com.leafyjava.pannellumtourmaker.exceptions.TourAlreadyExistsException;
 import com.leafyjava.pannellumtourmaker.exceptions.UnsupportedFileTreeException;
 import com.leafyjava.pannellumtourmaker.repositories.TourRepository;
 import com.leafyjava.pannellumtourmaker.storage.configs.StorageProperties;
+import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
-import org.springframework.web.util.UriComponents;
+import org.springframework.util.FileSystemUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,8 +27,13 @@ import java.util.stream.Collectors;
 @Service
 public class TourServiceImpl implements TourService{
 
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Value("${application.baseUrl}")
     private String baseUrl;
+
+    @Value("${application.nona}")
+    private String nona;
 
     private StorageProperties storageProperties;
     private TourRepository tourRepository;
@@ -39,7 +46,7 @@ public class TourServiceImpl implements TourService{
     }
 
     @Override
-    public void createTourFromFiles(final String tourName) {
+    public void createTourFromMultires(final String tourName) {
         Path tourPath = Paths.get(storageProperties.getTourLocation()).resolve(tourName).resolve("multires");
         try {
             List<Scene> scenes = Files.walk(tourPath, 1)
@@ -60,6 +67,44 @@ public class TourServiceImpl implements TourService{
 
         } catch (IOException e) {
             throw new UnsupportedFileTreeException("Multi-resolution directory is not found.", e);
+        }
+    }
+
+    @Override
+    public void convertToMultiresFromEquirectangular(final String tourName) {
+        Path equirectangularPath = Paths.get(storageProperties.getEquirectangularLocation()).resolve(tourName);
+
+        try {
+            Files.walk(equirectangularPath, 2)
+                .filter(path -> path.toString().toLowerCase().endsWith(".jpg"))
+                .forEach(path -> {
+                    String pyPath = null;
+                    try {
+                        pyPath = new ClassPathResource("generate.py").getURL().toString().substring(5);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    String output = storageProperties.getTourLocation() + "/" + tourName + "/multires/" +
+                        FilenameUtils.getBaseName(path.toString());
+                    String[] cmd = {
+                        "/bin/bash",
+                        "-c",
+                        "python " + pyPath  + " -o " + output +
+                            " -n " + nona + " " + path
+                    };
+                    try {
+                        Process process = Runtime.getRuntime().exec(cmd);
+                        int result = process.waitFor();
+                        if (result != 0) {
+                            logger.error("Command failed: " + String.join(" ", cmd));
+                        }
+                    } catch (IOException | InterruptedException e) {
+                        logger.error("Command failed: " + String.join(" ", cmd), e);
+                    }
+                });
+            FileSystemUtils.deleteRecursively(equirectangularPath.toFile());
+        } catch (IOException e) {
+            throw new UnsupportedFileTreeException("Equirectangular directory is not found.", e);
         }
     }
 

@@ -3,5 +3,6 @@ package com.leafyjava.pannellumtourmaker.services;
 import com.leafyjava.pannellumtourmaker.domains.TourMessage;
 
 public interface AsyncTourService {
-    void send(TourMessage tourMessage);
+    void sendToToursZipMultires(TourMessage tourMessage);
+    void sendToToursZipEquirectangular(TourMessage tourMessage);
 }

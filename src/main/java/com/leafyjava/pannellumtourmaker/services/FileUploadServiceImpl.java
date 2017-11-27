@@ -3,6 +3,7 @@ package com.leafyjava.pannellumtourmaker.services;
 import com.leafyjava.pannellumtourmaker.controllers.FileUploadController;
 import com.leafyjava.pannellumtourmaker.domains.UploadedFile;
 import com.leafyjava.pannellumtourmaker.storage.services.StorageService;
+import com.leafyjava.pannellumtourmaker.utils.SupportedTourUploadType;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -44,8 +45,8 @@ public class FileUploadServiceImpl implements FileUploadService {
     }
 
     @Override
-    public void store(final String name, final File file) {
-        storageService.storeZipContent(name, file);
+    public void store(final String name, final SupportedTourUploadType type, final File file) {
+        storageService.storeZipContent(name, type, file);
     }
 
     @Override

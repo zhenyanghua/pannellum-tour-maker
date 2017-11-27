@@ -3,6 +3,7 @@ package com.leafyjava.pannellumtourmaker.storage.services;
 import com.leafyjava.pannellumtourmaker.storage.configs.StorageProperties;
 import com.leafyjava.pannellumtourmaker.storage.exceptions.StorageException;
 import com.leafyjava.pannellumtourmaker.storage.exceptions.StorageFileNotFoundException;
+import com.leafyjava.pannellumtourmaker.utils.SupportedTourUploadType;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.io.IOUtils;
@@ -29,12 +30,14 @@ import java.util.stream.Stream;
 public class FileSystemStorageService implements StorageService {
 
     private final Path rootLocation;
-    private final Path extractedLocation;
+    private final Path tourLocation;
+    private final Path equirectangularLocation;
 
     @Autowired
     public FileSystemStorageService(StorageProperties storageProperties) {
         this.rootLocation = Paths.get(storageProperties.getLocation());
-        this.extractedLocation = Paths.get(storageProperties.getTourLocation());
+        this.tourLocation = Paths.get(storageProperties.getTourLocation());
+        this.equirectangularLocation = Paths.get(storageProperties.getEquirectangularLocation());
     }
 
     @Override
@@ -82,10 +85,18 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public void storeZipContent(final String name, final File file) {
+    public void storeZipContent(final String name, final SupportedTourUploadType type, final File file) {
         try {
+            Path destination = null;
+            switch (type) {
+                case MULTIRES:
+                    destination = tourLocation.resolve(name);
+                    break;
+                case EQUIRECTANGULAR:
+                    destination = equirectangularLocation.resolve(name);
+                    break;
+            }
             ZipFile zipFile = new ZipFile(file);
-            Path destination = extractedLocation.resolve(name);
             zipFile.extractAll(destination.toString());
             FileSystemUtils.deleteRecursively(destination.resolve("__MACOSX").toFile());
 
@@ -100,7 +111,7 @@ public class FileSystemStorageService implements StorageService {
     public Stream<Path> loadAll() {
         try {
             return Files.walk(rootLocation, 1)
-                .filter(path -> !path.equals(extractedLocation))
+                .filter(path -> !path.equals(tourLocation))
                 .filter(path -> !path.equals(rootLocation))
                 .map(rootLocation::relativize);
         } catch (IOException e) {

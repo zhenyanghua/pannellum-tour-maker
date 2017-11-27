@@ -4,17 +4,19 @@ spring:
 
 application:
   baseUrl: http://localhost:8080/
+  nona: /Applications/Hugin/HuginStitchProject.app/Contents/MacOS/nona
   upload:
     directory: /Users/hua/IdeaProjects/pannellum-tour-maker-service/upload-dir
     tours: /Users/hua/IdeaProjects/pannellum-tour-maker-service/upload-dir/tours
+    equirectangular: /Users/hua/IdeaProjects/pannellum-tour-maker-service/upload-dir/equirectangular
 
 ---
 spring:
   profiles: dev
   http:
     multipart:
-      max-file-size: 50MB
-      max-request-size: 50MB
+      max-file-size: 100MB
+      max-request-size: 100MB
 
 ---
 spring:
@@ -26,6 +28,6 @@ spring:
         database: test
   http:
       multipart:
-        max-file-size: 100MB
-        max-request-size: 100MB
+        max-file-size: 1000MB
+        max-request-size: 1000MB
 

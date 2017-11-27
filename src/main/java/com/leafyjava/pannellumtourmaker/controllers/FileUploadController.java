@@ -4,10 +4,13 @@ import com.leafyjava.pannellumtourmaker.domains.Tour;
 import com.leafyjava.pannellumtourmaker.domains.TourMessage;
 import com.leafyjava.pannellumtourmaker.domains.UploadedFile;
 import com.leafyjava.pannellumtourmaker.exceptions.InvalidTourException;
+import com.leafyjava.pannellumtourmaker.exceptions.TourAlreadyExistsException;
 import com.leafyjava.pannellumtourmaker.exceptions.UnsupportedFileExtensionException;
 import com.leafyjava.pannellumtourmaker.services.AsyncTourService;
 import com.leafyjava.pannellumtourmaker.services.FileUploadService;
 import com.leafyjava.pannellumtourmaker.services.TourService;
+
+import com.leafyjava.pannellumtourmaker.utils.SupportedTourUploadType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -25,6 +28,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
+
+import static com.leafyjava.pannellumtourmaker.utils.SupportedTourUploadType.EQUIRECTANGULAR;
+import static com.leafyjava.pannellumtourmaker.utils.SupportedTourUploadType.MULTIRES;
 
 @RestController
 @RequestMapping("/api/v1/public/guest/file-upload")
@@ -58,12 +65,33 @@ public class FileUploadController {
     }
 
     @PostMapping("/tours")
-    public void uploadFile(@RequestParam("name") String name, @RequestParam("file") MultipartFile file) {
+    public void uploadFile(@RequestParam("name") String name,
+                           @RequestParam("type") String type,
+                           @RequestParam("file") MultipartFile file) {
+        if (tourService.findOne(name) != null) {
+            throw new TourAlreadyExistsException("Tour " + name + " already exists.");
+        }
+        SupportedTourUploadType tourType = null;
+        try{
+            tourType = SupportedTourUploadType.valueOf(type.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidTourException("Tour type is not supported.");
+        }
         if (!StringUtils.getFilenameExtension(file.getOriginalFilename()).equalsIgnoreCase("zip")) {
             throw new UnsupportedFileExtensionException("The uploaded file must be a zip file.");
         }
+
         File zip = fileUploadService.convertToFile(file);
-        asyncTourService.send(new TourMessage(name, zip));
+        TourMessage tourMessage = new TourMessage(name, zip);
+
+        switch(tourType) {
+            case MULTIRES:
+                asyncTourService.sendToToursZipMultires(tourMessage);
+                break;
+            case EQUIRECTANGULAR:
+                asyncTourService.sendToToursZipEquirectangular(tourMessage);
+                break;
+        }
     }
 
     @GetMapping("/tours")

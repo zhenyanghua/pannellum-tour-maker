@@ -12,6 +12,9 @@ public class StorageProperties {
     @Value("${application.upload.tours}")
     private String tourLocation;
 
+    @Value("${application.upload.equirectangular}")
+    private String equirectangularLocation;
+
 
     public String getLocation() {
         return location;
@@ -29,4 +32,11 @@ public class StorageProperties {
         this.tourLocation = tourLocation;
     }
 
+    public String getEquirectangularLocation() {
+        return equirectangularLocation;
+    }
+
+    public void setEquirectangularLocation(final String equirectangularLocation) {
+        this.equirectangularLocation = equirectangularLocation;
+    }
 }
