@@ -1,15 +1,17 @@
 package com.leafyjava.pannellumtourmaker.services;
 
+import com.leafyjava.pannellumtourmaker.domains.Exif;
 import com.leafyjava.pannellumtourmaker.domains.Tour;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 public interface TourService {
-    void createTourFromMultires(String tourName);
+    void createTourFromMultires(String tourName, Map<String, Exif> exifMap);
 
-    void convertToMultiresFromEquirectangular(String tourName);
+    Map<String, Exif> convertToMultiresFromEquirectangular(String tourName);
 
     File convertToFile(MultipartFile file);
 

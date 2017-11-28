@@ -11,6 +11,7 @@ public class Scene {
     private String title;
     private float pitch;
     private float yaw;
+    private Exif exif;
     private String type;
     private MultiRes multiRes;
     private List<HotSpot> hotSpots;
@@ -45,6 +46,14 @@ public class Scene {
 
     public void setYaw(final float yaw) {
         this.yaw = yaw;
+    }
+
+    public Exif getExif() {
+        return exif;
+    }
+
+    public void setExif(final Exif exif) {
+        this.exif = exif;
     }
 
     public String getType() {

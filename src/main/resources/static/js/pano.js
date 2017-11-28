@@ -25,7 +25,8 @@ getTours();
 
 function initMainViewer(tour) {
   if (viewer) {
-      destroyPano(viewer);
+      viewer.destroy();
+      viewer = undefined;
   }
 
   scenes = {};
@@ -76,7 +77,8 @@ function hotspot(hotSpotDiv, args) {
 function loadSceneConfig() {
 
   if (hsViewer) {
-    destroyPano(hsViewer);
+    hsViewer.destroy();
+    hsViewer = undefined;
   }
 
   $hotSpotsList.empty();
@@ -92,6 +94,8 @@ function loadSceneConfig() {
         .append($("<div>").addClass('collapsible-body')
           .append(loadHotSpotSettings(hotspot))));
   });
+
+  Materialize.updateTextFields();
 }
 
 /**
@@ -111,67 +115,15 @@ function loadHotSpotSettings(hotspot) {
           .attr("id", "hotspot-text-" + hotspot.sceneId)
           .attr("name", "hotspot-text-" + hotspot.sceneId)
           .attr("type", "text")
-          .val(hotspot.text))
+          .val(hotspot.text)
+          .change(function (e) {updateHotSpotValue({text: e.target.value}, hotspot);}))
         .append($("<label>")
           .attr("for", "hotspot-text-" + hotspot.sceneId)
           .text("Text"))))
-    .append($("<div>").addClass('row')
-      .append($("<p>").addClass('range-field col s12')
-        .append($("<label>")
-          .attr("for", "hotspot-pitch-" + hotspot.sceneId)
-          .text("HotSpot Pitch in Current Scene"))
-        .append($("<input>")
-          .attr("id", "hotspot-pitch-" + hotspot.sceneId)
-          .attr("name", "hotspot-pitch-" + hotspot.sceneId)
-          .attr("type", "range")
-          .attr("min", -360)
-          .attr("max", 360)
-          .val(hotspot.pitch)
-          .change(function(e) { updateHotSpotValue({pitch: +e.target.value}, hotspot); }))))
-    .append($("<div>").addClass('row')
-      .append($("<p>").addClass('range-field col s12')
-        .append($("<label>")
-          .attr("for", "hotspot-yaw-" + hotspot.sceneId)
-          .text("HotSpot Yaw in Current Scene"))
-        .append($("<input>")
-          .attr("id", "hotspot-yaw-" + hotspot.sceneId)
-          .attr("name", "hotspot-yaw-" + hotspot.sceneId)
-          .attr("type", "range")
-          .attr("min", -360)
-          .attr("max", 360)
-          .val(hotspot.yaw)
-          .change(function(e) { updateHotSpotValue({yaw: +e.target.value}, hotspot); }))))
-    .append($("<div>").addClass('row')
-      .append($("<p>").addClass('range-field col s12')
-        .append($("<label>")
-          .attr("for", "hotspot-targetPitch-" + hotspot.sceneId)
-          .text("HotSpot Pitch in Connected Scene"))
-        .append($("<input>")
-          .attr("id", "hotspot-targetPitch-" + hotspot.sceneId)
-          .attr("name", "hotspot-targetPitch-" + hotspot.sceneId)
-          .attr("type", "range")
-          .attr("min", -360)
-          .attr("max", 360)
-          .val(hotspot.targetPitch)
-          .change(function(e) { updateHotSpotValue({targetPitch: +e.target.value}, hotspot); }))))
-    .append($("<div>").addClass('row')
-      .append($("<p>").addClass('range-field col s12')
-        .append($("<label>")
-          .attr("for", "hotspot-targetYaw-" + hotspot.sceneId)
-          .text("HotSpot Yaw in Connected Scene"))
-        .append($("<input>")
-          .attr("id", "hotspot-targetYaw-" + hotspot.sceneId)
-          .attr("name", "hotspot-targetYaw-" + hotspot.sceneId)
-          .attr("type", "range")
-          .attr("min", -360)
-          .attr("max", 360)
-          .val(hotspot.targetYaw)
-          .change(function(e) { updateHotSpotValue({targetYaw: +e.target.value}, hotspot); }))))
-    .append($("<div>").addClass('row center-align')
-      .append($("<a>").addClass("waves-effect waves-light btn red")
-        .text("Delete HotSpot")
-        .append($("<i>").addClass("material-icons left").text("delete"))
-        .click(function(){removeHotSpot(hotspot);})))
+    .append($("<a>").addClass("waves-effect waves-light btn red")
+      .text("Delete HotSpot")
+      .append($("<i>").addClass("material-icons left").text("delete"))
+      .click(function(){removeHotSpot(hotspot);}));
 }
 
 function updateHotSpotValue(val, hotspot) {
@@ -412,9 +364,4 @@ function addMetaToHotSpots(tour) {
       });
     });
   });
-}
-
-function destroyPano(view) {
-    view.destroy();
-    view = undefined;
 }

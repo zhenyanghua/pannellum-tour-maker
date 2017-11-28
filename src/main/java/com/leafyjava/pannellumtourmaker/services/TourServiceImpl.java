@@ -1,14 +1,21 @@
 package com.leafyjava.pannellumtourmaker.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.leafyjava.pannellumtourmaker.domains.Exif;
 import com.leafyjava.pannellumtourmaker.domains.Scene;
 import com.leafyjava.pannellumtourmaker.domains.Tour;
+import com.leafyjava.pannellumtourmaker.exceptions.InvalidTourException;
 import com.leafyjava.pannellumtourmaker.exceptions.TourAlreadyExistsException;
 import com.leafyjava.pannellumtourmaker.exceptions.UnsupportedFileTreeException;
 import com.leafyjava.pannellumtourmaker.repositories.TourRepository;
 import com.leafyjava.pannellumtourmaker.storage.configs.StorageProperties;
 import com.leafyjava.pannellumtourmaker.storage.services.StorageService;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.sanselan.ImageReadException;
+import org.apache.sanselan.Sanselan;
+import org.apache.sanselan.common.IImageMetadata;
+import org.apache.sanselan.formats.jpeg.JpegImageMetadata;
+import org.apache.sanselan.formats.tiff.TiffImageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +31,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.leafyjava.pannellumtourmaker.configs.WebConfig.TOURS;
@@ -55,13 +65,13 @@ public class TourServiceImpl implements TourService{
     }
 
     @Override
-    public void createTourFromMultires(final String tourName) {
+    public void createTourFromMultires(final String tourName, Map<String, Exif> exifMap) {
         Path tourPath = Paths.get(storageProperties.getTourLocation()).resolve(tourName).resolve(MULTIRES);
         try {
             List<Scene> scenes = Files.walk(tourPath, 1)
                 .filter(path -> !path.getFileName().toString().equalsIgnoreCase(MULTIRES) &&
                     !path.getFileName().toString().equalsIgnoreCase(".DS_Store"))
-                .map(this::mapConfigToScene)
+                .map(scenePath -> mapConfigToScene(scenePath, exifMap))
                 .collect(Collectors.toList());
 
             Tour tour = new Tour();
@@ -80,13 +90,16 @@ public class TourServiceImpl implements TourService{
     }
 
     @Override
-    public void convertToMultiresFromEquirectangular(final String tourName) {
+    public Map<String, Exif> convertToMultiresFromEquirectangular(final String tourName) {
         Path equirectangularPath = Paths.get(storageProperties.getEquirectangularLocation()).resolve(tourName);
+        Map<String, Exif> exifMap = new HashMap<>();
 
         try {
             Files.walk(equirectangularPath, 2)
                 .filter(path -> path.toString().toLowerCase().endsWith(".jpg"))
                 .forEach(path -> {
+                    extractMeta(exifMap, path.toFile());
+
                     String pyPath = null;
                     try {
                         pyPath = new ClassPathResource("generate.py").getURL().toString().substring(5);
@@ -115,6 +128,8 @@ public class TourServiceImpl implements TourService{
         } catch (IOException e) {
             throw new UnsupportedFileTreeException("Failed to read equirectangular directory.", e);
         }
+
+        return exifMap;
     }
 
     @Override
@@ -138,7 +153,7 @@ public class TourServiceImpl implements TourService{
     }
 
 
-    private Scene mapConfigToScene(Path scenePath) {
+    private Scene mapConfigToScene(Path scenePath, Map<String, Exif> exifMap) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             Path config = scenePath.resolve("config.json");
@@ -147,6 +162,7 @@ public class TourServiceImpl implements TourService{
             scene.setId(sceneId);
             scene.setTitle(sceneId);
             scene.setType("multires");
+            scene.setExif(exifMap.get(sceneId));
 
             String basePath = baseUrl + "/" + scenePath.toString().replace(storageProperties.getTourLocation(), TOURS);
 
@@ -155,6 +171,25 @@ public class TourServiceImpl implements TourService{
             return scene;
         } catch (IOException e) {
             throw new UnsupportedFileTreeException("Failed to read: " + scenePath, e);
+        }
+    }
+
+
+    private void extractMeta(final Map<String, Exif> map, final File file) {
+        try {
+            JpegImageMetadata metadata = (JpegImageMetadata) Sanselan.getMetadata(file);
+            TiffImageMetadata exif = metadata.getExif();
+            if (exif != null) {
+                TiffImageMetadata.GPSInfo gps = exif.getGPS();
+                if (gps != null) {
+                    final double longitude = gps.getLongitudeAsDegreesEast();
+                    final double latitude = gps.getLatitudeAsDegreesNorth();
+
+                    map.put(FilenameUtils.getBaseName(file.getName()), new Exif(longitude, latitude));
+                }
+            }
+        } catch (ImageReadException | IOException e) {
+            logger.warn("Failed to read meta data from image: " + file.getName());
         }
     }
 }

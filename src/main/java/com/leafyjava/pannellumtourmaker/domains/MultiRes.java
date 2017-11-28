@@ -4,8 +4,6 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 
 public class MultiRes {
-//    @Id
-//    private ObjectId multiResId;
     private String basePath;
     private String path;
     private String fallbackPath;
@@ -13,18 +11,6 @@ public class MultiRes {
     private int tileResolution;
     private int maxLevel;
     private int cubeResolution;
-//
-//    public MultiRes() {
-//        this.multiResId = ObjectId.get();
-//    }
-//
-//    public ObjectId getMultiResId() {
-//        return multiResId;
-//    }
-//
-//    public void setMultiResId(final ObjectId multiResId) {
-//        this.multiResId = multiResId;
-//    }
 
     public String getBasePath() {
         return basePath;
