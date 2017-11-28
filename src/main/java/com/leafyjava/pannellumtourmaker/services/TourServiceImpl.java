@@ -7,6 +7,7 @@ import com.leafyjava.pannellumtourmaker.exceptions.TourAlreadyExistsException;
 import com.leafyjava.pannellumtourmaker.exceptions.UnsupportedFileTreeException;
 import com.leafyjava.pannellumtourmaker.repositories.TourRepository;
 import com.leafyjava.pannellumtourmaker.storage.configs.StorageProperties;
+import com.leafyjava.pannellumtourmaker.storage.services.StorageService;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,10 +27,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.leafyjava.pannellumtourmaker.configs.WebConfig.TOURS;
+
 @Service
 public class TourServiceImpl implements TourService{
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final String MULTIRES = "multires";
 
     @Value("${application.baseUrl}")
     private String baseUrl;
@@ -35,22 +41,25 @@ public class TourServiceImpl implements TourService{
     @Value("${application.nona}")
     private String nona;
 
+    private StorageService storageService;
     private StorageProperties storageProperties;
     private TourRepository tourRepository;
 
     @Autowired
-    public TourServiceImpl(final StorageProperties storageProperties,
+    public TourServiceImpl(final StorageService storageService,
+                           final StorageProperties storageProperties,
                            final TourRepository tourRepository) {
+        this.storageService = storageService;
         this.storageProperties = storageProperties;
         this.tourRepository = tourRepository;
     }
 
     @Override
     public void createTourFromMultires(final String tourName) {
-        Path tourPath = Paths.get(storageProperties.getTourLocation()).resolve(tourName).resolve("multires");
+        Path tourPath = Paths.get(storageProperties.getTourLocation()).resolve(tourName).resolve(MULTIRES);
         try {
             List<Scene> scenes = Files.walk(tourPath, 1)
-                .filter(path -> !path.getFileName().toString().equalsIgnoreCase("multires") &&
+                .filter(path -> !path.getFileName().toString().equalsIgnoreCase(MULTIRES) &&
                     !path.getFileName().toString().equalsIgnoreCase(".DS_Store"))
                 .map(this::mapConfigToScene)
                 .collect(Collectors.toList());
@@ -84,7 +93,7 @@ public class TourServiceImpl implements TourService{
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    String output = storageProperties.getTourLocation() + "/" + tourName + "/multires/" +
+                    String output = storageProperties.getTourLocation() + "/" + tourName + "/" + MULTIRES + "/" +
                         FilenameUtils.getBaseName(path.toString());
                     String[] cmd = {
                         "/bin/bash",
@@ -104,8 +113,13 @@ public class TourServiceImpl implements TourService{
                 });
             FileSystemUtils.deleteRecursively(equirectangularPath.toFile());
         } catch (IOException e) {
-            throw new UnsupportedFileTreeException("Equirectangular directory is not found.", e);
+            throw new UnsupportedFileTreeException("Failed to read equirectangular directory.", e);
         }
+    }
+
+    @Override
+    public File convertToFile(final MultipartFile file) {
+        return storageService.convertToFile(file);
     }
 
     @Override
@@ -134,7 +148,7 @@ public class TourServiceImpl implements TourService{
             scene.setTitle(sceneId);
             scene.setType("multires");
 
-            String basePath = baseUrl + "/" + scenePath.toString().replace(storageProperties.getTourLocation(), "tours");
+            String basePath = baseUrl + "/" + scenePath.toString().replace(storageProperties.getTourLocation(), TOURS);
 
             scene.getMultiRes().setBasePath(basePath);
             scene.setHotSpots(new ArrayList<>());

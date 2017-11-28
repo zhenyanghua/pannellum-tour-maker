@@ -3,6 +3,7 @@ package com.leafyjava.pannellumtourmaker.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.leafyjava.pannellumtourmaker.domains.TourMessage;
+import com.leafyjava.pannellumtourmaker.storage.services.StorageService;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -12,27 +13,30 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
-import static com.leafyjava.pannellumtourmaker.utils.SupportedTourUploadType.*;
+import static com.leafyjava.pannellumtourmaker.utils.QueueNames.TOUR_ZIP_EQUIRECTANGULAR;
+import static com.leafyjava.pannellumtourmaker.utils.QueueNames.TOUR_ZIP_MULTIRES;
+import static com.leafyjava.pannellumtourmaker.utils.SupportedTourUploadType.EQUIRECTANGULAR;
+import static com.leafyjava.pannellumtourmaker.utils.SupportedTourUploadType.MULTIRES;
 
 @Service
 public class AsyncTourServiceImpl implements AsyncTourService {
     private RabbitTemplate rabbitTemplate;
     private Queue toursZipMultiresQueue;
     private Queue toursZipEquirectangularQueue;
-    private FileUploadService fileUploadService;
     private TourService tourService;
+    private StorageService storageService;
 
     @Autowired
     public AsyncTourServiceImpl(final RabbitTemplate rabbitTemplate,
-                                @Qualifier("tours.zip.multires") final Queue toursZipMultiresQueue,
-                                @Qualifier("tours.zip.equirectangular") final Queue toursZipEquirectangularQueue,
-                                final FileUploadService fileUploadService,
-                                final TourService tourService) {
+                                @Qualifier(TOUR_ZIP_MULTIRES) final Queue toursZipMultiresQueue,
+                                @Qualifier(TOUR_ZIP_EQUIRECTANGULAR) final Queue toursZipEquirectangularQueue,
+                                final TourService tourService,
+                                final StorageService storageService) {
         this.rabbitTemplate = rabbitTemplate;
         this.toursZipMultiresQueue = toursZipMultiresQueue;
         this.toursZipEquirectangularQueue = toursZipEquirectangularQueue;
-        this.fileUploadService = fileUploadService;
         this.tourService = tourService;
+        this.storageService = storageService;
     }
 
     @Override
@@ -58,26 +62,26 @@ public class AsyncTourServiceImpl implements AsyncTourService {
         }
     }
 
-    @RabbitListener(queues = "tours.zip.multires")
+    @RabbitListener(queues = TOUR_ZIP_MULTIRES)
     public void receiveInToursZipMultires(String message) {
         ObjectMapper mapper = new ObjectMapper();
-        TourMessage tourMessage = null;
+        TourMessage tourMessage;
         try {
             tourMessage = mapper.readValue(message, TourMessage.class);
-            fileUploadService.store(tourMessage.getName(), MULTIRES, tourMessage.getFile());
+            storageService.storeZipContent(tourMessage.getName(), MULTIRES, tourMessage.getFile());
             tourService.createTourFromMultires(tourMessage.getName());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    @RabbitListener(queues = "tours.zip.equirectangular")
+    @RabbitListener(queues = TOUR_ZIP_EQUIRECTANGULAR)
     public void receiveInToursZipEquirectangular(String message) {
         ObjectMapper mapper = new ObjectMapper();
-        TourMessage tourMessage = null;
+        TourMessage tourMessage;
         try {
             tourMessage = mapper.readValue(message, TourMessage.class);
-            fileUploadService.store(tourMessage.getName(), EQUIRECTANGULAR, tourMessage.getFile());
+            storageService.storeZipContent(tourMessage.getName(), EQUIRECTANGULAR, tourMessage.getFile());
             tourService.convertToMultiresFromEquirectangular(tourMessage.getName());
             tourService.createTourFromMultires(tourMessage.getName());
         } catch (IOException e) {

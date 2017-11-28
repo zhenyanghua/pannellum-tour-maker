@@ -10,6 +10,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @Configuration
 public class WebConfig extends WebMvcConfigurerAdapter{
 
+    public static final String TOURS = "tours";
+
     private StorageProperties storageProperties;
 
     @Autowired
@@ -19,7 +21,7 @@ public class WebConfig extends WebMvcConfigurerAdapter{
 
     @Override
     public void addResourceHandlers(final ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/tours/**")
+        registry.addResourceHandler("/" + TOURS + "/**")
             .addResourceLocations("file://" + storageProperties.getTourLocation() + "/");
         super.addResourceHandlers(registry);
     }
