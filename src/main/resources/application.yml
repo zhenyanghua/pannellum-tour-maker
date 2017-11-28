@@ -17,7 +17,8 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
-
+  thymeleaf:
+    cache: false
 ---
 spring:
   profiles: prod
@@ -30,4 +31,6 @@ spring:
       multipart:
         max-file-size: 1000MB
         max-request-size: 1000MB
+  thymeleaf:
+    cache: true
 

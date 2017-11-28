@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title layout:title-pattern="$LAYOUT_TITLE - $CONTENT_TITLE">Leafy Java</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/materializecss/0.100.2/css/materialize.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}"/>
+    <script th:src="@{/webjars/jquery/3.2.1/jquery.min.js}"></script>
+    <script th:src="@{/webjars/materializecss/0.100.2/js/materialize.min.js}"></script>
+</head>
+<body>
+    <th:block th:replace="fragments/header :: header" />
+    <main>
+        <th:block layout:fragment="content" />
+    </main>
+</body>
+</html>

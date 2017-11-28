@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <link rel="stylesheet" th:href="@{/webjars/pannellum/2.3.2/build/pannellum.css}">
+    <link rel="stylesheet" th:href="@{/css/pano.css}">
+    <title>Home</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div id="left-panel">
+        <div id="tour-list">
+            <h5 class="card-panel red-text text-lighten-2">Available Tours</h5>
+            <ul id="tour-list-container" class="collection"></ul>
+        </div>
+        <div id="scene-list">
+            <h5 class="card-panel red-text text-lighten-2">Available Scenes</h5>
+            <div id="scene-list-container"></div>
+        </div>
+    </div>
+    <div id="panorama" class="empty-pano">
+        <div id="center-point" class="hide"></div>
+    </div>
+    <div id="settings">
+        <div id="hotspot-pano" class="card">
+            <div class="card-content">
+                <div class="card-title red-text text-lighten-2">Adjust HotSpot</div>
+            </div>
+            <div id="hotspot-pano-container" class="empty-pano"></div>
+        </div>
+        <div id="hotspot-pano-list">
+            <ul id="settings-hotspot-list" class="collapsible popout" data-collapsible="accordion"></ul>
+        </div>
+    </div>
+    <script th:src="@{/webjars/pannellum/2.3.2/build/pannellum.js}"></script>
+    <script th:src="@{/js/polyfill.js}"></script>
+    <script th:src="@{/js/pano.js}"></script>
+</div>
+</body>
+</html>

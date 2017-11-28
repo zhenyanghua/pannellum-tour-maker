@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Login</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="login-container">
+        <div class="login">
+            <div class="row">
+                <div class="col s12">
+                    <div class="container">
+                        <h2 class="header">User Sign In</h2>
+                        <form th:action="@{/login}" method="post">
+                            <div th:if="${param.error}">
+                                <div class="card-panel red lighten-4 red-text text-darken-4">
+                                    Invalid username or password.
+                                </div>
+                            </div>
+                            <div th:if="${param.logout}">
+                                <div class="card-panel light-blue lighten-4 blue-text text-darken-4">
+                                    You have been logged out.
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input type="text"
+                                           id="username"
+                                           name="username"
+                                           class="validate"
+                                           autofocus="autofocus"
+                                           required />
+                                    <label for="username">Username</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input type="password"
+                                           id="password"
+                                           name="password"
+                                           class="validate"
+                                           required />
+                                    <label for="password">Password</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col s12">
+                                    <input type="submit"
+                                           name="login-submit"
+                                           id="login-submit"
+                                           class="btn-large waves-effect waves-light"
+                                           value="Log In" />
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

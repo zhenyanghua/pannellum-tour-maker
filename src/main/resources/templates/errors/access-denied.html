@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Access Denied</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="container">
+        <h2 class="header">Access Denied</h2>
+        <p><a th:href="@{/}">Back to home page</a></p>
+    </div>
+</div>
+</body>
+</html>

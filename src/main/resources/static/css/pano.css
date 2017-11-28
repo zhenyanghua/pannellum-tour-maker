@@ -1,0 +1,130 @@
+#left-panel {
+    width: 250px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.scene-preview {
+    height: 120px;
+}
+
+#tour-list-container {
+    margin: 10px;
+}
+#left-panel .card-panel {
+    margin: 10px;
+}
+#left-panel .card {
+    margin: 10px;
+}
+
+#left-panel .card-title {
+    pointer-events: none;
+    font-size: medium;
+    padding: 0 5px !important;
+    background-color: rgba(0,0,0,0.4);
+}
+#left-panel .card-action {
+    padding: 6px 12px;
+}
+#left-panel .card-action a {
+    cursor: pointer;
+}
+
+#panorama {
+    width: calc(100% - 650px);
+    height: calc(100% - 20px);
+    margin: 10px 0;
+}
+#center-point {
+    border-radius: 50%;
+    background-color: rgba(0, 255, 0, 0.8);
+    width: 8px;
+    height: 8px;
+    z-index: 999;
+    position: absolute;
+    top: calc(50% - 4px);
+    left: calc(50% - 4px);
+    transform: translate(-50% -50%);
+}
+#hotspot-pano {
+    width: calc(100% - 20px);
+    margin: 10px;
+}
+#hotspot-pano .card-content {
+    padding-top: 8px;
+    padding-bottom: 0;
+}
+.empty-pano {
+    background: #f4f4f4 url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="67" height="100" viewBox="0 0 67 100"><path stroke="#ccc" fill="none" d="M33.5,50,0,63,33.5,75,67,63,33.5,50m-33.5-50,67,25m-0.5,0,0,75m-66.5-75,67-25m-33.5,75,0,25m0-100,0,50"/></svg>') repeat;
+}
+#hotspot-pano-container {
+    height: 180px;
+}
+#hotspot-pano-list {
+    height: calc(100% - 248px);
+    overflow-y: auto;
+}
+#settings {
+    width: 400px;
+    height: 100%;
+}
+
+.custom-hotspot-target {
+    width: 21px;
+    height: 32px;
+    background-position: center;
+    background-image: url(../img/marker-light.png);
+    background-size: 21px 32px;
+    animation: 3s ease-in-out infinite both anim;
+}
+.custom-hotspot span {
+    /*visibility: hidden;*/
+    position: absolute;
+    border-radius: 3px;
+    background-color: #fff;
+    color: #000;
+    text-align: center;
+    max-width: 200px;
+    padding: 5px 10px;
+    margin-left: -220px;
+    cursor: default;
+}
+/*.custom-hotspot:hover span{*/
+/*visibility: visible;*/
+/*}*/
+/*.custom-hotspot:hover span:after {*/
+.custom-hotspot span:after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-width: 10px;
+    border-style: solid;
+    border-color: #fff transparent transparent transparent;
+    bottom: -20px;
+    left: -10px;
+    margin: 0 50%;
+}
+
+@keyframes anim {
+    from {
+        transform: scale(1);
+    }
+
+    25% {
+        transform: scale(1.3);
+    }
+
+    50% {
+        transform: scale(1);
+    }
+
+    75% {
+        transform: scale(1.3);
+    }
+
+    to {
+        transform: scale(1);
+    }
+}
