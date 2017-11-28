@@ -30,11 +30,15 @@
 #left-panel .card-action a {
     cursor: pointer;
 }
-
-#panorama {
+#pano-container {
+    position: relative;
     width: calc(100% - 650px);
     height: calc(100% - 20px);
     margin: 10px 0;
+}
+#panorama {
+    width: 100%;
+    height: 100%;
 }
 #center-point {
     border-radius: 50%;

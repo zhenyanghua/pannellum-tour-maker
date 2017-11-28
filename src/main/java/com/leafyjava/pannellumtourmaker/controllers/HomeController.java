@@ -11,6 +11,11 @@ public class HomeController {
         return "index";
     }
 
+    @GetMapping("/upload")
+    public String upload() {
+        return "upload";
+    }
+
     @GetMapping("/login")
     public String login() {
         return "login";

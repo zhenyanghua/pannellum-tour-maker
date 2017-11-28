@@ -20,8 +20,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api/v1/public/guest/tours")
@@ -45,6 +47,10 @@ public class TourController {
     public void uploadFile(@RequestParam("name") String name,
                            @RequestParam("type") String type,
                            @RequestParam("file") MultipartFile file) {
+        if (!Pattern.matches("[a-zA-Z\\d]*", name)) {
+            throw new InvalidTourException("Tour name can only contain letters and numbers. " +
+                "No special characters or space is allowed.");
+        }
         if (tourService.findOne(name) != null) {
             throw new TourAlreadyExistsException("Tour " + name + " already exists.");
         }

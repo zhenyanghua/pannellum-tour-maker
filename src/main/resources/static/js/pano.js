@@ -1,5 +1,3 @@
-var apiUrl = "http://localhost:8080/api/v1";
-
 var $hotSpotsList = $("#settings-hotspot-list");
 var $tourList = $("#tour-list-container");
 var $sceneList = $("#scene-list-container");
@@ -272,7 +270,6 @@ function populateSceneList() {
         .append($("<div>").addClass('card-action')
           .append($("<a>").append($("<i>").addClass("material-icons").text("add_circle_outline"))
             .click(function() { addToScene(scene);}))
-          // .append($("<a>").append($("<i>").addClass("material-icons").text("delete_forever")))
         ));
 
       var viewerOptions = Object.assign({
@@ -338,12 +335,12 @@ function getTours() {
     .done(function (data) {
       tours = data;
       tours.forEach(function (tour) {
-        $tourList.append($("<li>").addClass("collection-item")
+        $tourList.append($("<li>").addClass("collection-item").attr('id', "tour-list-item-" +tour.name)
           .append($("<div>").text(tour.name)
             .append($("<a>").attr("href", "#switch-tour").addClass("secondary-content")
               .click(function() {switchTour(tour.name);})
               .append($("<i>").addClass("material-icons").text("arrow_forward")))
-            .append($("<a>").attr("href", "#save-tour").addClass("secondary-content")
+            .append($("<a>").attr("href", "#save-tour").addClass("secondary-content hide action-save").attr('id', "tour-list-item-action-save-" + tour.name)
               .click(function() {saveTour(tour.name);})
               .append($("<i>").addClass("material-icons").text("save")))
           ));
@@ -355,6 +352,10 @@ function switchTour(name) {
   if ($centerPoint.hasClass("hide")) {
     $centerPoint.removeClass("hide");
   }
+  $tourList.find('.collection-item').removeClass('active');
+  $tourList.find('#tour-list-item-' + name).addClass('active');
+  $tourList.find('.action-save').addClass('hide');
+  $tourList.find('#tour-list-item-action-save-' + name).removeClass('hide');
 
   var tour = findTourByName(name);
 

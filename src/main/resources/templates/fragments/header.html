@@ -13,6 +13,9 @@
                     <li th:class="${#httpServletRequest.getRequestURI() == '/' ? 'active' : ''}">
                         <a th:href="@{/}">Home</a>
                     </li>
+                    <li th:class="${#httpServletRequest.getRequestURI() == '/upload' ? 'active' : ''}">
+                        <a th:href="@{/upload}">Upload</a>
+                    </li>
                 </ul>
             </div>
         </nav>
