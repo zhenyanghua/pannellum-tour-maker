@@ -66,12 +66,17 @@
     height: 180px;
 }
 #hotspot-pano-list {
-    height: calc(100% - 248px);
+    height: calc(100% - 418px);
     overflow-y: auto;
 }
 #settings {
     width: 400px;
     height: 100%;
+}
+#mini-map {
+    width: calc(100% - 20px);
+    height: 150px;
+    margin: 10px;
 }
 
 .custom-hotspot-target {

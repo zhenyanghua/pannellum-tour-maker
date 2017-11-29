@@ -162,7 +162,10 @@ public class TourServiceImpl implements TourService{
             scene.setId(sceneId);
             scene.setTitle(sceneId);
             scene.setType("multires");
-            scene.setExif(exifMap.get(sceneId));
+
+            if (exifMap != null) {
+                scene.setExif(exifMap.get(sceneId));
+            }
 
             String basePath = baseUrl + "/" + scenePath.toString().replace(storageProperties.getTourLocation(), TOURS);
 

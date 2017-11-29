@@ -3,8 +3,9 @@
       xmlns:th="http://www.thymeleaf.org"
       layout:decorate="~{fragments/layout}">
 <head>
-    <link rel="stylesheet" th:href="@{/webjars/pannellum/2.3.2/build/pannellum.css}">
-    <link rel="stylesheet" th:href="@{/css/pano.css}">
+    <link rel="stylesheet" th:href="@{/webjars/pannellum/2.3.2/build/pannellum.css}"/>
+    <link rel="stylesheet" th:href="@{/webjars/openlayers/4.3.1/ol.css}"/>
+    <link rel="stylesheet" th:href="@{/css/pano.css}"/>
     <title>Home</title>
 </head>
 <body>
@@ -24,6 +25,7 @@
         <div id="center-point" class="hide"></div>
     </div>
     <div id="settings">
+        <div id="mini-map" class="card"></div>
         <div id="hotspot-pano" class="card">
             <div class="card-content">
                 <div class="card-title red-text text-lighten-2">Adjust HotSpot</div>
@@ -35,6 +37,7 @@
         </div>
     </div>
     <script th:src="@{/webjars/pannellum/2.3.2/build/pannellum.js}"></script>
+    <script th:src="@{/webjars/openlayers/4.3.1/ol.js}"></script>
     <script th:src="@{/js/polyfill.js}"></script>
     <script th:src="@{/js/pano.js}"></script>
 </div>
