@@ -26,4 +26,5 @@ public class Tour {
     public void setScenes(final List<Scene> scenes) {
         this.scenes = scenes;
     }
+    
 }

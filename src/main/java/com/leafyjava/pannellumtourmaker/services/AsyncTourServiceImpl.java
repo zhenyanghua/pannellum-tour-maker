@@ -3,6 +3,7 @@ package com.leafyjava.pannellumtourmaker.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.leafyjava.pannellumtourmaker.domains.Exif;
+import com.leafyjava.pannellumtourmaker.domains.PhotoMeta;
 import com.leafyjava.pannellumtourmaker.domains.TourMessage;
 import com.leafyjava.pannellumtourmaker.storage.services.StorageService;
 import org.springframework.amqp.core.Queue;
@@ -84,8 +85,8 @@ public class AsyncTourServiceImpl implements AsyncTourService {
         try {
             tourMessage = mapper.readValue(message, TourMessage.class);
             storageService.storeZipContent(tourMessage.getName(), EQUIRECTANGULAR, tourMessage.getFile());
-            Map<String, Exif> exifMap = tourService.convertToMultiresFromEquirectangular(tourMessage.getName());
-            tourService.createTourFromMultires(tourMessage.getName(), exifMap);
+            Map<String, PhotoMeta> metaMap = tourService.convertToMultiresFromEquirectangular(tourMessage.getName());
+            tourService.createTourFromMultires(tourMessage.getName(), metaMap);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -1,8 +1,5 @@
 package com.leafyjava.pannellumtourmaker.domains;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
-
 public class MultiRes {
     private String basePath;
     private String path;

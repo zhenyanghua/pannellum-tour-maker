@@ -35,24 +35,25 @@ function initMainViewer(tour) {
     scenes = {};
 
     tour.scenes.forEach(function(scene) {
-        scenes[scene.id] = scene;
+	    scenes[scene.id] = scene;
     });
 
-    var firstScene = tour.scenes[0].id;
+    var firstScene = tour.scenes[0];
+    // var northOffset = firstScene.photoMeta.gpano.poseHeadingDegrees || 0;
 
     viewer = pannellum.viewer('panorama', {
         "autoLoad": true,
-        "compass": true,
-        "northOffset": -120,
+	    // "compass": true,
 
         "default": {
-            "firstScene": firstScene,
+            "firstScene": firstScene.id,
             "author": "Demo",
             "sceneFadeDuration": 1000
         },
 
         "scenes": scenes
     });
+    // viewer.setNorthOffset(-northOffset);
 
     viewer.on("load", loadSceneConfig);
     viewer.on("mouseup", updateNorthFace);
@@ -401,11 +402,11 @@ function initSceneMarkers(tourName) {
 
     var availableScenes = tour.scenes
         .filter(function(scene) {
-            return scene.exif;
+            return scene.photoMeta && scene.photoMeta.exif;
         });
     var markers = availableScenes
         .map(function(scene) {
-            var exif = scene.exif;
+            var exif = scene.photoMeta.exif;
             var pos = ol.proj.fromLonLat([exif.longitude, exif.latitude]);
             return new ol.Feature({
                 type: 'icon',
@@ -429,7 +430,8 @@ function initSceneMarkers(tourName) {
 
     if (availableScenes.length > 0) {
         var coordinates = availableScenes.map(function(scene) {
-            return [scene.exif.longitude, scene.exif.latitude];
+            var exif = scene.photoMeta.exif;
+            return [exif.longitude, exif.latitude];
         });
 
         var boundingExtent = ol.extent.boundingExtent(coordinates);
@@ -445,33 +447,42 @@ function updateNorthFace() {
 		minimap.removeLayer(activeMarkerLayer);
 		activeMarkerLayer = undefined;
 	}
-	var north = viewer.getYaw() - viewer.getNorthOffset();
-	var northInRadian = north * Math.PI / 180;
-	console.log(north);
 
-    var exif = viewer.getConfig().exif;
+    var meta = viewer.getConfig().photoMeta;
+	var gpano = meta.gpano;
 
-    if (!exif) return;
+	if (gpano && !isNaN(gpano.poseHeadingDegrees)) {
+		viewer.setNorthOffset(-gpano.poseHeadingDegrees);
 
-	var pos = ol.proj.fromLonLat([exif.longitude, exif.latitude]);
-	var marker = new ol.Feature({
-		type: 'icon',
-		geometry: new ol.geom.Point(pos)
-	});
+		// var rotation = viewer.getYaw() - viewer.getNorthOffset();
+		var rotation = viewer.getYaw() + gpano.poseHeadingDegrees
+		var rotationInRadian = rotation * Math.PI / 180;
+	}
 
-    activeMarkerLayer = new ol.layer.Vector({
-        source: new ol.source.Vector({
-            features: [marker]
-        }),
-        style: new ol.style.Style({
-            image: new ol.style.Icon({
-                scale: 0.6,
-                src: '/img/arrow.png',
-                rotation: northInRadian
-            })
-        })
-    });
+    var exif = meta.exif;
 
-    minimap.addLayer(activeMarkerLayer);
+    if (exif) {
+	    var pos = ol.proj.fromLonLat([exif.longitude, exif.latitude]);
+	    var marker = new ol.Feature({
+		    type: 'icon',
+		    geometry: new ol.geom.Point(pos)
+	    });
+
+	    activeMarkerLayer = new ol.layer.Vector({
+		    source: new ol.source.Vector({
+			    features: [marker]
+		    }),
+		    style: new ol.style.Style({
+			    image: new ol.style.Icon({
+				    scale: 0.6,
+				    src: '/img/arrow.png',
+				    rotation: rotationInRadian
+			    })
+		    })
+	    });
+
+	    minimap.addLayer(activeMarkerLayer);
+    }
+
 
 }

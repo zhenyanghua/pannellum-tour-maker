@@ -1,10 +1,13 @@
 package com.leafyjava.pannellumtourmaker.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.leafyjava.pannellumtourmaker.domains.Exif;
+import com.leafyjava.pannellumtourmaker.domains.GPano;
+import com.leafyjava.pannellumtourmaker.domains.PhotoMeta;
 import com.leafyjava.pannellumtourmaker.domains.Scene;
 import com.leafyjava.pannellumtourmaker.domains.Tour;
-import com.leafyjava.pannellumtourmaker.exceptions.InvalidTourException;
 import com.leafyjava.pannellumtourmaker.exceptions.TourAlreadyExistsException;
 import com.leafyjava.pannellumtourmaker.exceptions.UnsupportedFileTreeException;
 import com.leafyjava.pannellumtourmaker.repositories.TourRepository;
@@ -13,7 +16,6 @@ import com.leafyjava.pannellumtourmaker.storage.services.StorageService;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.sanselan.ImageReadException;
 import org.apache.sanselan.Sanselan;
-import org.apache.sanselan.common.IImageMetadata;
 import org.apache.sanselan.formats.jpeg.JpegImageMetadata;
 import org.apache.sanselan.formats.tiff.TiffImageMetadata;
 import org.slf4j.Logger;
@@ -34,7 +36,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.leafyjava.pannellumtourmaker.configs.WebConfig.TOURS;
@@ -65,13 +68,13 @@ public class TourServiceImpl implements TourService{
     }
 
     @Override
-    public void createTourFromMultires(final String tourName, Map<String, Exif> exifMap) {
+    public void createTourFromMultires(final String tourName, Map<String, PhotoMeta> metaMap) {
         Path tourPath = Paths.get(storageProperties.getTourLocation()).resolve(tourName).resolve(MULTIRES);
         try {
             List<Scene> scenes = Files.walk(tourPath, 1)
                 .filter(path -> !path.getFileName().toString().equalsIgnoreCase(MULTIRES) &&
                     !path.getFileName().toString().equalsIgnoreCase(".DS_Store"))
-                .map(scenePath -> mapConfigToScene(scenePath, exifMap))
+                .map(scenePath -> mapConfigToScene(scenePath, metaMap))
                 .collect(Collectors.toList());
 
             Tour tour = new Tour();
@@ -90,15 +93,15 @@ public class TourServiceImpl implements TourService{
     }
 
     @Override
-    public Map<String, Exif> convertToMultiresFromEquirectangular(final String tourName) {
+    public Map<String, PhotoMeta> convertToMultiresFromEquirectangular(final String tourName) {
         Path equirectangularPath = Paths.get(storageProperties.getEquirectangularLocation()).resolve(tourName);
-        Map<String, Exif> exifMap = new HashMap<>();
+        Map<String, PhotoMeta> metaMap = new HashMap<>();
 
         try {
             Files.walk(equirectangularPath, 2)
                 .filter(path -> path.toString().toLowerCase().endsWith(".jpg"))
                 .forEach(path -> {
-                    extractMeta(exifMap, path.toFile());
+                    extractMeta(metaMap, path.toFile());
 
                     String pyPath = null;
                     try {
@@ -129,7 +132,7 @@ public class TourServiceImpl implements TourService{
             throw new UnsupportedFileTreeException("Failed to read equirectangular directory.", e);
         }
 
-        return exifMap;
+        return metaMap;
     }
 
     @Override
@@ -153,7 +156,7 @@ public class TourServiceImpl implements TourService{
     }
 
 
-    private Scene mapConfigToScene(Path scenePath, Map<String, Exif> exifMap) {
+    private Scene mapConfigToScene(Path scenePath, Map<String, PhotoMeta> metaMap) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             Path config = scenePath.resolve("config.json");
@@ -163,8 +166,8 @@ public class TourServiceImpl implements TourService{
             scene.setTitle(sceneId);
             scene.setType("multires");
 
-            if (exifMap != null) {
-                scene.setExif(exifMap.get(sceneId));
+            if (metaMap != null) {
+                scene.setPhotoMeta(metaMap.get(sceneId));
             }
 
             String basePath = baseUrl + "/" + scenePath.toString().replace(storageProperties.getTourLocation(), TOURS);
@@ -178,21 +181,56 @@ public class TourServiceImpl implements TourService{
     }
 
 
-    private void extractMeta(final Map<String, Exif> map, final File file) {
+    private void extractMeta(final Map<String, PhotoMeta> map, final File file) {
         try {
-            JpegImageMetadata metadata = (JpegImageMetadata) Sanselan.getMetadata(file);
-            TiffImageMetadata exif = metadata.getExif();
-            if (exif != null) {
-                TiffImageMetadata.GPSInfo gps = exif.getGPS();
-                if (gps != null) {
-                    final double longitude = gps.getLongitudeAsDegreesEast();
-                    final double latitude = gps.getLatitudeAsDegreesNorth();
+            PhotoMeta photoMeta = new PhotoMeta();
 
-                    map.put(FilenameUtils.getBaseName(file.getName()), new Exif(longitude, latitude));
-                }
-            }
+            photoMeta.setExif(extractExif(file));
+            photoMeta.setGPano(extractGPano(file));
+
+            map.put(FilenameUtils.getBaseName(file.getName()), photoMeta);
+
+
         } catch (ImageReadException | IOException e) {
             logger.warn("Failed to read meta data from image: " + file.getName());
         }
+    }
+
+    private GPano extractGPano(final File file) throws ImageReadException, IOException {
+        GPano gPano = null;
+        String xmpXml = Sanselan.getXmpXml(file);
+        if (xmpXml != null && !xmpXml.isEmpty()) {
+            XmlMapper mapper = new XmlMapper();
+            String cleanedXml = extractText(xmpXml);
+            gPano = mapper.readValue(cleanedXml, GPano.class);
+        }
+        return gPano;
+    }
+
+    private Exif extractExif(final File file) throws ImageReadException, IOException {
+        Exif result = null;
+        JpegImageMetadata metadata = (JpegImageMetadata) Sanselan.getMetadata(file);
+        TiffImageMetadata exif = metadata.getExif();
+        if (exif != null) {
+            TiffImageMetadata.GPSInfo gps = exif.getGPS();
+            if (gps != null) {
+                final double longitude = gps.getLongitudeAsDegreesEast();
+                final double latitude = gps.getLatitudeAsDegreesNorth();
+
+                result = new Exif(longitude, latitude);
+            }
+        }
+        return result;
+    }
+
+    private static String extractText(String content) {
+        Pattern p = Pattern.compile("(<GPano:.*>)",
+            Pattern.CASE_INSENSITIVE);
+        Matcher m = p.matcher(content);
+        StringBuilder sb = new StringBuilder();
+        while (m.find()) {
+            sb.append(m.group(1).replace("GPano:", ""));
+        }
+        return "<GPano>" + sb.toString() + "</GPano>";
     }
 }
