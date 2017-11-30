@@ -27,13 +27,13 @@ import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api/v1/public/guest/tours")
-public class TourController {
+public class TourRestController {
     private TourService tourService;
     private AsyncTourService asyncTourService;
 
     @Autowired
-    public TourController(final TourService tourService,
-                          final AsyncTourService asyncTourService) {
+    public TourRestController(final TourService tourService,
+                              final AsyncTourService asyncTourService) {
         this.tourService = tourService;
         this.asyncTourService = asyncTourService;
     }
