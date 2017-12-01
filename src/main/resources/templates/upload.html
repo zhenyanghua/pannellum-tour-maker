@@ -23,13 +23,22 @@
                 <input name="type" type="radio" id="radio-multires" class="with-gap" value="multires"/>
                 <label for="radio-multires">Multires</label>
             </p>
-            <div class="tourFile-field input-field">
+            <div class="file-field input-field">
                 <div class="btn">
                     <span>File</span>
-                    <input type="tourFile" name="tourFile" id="input-tourFile">
+                    <input type="file" name="file" id="input-file">
                 </div>
-                <div class="tourFile-path-wrapper">
-                    <input class="tourFile-path validate" type="text" name="fileName" id="input-tourFile-name" placeholder="Supported files: *.zip">
+                <div class="file-path-wrapper">
+                    <input class="file-path validate" type="text" name="fileName" id="input-file-name" placeholder="Supported files: *.zip">
+                </div>
+            </div>
+            <div class="file-field input-field">
+                <div class="btn">
+                    <span>Map</span>
+                    <input type="file" name="map" id="input-map">
+                </div>
+                <div class="file-path-wrapper">
+                    <input class="file-path validate" type="text" name="mapName" id="input-map-name" placeholder="Supported files: *.jpg, *.png">
                 </div>
             </div>
             <div class="form-action">
@@ -40,6 +49,7 @@
         </form>
     </div>
     <script th:src="@{/webjars/jquery-validation/1.17.0/jquery.validate.min.js}"></script>
+    <script th:src="@{/webjars/jquery-validation/1.17.0/additional-methods.min.js}"></script>
     <script th:src="@{/js/upload.js}"></script>
 </div>
 </body>

@@ -50,6 +50,7 @@
     top: calc(50% - 4px);
     left: calc(50% - 4px);
     transform: translate(-50% -50%);
+    pointer-events: none;
 }
 #hotspot-pano {
     width: calc(100% - 20px);

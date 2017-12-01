@@ -6,7 +6,11 @@ $("#form-upload").validate({
             required: true
         },
         file: {
-            required: true
+            required: true,
+	        accept: "application/zip,application/x-zip,application/octet-stream,application/x-zip-compressed"
+        },
+        map: {
+            accept: "image/jpeg, image/png"
         }
     },
 
@@ -15,7 +19,11 @@ $("#form-upload").validate({
             required: "Tour name is required."
         },
         file: {
-            required: "Photo zip file is required."
+            required: "Photo zip file is required.",
+            accept: "Only support *.zip file."
+        },
+        map: {
+            accept: "Only support jpg or png file."
         }
     },
 
@@ -23,11 +31,14 @@ $("#form-upload").validate({
         var name = $("#input-tourname").val();
         var type = $("[name='type']:checked").val();
         var file = $("#input-file")[0].files[0];
+        var mapInput = $("#input-map")[0];
+        var map = mapInput.files.length > 0 ? mapInput.files[0] : undefined;
 
         var form = new FormData();
         form.append("file", file);
         form.append("name", name);
         form.append("type", type);
+        if (map) form.append("map", map);
 
         var options = {
             method: "POST",
