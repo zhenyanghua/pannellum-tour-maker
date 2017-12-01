@@ -9,11 +9,13 @@ import java.util.List;
 import java.util.Map;
 
 public interface TourService {
-    void createTourFromMultires(String tourName, Map<String, PhotoMeta> metaMap);
+    void createTourFromMultires(String tourName, Map<String, PhotoMeta> metaMap, String mapPath);
 
     Map<String, PhotoMeta> convertToMultiresFromEquirectangular(String tourName);
 
-    File convertToFile(MultipartFile file);
+    File createTempFileFromMultipartFile(MultipartFile file);
+
+    String getMapPath(String tourName, File mapFile);
 
     List<Tour> findAllTours();
 

@@ -1,6 +1,5 @@
 package com.leafyjava.pannellumtourmaker.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.leafyjava.pannellumtourmaker.domains.Exif;
@@ -68,7 +67,7 @@ public class TourServiceImpl implements TourService{
     }
 
     @Override
-    public void createTourFromMultires(final String tourName, Map<String, PhotoMeta> metaMap) {
+    public void createTourFromMultires(final String tourName, Map<String, PhotoMeta> metaMap, String mapPath) {
         Path tourPath = Paths.get(storageProperties.getTourLocation()).resolve(tourName).resolve(MULTIRES);
         try {
             List<Scene> scenes = Files.walk(tourPath, 1)
@@ -80,6 +79,7 @@ public class TourServiceImpl implements TourService{
             Tour tour = new Tour();
             tour.setName(tourName);
             tour.setScenes(scenes);
+            tour.setMapPath(mapPath);
 
             if(tourRepository.findOne(tourName) != null) {
                 throw new TourAlreadyExistsException(tourName + " already exists in the tour collection.");
@@ -136,8 +136,15 @@ public class TourServiceImpl implements TourService{
     }
 
     @Override
-    public File convertToFile(final MultipartFile file) {
-        return storageService.convertToFile(file);
+    public File createTempFileFromMultipartFile(final MultipartFile file) {
+        return storageService.createTempFileFromMultipartFile(file);
+    }
+
+    @Override
+    public String getMapPath(String tourName, File mapFile) {
+        if (mapFile == null) return null;
+
+        return baseUrl + "/" + TOURS + "/" + tourName + "/" + "map." + FilenameUtils.getExtension(mapFile.getName());
     }
 
     @Override
@@ -154,7 +161,6 @@ public class TourServiceImpl implements TourService{
     public Tour save(final Tour tour) {
         return tourRepository.save(tour);
     }
-
 
     private Scene mapConfigToScene(Path scenePath, Map<String, PhotoMeta> metaMap) {
         ObjectMapper mapper = new ObjectMapper();
@@ -179,7 +185,6 @@ public class TourServiceImpl implements TourService{
             throw new UnsupportedFileTreeException("Failed to read: " + scenePath, e);
         }
     }
-
 
     private void extractMeta(final Map<String, PhotoMeta> map, final File file) {
         try {

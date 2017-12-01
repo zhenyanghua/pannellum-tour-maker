@@ -1,7 +1,5 @@
 package com.leafyjava.pannellumtourmaker.domains;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class PhotoMeta {
 
     private Exif exif;

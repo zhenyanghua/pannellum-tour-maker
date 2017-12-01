@@ -11,6 +11,8 @@ public class Scene {
     private String title;
     private float pitch;
     private float yaw;
+    private Gps gps;
+    private float northOffset;
     private PhotoMeta photoMeta;
     private String type;
     private MultiRes multiRes;
@@ -46,6 +48,22 @@ public class Scene {
 
     public void setYaw(final float yaw) {
         this.yaw = yaw;
+    }
+
+    public Gps getGps() {
+        return gps;
+    }
+
+    public void setGps(final Gps gps) {
+        this.gps = gps;
+    }
+
+    public float getNorthOffset() {
+        return northOffset;
+    }
+
+    public void setNorthOffset(final float northOffset) {
+        this.northOffset = northOffset;
     }
 
     public PhotoMeta getPhotoMeta() {

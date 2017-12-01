@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -44,9 +43,10 @@ public class TourRestController {
     }
 
     @PostMapping()
-    public void uploadFile(@RequestParam("name") String name,
+    public void uploadTour(@RequestParam("name") String name,
                            @RequestParam("type") String type,
-                           @RequestParam("file") MultipartFile file) {
+                           @RequestParam("file") MultipartFile tourFile,
+                           @RequestParam(value = "map", required = false) MultipartFile mapFile) {
         if (!Pattern.matches("[a-zA-Z\\d]*", name)) {
             throw new InvalidTourException("Tour name can only contain letters and numbers. " +
                 "No special characters or space is allowed.");
@@ -54,18 +54,28 @@ public class TourRestController {
         if (tourService.findOne(name) != null) {
             throw new TourAlreadyExistsException("Tour " + name + " already exists.");
         }
+
         SupportedTourUploadType tourType = null;
         try{
             tourType = SupportedTourUploadType.valueOf(type.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new InvalidTourException("Tour type is not supported.");
         }
-        if (!StringUtils.getFilenameExtension(file.getOriginalFilename()).equalsIgnoreCase("zip")) {
+
+        if (!StringUtils.getFilenameExtension(tourFile.getOriginalFilename()).equalsIgnoreCase("zip")) {
             throw new UnsupportedFileExtensionException("The uploaded file must be a zip file.");
         }
 
-        File zip = tourService.convertToFile(file);
-        TourMessage tourMessage = new TourMessage(name, zip);
+        if (mapFile != null) {
+            String mapFileExtension = StringUtils.getFilenameExtension(mapFile.getOriginalFilename());
+            if (!(mapFileExtension.equalsIgnoreCase("jpg") || mapFileExtension.equalsIgnoreCase("png"))) {
+                throw new UnsupportedFileExtensionException("The uploaded file must be a jpg or png file.");
+            }
+        }
+
+        File tempTourFile = tourService.createTempFileFromMultipartFile(tourFile);
+        File tempMapFile = mapFile != null ? tourService.createTempFileFromMultipartFile(mapFile) : null;
+        TourMessage tourMessage = new TourMessage(name, tempTourFile, tempMapFile);
 
         switch(tourType) {
             case MULTIRES:

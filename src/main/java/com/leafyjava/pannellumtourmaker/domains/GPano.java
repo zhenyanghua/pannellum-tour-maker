@@ -1,6 +1,5 @@
 package com.leafyjava.pannellumtourmaker.domains;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 public class GPano {

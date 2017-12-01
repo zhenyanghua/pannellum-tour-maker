@@ -10,6 +10,7 @@ public class Tour {
     @Id
     private String name;
     private List<Scene> scenes;
+    private String mapPath;
 
     public String getName() {
         return name;
@@ -26,5 +27,12 @@ public class Tour {
     public void setScenes(final List<Scene> scenes) {
         this.scenes = scenes;
     }
-    
+
+    public String getMapPath() {
+        return mapPath;
+    }
+
+    public void setMapPath(final String mapPath) {
+        this.mapPath = mapPath;
+    }
 }

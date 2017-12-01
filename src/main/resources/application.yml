@@ -1,6 +1,8 @@
 spring:
   profiles:
     active: default, dev
+  jackson:
+    default-property-inclusion: non_null
 
 application:
   baseUrl: http://localhost:8080/

@@ -455,7 +455,7 @@ function updateNorthFace() {
 		viewer.setNorthOffset(-gpano.poseHeadingDegrees);
 
 		// var rotation = viewer.getYaw() - viewer.getNorthOffset();
-		var rotation = viewer.getYaw() + gpano.poseHeadingDegrees
+		var rotation = viewer.getYaw() + gpano.poseHeadingDegrees;
 		var rotationInRadian = rotation * Math.PI / 180;
 	}
 

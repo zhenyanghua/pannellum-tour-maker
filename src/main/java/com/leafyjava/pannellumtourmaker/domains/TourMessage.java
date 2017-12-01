@@ -4,14 +4,21 @@ import java.io.File;
 
 public class TourMessage {
     private String name;
-    private File file;
+    private File tourFile;
+    private File mapFile;
 
     public TourMessage() {
     }
 
-    public TourMessage(final String name, final File file) {
+    public TourMessage(final String name, final File tourFile) {
         this.name = name;
-        this.file = file;
+        this.tourFile = tourFile;
+    }
+
+    public TourMessage(final String name, final File tourFile, final File mapFile) {
+        this.name = name;
+        this.tourFile = tourFile;
+        this.mapFile = mapFile;
     }
 
     public String getName() {
@@ -22,11 +29,19 @@ public class TourMessage {
         this.name = name;
     }
 
-    public File getFile() {
-        return file;
+    public File getTourFile() {
+        return tourFile;
     }
 
-    public void setFile(final File file) {
-        this.file = file;
+    public void setTourFile(final File tourFile) {
+        this.tourFile = tourFile;
+    }
+
+    public File getMapFile() {
+        return mapFile;
+    }
+
+    public void setMapFile(final File mapFile) {
+        this.mapFile = mapFile;
     }
 }

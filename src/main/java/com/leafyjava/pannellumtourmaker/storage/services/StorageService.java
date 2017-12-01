@@ -13,10 +13,13 @@ public interface StorageService {
     void init();
 
     void store(String name, MultipartFile file);
+    void store(String name, MultipartFile file, Path destination);
+    void store(String name, Path file);
+    void store(String name, Path file,  Path destination);
 
-    File convertToFile(final MultipartFile file);
+    File createTempFileFromMultipartFile(final MultipartFile file);
 
-    void storeZipContent(String name, SupportedTourUploadType type, File file);
+    void storeTourContent(String name, SupportedTourUploadType type, File file);
 
     Stream<Path> loadAll();
 

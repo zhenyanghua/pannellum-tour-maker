@@ -6,6 +6,7 @@ import com.leafyjava.pannellumtourmaker.storage.exceptions.StorageFileNotFoundEx
 import com.leafyjava.pannellumtourmaker.utils.SupportedTourUploadType;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -51,8 +52,14 @@ public class FileSystemStorageService implements StorageService {
 
     @Override
     public void store(final String name, final MultipartFile file) {
-        String extension = StringUtils.getFilenameExtension(file.getOriginalFilename());
-        String filename = StringUtils.cleanPath(name + "." + extension);
+        String filename = getNewFileName(name, file.getOriginalFilename());
+
+        store(name, file, rootLocation.resolve(filename));
+    }
+
+    @Override
+    public void store(final String name, final MultipartFile file, final Path destination) {
+        String filename = getNewFileName(name, file.getOriginalFilename());
 
         try {
             if (file.isEmpty()) {
@@ -63,21 +70,40 @@ public class FileSystemStorageService implements StorageService {
                 throw new StorageException("Cannot store file with relative path outside current directory " + filename);
             }
 
-            Files.copy(file.getInputStream(), rootLocation.resolve(filename), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new StorageException("Failed to store file " + filename, e);
         }
     }
 
     @Override
-    public File convertToFile(final MultipartFile file) {
+    public void store(final String name, Path file) {
+        store(name, file, rootLocation.resolve(name));
+    }
+
+    @Override
+    public void store(final String name, final Path file, final Path destination) {
         try {
-            File zip = File.createTempFile(UUID.randomUUID().toString(), "temp");
-            FileOutputStream outputStream = new FileOutputStream(zip);
-            IOUtils.copy(file.getInputStream(), outputStream);
+            Files.createDirectories(destination.getParent());
+            Files.copy(file, destination, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new StorageException("Failed to store file " + file, e);
+        } finally {
+            file.toFile().delete();
+        }
+    }
+
+
+    @Override
+    public File createTempFileFromMultipartFile(final MultipartFile multipartFilefile) {
+        try {
+            String extension = "." + FilenameUtils.getExtension(multipartFilefile.getOriginalFilename());
+            File file = File.createTempFile(UUID.randomUUID().toString(), extension);
+            FileOutputStream outputStream = new FileOutputStream(file);
+            IOUtils.copy(multipartFilefile.getInputStream(), outputStream);
             outputStream.close();
 
-            return zip;
+            return file;
 
         } catch (IOException e) {
             throw new StorageException("Fail to create a temporary space to save the zip file", e);
@@ -85,7 +111,7 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public void storeZipContent(final String name, final SupportedTourUploadType type, final File file) {
+    public void storeTourContent(final String name, final SupportedTourUploadType type, final File file) {
         try {
             Path destination = null;
             switch (type) {
@@ -144,4 +170,10 @@ public class FileSystemStorageService implements StorageService {
     public void deleteAll() {
         FileSystemUtils.deleteRecursively(rootLocation.toFile());
     }
+
+    private String getNewFileName(final String name, final String originalFileNameWithExtension) {
+        String extension = StringUtils.getFilenameExtension(originalFileNameWithExtension);
+        return StringUtils.cleanPath(name + "." + extension);
+    }
+
 }
