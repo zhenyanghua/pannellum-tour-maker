@@ -23,6 +23,7 @@ var defaultPreviewSettings = {
 
 var viewer;
 var hsViewer;
+var currentTourName;
 
 getTours();
 
@@ -308,6 +309,7 @@ function getTours() {
 }
 
 function switchTour(name) {
+
     if ($centerPoint.hasClass("hide")) {
         $centerPoint.removeClass("hide");
     }
@@ -317,15 +319,22 @@ function switchTour(name) {
     $tourList.find('#tour-list-item-action-save-' + name).removeClass('hide');
 
     var tour = findTourByName(name);
+    currentTourName = name;
 
     addMetaToHotSpots(tour);
 
     initMainViewer(tour);
-    if (!minimap) {
-        initMiniMap('mini-map');
+
+    var mapDiv = 'mini-map';
+	$("#" + mapDiv).empty();
+    if (tour.mapPath) {
+        initCustomMiniMap(mapDiv, tour);
+    } else {
+        initMiniMap(mapDiv);
+        initSceneMarkers(tour);
+        updateNorthFace();
     }
-    initSceneMarkers(name);
-    updateNorthFace();
+
 }
 
 function saveTour(name) {
@@ -379,13 +388,19 @@ function addMetaToHotSpots(tour) {
 }
 
 function initMiniMap(mapDiv) {
-
     minimap = new ol.Map({
         layers: [
             new ol.layer.Tile({
                 source: new ol.source.OSM()
             })
         ],
+        controls: [
+            new ol.control.Attribution({
+                collapsible: false
+            }),
+            new ol.control.Zoom()
+        ],
+        logo: false,
         target: mapDiv,
         view: new ol.View({
             center: [0, 0],
@@ -394,25 +409,81 @@ function initMiniMap(mapDiv) {
     });
 }
 
-function initSceneMarkers(tourName) {
-    var tour = findTourByName(tourName);
+function initCustomMiniMap(mapDiv, tour) {
+	$("<img/>").attr("src", tour.mapPath).on('load', function(){
+		var extent = [0, 0, this.width, this.height];
+		var projection = new ol.proj.Projection({
+            code: 'custom-map',
+            units: 'pixels',
+            extent: extent
+        });
+		var layer = new ol.layer.Image({
+            source: new ol.source.ImageStatic({
+                url: tour.mapPath,
+                projection: projection,
+                imageExtent: extent
+            })
+        });
+
+		minimap = new ol.Map({
+			layers: [
+				layer
+			],
+			controls: [
+				new ol.control.Attribution({
+					collapsible: false
+				}),
+				new ol.control.Zoom()
+			],
+			logo: false,
+			target: mapDiv,
+			view: new ol.View({
+				projection: projection,
+				center: ol.extent.getCenter(extent),
+				zoom: 10
+			})
+		});
+
+		initSceneMarkers(tour);
+		updateNorthFace();
+	});
+
+}
+
+/**
+ * todo - check dental && dental 2 - no markers shown
+ * @param tour
+ */
+function initSceneMarkers(tour) {
+
     if (markerLayer) {
         minimap.removeLayer(markerLayer);
     }
 
     var availableScenes = tour.scenes
-        .filter(function(scene) {
-            return scene.photoMeta && scene.photoMeta.exif;
-        });
+	    .filter(function(scene) {
+	    	if (tour.mapPath) {
+	    		return scene.coordinates;
+		    }
+		    return scene.photoMeta && scene.photoMeta.exif;
+	    });
     var markers = availableScenes
-        .map(function(scene) {
-            var exif = scene.photoMeta.exif;
-            var pos = ol.proj.fromLonLat([exif.longitude, exif.latitude]);
-            return new ol.Feature({
-                type: 'icon',
-                geometry: new ol.geom.Point(pos)
-            });
-        });
+	    .map(function(scene) {
+		    var pos;
+
+	    	if (tour.mapPath) {
+			    var coordinates = scene.coordinates;
+			    pos = [coordinates.x, coordinates.y];
+		    } else {
+			    var exif = scene.photoMeta.exif;
+			    pos = ol.proj.fromLonLat([exif.longitude, exif.latitude]);
+		    }
+
+		    return new ol.Feature({
+			    type: 'icon',
+			    geometry: new ol.geom.Point(pos)
+		    });
+	    });
 
     markerLayer = new ol.layer.Vector({
         source: new ol.source.Vector({
@@ -430,12 +501,17 @@ function initSceneMarkers(tourName) {
 
     if (availableScenes.length > 0) {
         var coordinates = availableScenes.map(function(scene) {
+        	if (tour.mapPath)
+        		return [scene.coordinates.x, scene.coordinates.y];
+
             var exif = scene.photoMeta.exif;
             return [exif.longitude, exif.latitude];
         });
 
         var boundingExtent = ol.extent.boundingExtent(coordinates);
-        boundingExtent = ol.proj.transformExtent(boundingExtent, ol.proj.get('EPSG:4326'), ol.proj.get('EPSG:3857'));
+        if (!tour.mapPath) {
+	        boundingExtent = ol.proj.transformExtent(boundingExtent, ol.proj.get('EPSG:4326'), ol.proj.get('EPSG:3857'));
+        }
         minimap.getView().fit(boundingExtent, minimap.getSize());
     }
 }
@@ -448,21 +524,32 @@ function updateNorthFace() {
 		activeMarkerLayer = undefined;
 	}
 
-    var meta = viewer.getConfig().photoMeta;
-	var gpano = meta.gpano;
+	var rotationInRadian;
+	var viewConfig = viewer.getConfig();
 
-	if (gpano && !isNaN(gpano.poseHeadingDegrees)) {
-		viewer.setNorthOffset(-gpano.poseHeadingDegrees);
+	if (viewConfig.northOffset) {
+		rotationInRadian = degreeToRadian(viewConfig.northOffset);
+	} else if (viewConfig.photoMeta && viewConfig.photoMeta.exif) {
+		var gpano = viewConfig.photoMeta.gpano;
 
-		// var rotation = viewer.getYaw() - viewer.getNorthOffset();
-		var rotation = viewer.getYaw() + gpano.poseHeadingDegrees;
-		var rotationInRadian = rotation * Math.PI / 180;
+		if (gpano && !isNaN(gpano.poseHeadingDegrees)) {
+			viewer.setNorthOffset(-gpano.poseHeadingDegrees);
+
+			var rotation = viewer.getYaw() + gpano.poseHeadingDegrees;
+			rotationInRadian = degreeToRadian(rotation);
+		}
 	}
 
-    var exif = meta.exif;
+	var tour = findTourByName(currentTourName);
 
-    if (exif) {
-	    var pos = ol.proj.fromLonLat([exif.longitude, exif.latitude]);
+    if (rotationInRadian && ((tour.mapPath && viewConfig.coordinates) || (viewConfig.photoMeta && viewConfig.photoMeta.exif))) {
+
+	    var pos = tour.mapPath ? (viewConfig.coordinates ?
+		    [viewConfig.coordinates.x, viewConfig.coordinates.y] : undefined) :
+		    ol.proj.fromLonLat([viewConfig.photoMeta.exif.longitude, viewConfig.photoMeta.exif.latitude]);
+
+	    if (!pos) return;
+
 	    var marker = new ol.Feature({
 		    type: 'icon',
 		    geometry: new ol.geom.Point(pos)
@@ -483,6 +570,8 @@ function updateNorthFace() {
 
 	    minimap.addLayer(activeMarkerLayer);
     }
+}
 
-
+function degreeToRadian(degree) {
+	return degree * Math.PI / 180;
 }

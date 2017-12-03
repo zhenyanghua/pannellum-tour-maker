@@ -1,7 +1,6 @@
 package com.leafyjava.pannellumtourmaker.domains;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
@@ -11,7 +10,7 @@ public class Scene {
     private String title;
     private float pitch;
     private float yaw;
-    private Gps gps;
+    private Coordinates coordinates;
     private float northOffset;
     private PhotoMeta photoMeta;
     private String type;
@@ -50,12 +49,12 @@ public class Scene {
         this.yaw = yaw;
     }
 
-    public Gps getGps() {
-        return gps;
+    public Coordinates getCoordinates() {
+        return coordinates;
     }
 
-    public void setGps(final Gps gps) {
-        this.gps = gps;
+    public void setCoordinates(final Coordinates coordinates) {
+        this.coordinates = coordinates;
     }
 
     public float getNorthOffset() {
