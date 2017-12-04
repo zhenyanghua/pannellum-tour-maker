@@ -6,11 +6,18 @@ function getTours() {
 	$.getJSON(apiUrl + "/public/guest/tours/")
 		.done(function (tours) {
 			tours.forEach(function (tour) {
-				$tourList.append($("<li>").addClass("collection-item").attr('id', "tour-list-item-" +tour.name)
-					.append($("<div>").text(tour.name)
-						.append($("<a>").attr("href", "/tours/" + tour.name).addClass("secondary-content")
-							.append($("<i>").addClass("material-icons").text("arrow_forward")))
-					));
+				var imageSrc = tour.mapPath || "/img/panorama.png";
+				$tourList.append($("<div>").addClass("col s12 m4")
+					.append($("<div>").addClass("card").attr('id', "tour-list-item-" +tour.name)
+						.append($("<div>").addClass("card-image")
+							.append($("<img>").attr("src", imageSrc))
+							.append($("<span>").addClass("card-title red-text text-lighten-2").text(tour.name)))
+						// .append($("<div>").addClass("card-content")
+						// 	.append($("<p>").text("content")))
+						.append($("<div>").addClass("card-action")
+							.append($("<a>").attr("href", "/tours/" + tour.name)
+								.text("Edit Tour")
+							))));
 			});
 		});
 }
