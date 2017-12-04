@@ -1,15 +1,16 @@
 var $hotSpotsList = $("#settings-hotspot-list");
-var $tourList = $("#tour-list-container");
 var $sceneList = $("#scene-list-container");
 var $centerPoint = $("#center-point");
+var $firstSceneBtn = $("#first-scene-btn");
 
+var tour;
+var sceneViewerList = {};
+var scenes = {};
+var viewer;
+var hsViewer;
 var minimap;
 var markerLayer;
 var activeMarkerLayer;
-var tours = [];
-var sceneViewerList = {};
-
-var scenes = {};
 
 var defaultPreviewSettings = {
     "autoLoad": true,
@@ -21,11 +22,21 @@ var defaultPreviewSettings = {
     "type": "multires"
 };
 
-var viewer;
-var hsViewer;
-var currentTourName;
+getTour();
 
-getTours();
+function getTour() {
+
+	$.getJSON(apiUrl + "/public/guest/tours/" + getTourNameFromPath())
+		.done(function (data) {
+			tour = data;
+			switchTour(tour);
+		})
+}
+
+function getTourNameFromPath() {
+	var segments = location.pathname.split('/');
+	return segments[segments.length - 1];
+}
 
 function initMainViewer(tour) {
     if (viewer) {
@@ -39,22 +50,21 @@ function initMainViewer(tour) {
 	    scenes[scene.id] = scene;
     });
 
-    var firstScene = tour.scenes[0];
-    // var northOffset = firstScene.photoMeta.gpano.poseHeadingDegrees || 0;
+    if (tour.scenes.length === 0) return;
+
+    var firstScene = tour.firstScene || tour.scenes[0];
 
     viewer = pannellum.viewer('panorama', {
         "autoLoad": true,
-	    // "compass": true,
 
         "default": {
-            "firstScene": firstScene.id,
+            "firstScene": firstScene,
             "author": "Demo",
             "sceneFadeDuration": 1000
         },
 
         "scenes": scenes
     });
-    // viewer.setNorthOffset(-northOffset);
 
     viewer.on("load", loadSceneConfig);
     viewer.on("mouseup", updateNorthFace);
@@ -81,6 +91,16 @@ function hotspot(hotSpotDiv, args) {
     span.style.marginTop = -span.scrollHeight - 12 + 'px';
 }
 
+function updateFirstSceneUI() {
+	if (viewer.getScene() === tour.firstScene) {
+		$firstSceneBtn.find("i").text("star");
+		$firstSceneBtn.find("span").text("First Scene");
+	} else {
+		$firstSceneBtn.find("i").text("star_border");
+		$firstSceneBtn.find("span").text("Set as first scene");
+	}
+}
+
 function loadSceneConfig() {
 
     if (hsViewer) {
@@ -88,7 +108,8 @@ function loadSceneConfig() {
         hsViewer = undefined;
     }
 
-    $hotSpotsList.empty();
+	updateFirstSceneUI();
+	$hotSpotsList.empty();
     populateSceneList();
     updateNorthFace();
 
@@ -103,7 +124,9 @@ function loadSceneConfig() {
                     .append(loadHotSpotSettings(hotspot))));
     });
 
-    Materialize.updateTextFields();
+    if (Materialize.updateTextFields) {
+	    Materialize.updateTextFields();
+    }
 }
 
 /**
@@ -290,36 +313,11 @@ function removeHotSpot(hs) {
     syncRemovedHotSpotWithSceneList(hs, viewer.getScene());
 }
 
-function getTours() {
-    $.getJSON(apiUrl + "/public/guest/tours")
-        .done(function (data) {
-            tours = data;
-            tours.forEach(function (tour) {
-                $tourList.append($("<li>").addClass("collection-item").attr('id', "tour-list-item-" +tour.name)
-                    .append($("<div>").text(tour.name)
-                        .append($("<a>").attr("href", "#switch-tour").addClass("secondary-content")
-                            .click(function() {switchTour(tour.name);})
-                            .append($("<i>").addClass("material-icons").text("arrow_forward")))
-                        .append($("<a>").attr("href", "#save-tour").addClass("secondary-content hide action-save").attr('id', "tour-list-item-action-save-" + tour.name)
-                            .click(function() {saveTour(tour.name);})
-                            .append($("<i>").addClass("material-icons").text("save")))
-                    ));
-            });
-        });
-}
-
-function switchTour(name) {
+function switchTour(tour) {
 
     if ($centerPoint.hasClass("hide")) {
         $centerPoint.removeClass("hide");
     }
-    $tourList.find('.collection-item').removeClass('active');
-    $tourList.find('#tour-list-item-' + name).addClass('active');
-    $tourList.find('.action-save').addClass('hide');
-    $tourList.find('#tour-list-item-action-save-' + name).removeClass('hide');
-
-    var tour = findTourByName(name);
-    currentTourName = name;
 
     addMetaToHotSpots(tour);
 
@@ -337,15 +335,14 @@ function switchTour(name) {
 
 }
 
-function saveTour(name) {
-    var tour = findTourByName(name);
+function saveTour() {
     tour.scenes = Object.keys(scenes)
         .map(function (sceneId) {
             return scenes[sceneId];
         });
     tour = removeMetaFromHotSpots(tour);
 
-    $.ajax(apiUrl + "/public/guest/tours/" + name, {
+    $.ajax(apiUrl + "/public/guest/tours/" + tour.name, {
         method: "PUT",
         data: JSON.stringify(tour),
         dataType: "json",
@@ -355,12 +352,6 @@ function saveTour(name) {
             console.log(res);
         })
 
-}
-
-function findTourByName(name) {
-    return tours.filter(function (tour) {
-        return tour.name === name;
-    })[0];
 }
 
 function removeMetaFromHotSpots(tour) {
@@ -450,10 +441,6 @@ function initCustomMiniMap(mapDiv, tour) {
 
 }
 
-/**
- * todo - check dental && dental 2 - no markers shown
- * @param tour
- */
 function initSceneMarkers(tour) {
 
     if (markerLayer) {
@@ -539,8 +526,6 @@ function updateNorthFace() {
 			rotationInRadian = degreeToRadian(rotation);
 		}
 	}
-
-	var tour = findTourByName(currentTourName);
 
     if (rotationInRadian && ((tour.mapPath && viewConfig.coordinates) || (viewConfig.photoMeta && viewConfig.photoMeta.exif))) {
 

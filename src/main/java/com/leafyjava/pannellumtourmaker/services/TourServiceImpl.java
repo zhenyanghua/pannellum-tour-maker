@@ -80,6 +80,9 @@ public class TourServiceImpl implements TourService{
             tour.setName(tourName);
             tour.setScenes(scenes);
             tour.setMapPath(mapPath);
+            if (scenes.size() > 0) {
+                tour.setFirstScene(scenes.get(0).getId());
+            }
 
             if(tourRepository.findOne(tourName) != null) {
                 throw new TourAlreadyExistsException(tourName + " already exists in the tour collection.");

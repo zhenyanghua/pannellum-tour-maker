@@ -6,22 +6,24 @@
     <link rel="stylesheet" th:href="@{/webjars/pannellum/2.3.2/build/pannellum.css}"/>
     <link rel="stylesheet" th:href="@{/webjars/openlayers/4.3.1/ol.css}"/>
     <link rel="stylesheet" th:href="@{/css/pano.css}"/>
-    <title>Home</title>
+    <title>Pano Editor</title>
 </head>
 <body>
 <div layout:fragment="content" th:remove="tag">
     <div id="left-panel">
-        <div id="tour-list">
-            <h5 class="card-panel red-text text-lighten-2">Available Tours</h5>
-            <ul id="tour-list-container" class="collection"></ul>
-        </div>
         <div id="scene-list">
             <h5 class="card-panel red-text text-lighten-2">Available Scenes</h5>
             <div id="scene-list-container"></div>
         </div>
     </div>
-    <div id="pano-container">
+    <div id="pano-container" class="card">
         <div id="panorama" class="empty-pano"></div>
+        <div id="scene-panel" class="center align">
+            <a id="first-scene-btn" class="waves-effect waves-light btn">
+                <i class="material-icons left">star_border</i>
+                <span>Set as first scene</span>
+            </a>
+        </div>
         <div id="center-point" class="hide"></div>
     </div>
     <div id="settings">

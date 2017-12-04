@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <link rel="stylesheet" th:href="@{/css/tours.css}"/>
+    <title>Tours</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div id="left-panel">
+        <div id="tour-list">
+            <h5 class="card-panel red-text text-lighten-2">Available Tours</h5>
+            <ul id="tour-list-container" class="collection"></ul>
+        </div>
+    </div>
+
+    <script th:src="@{/js/polyfill.js}"></script>
+    <script th:src="@{/js/tours.js}"></script>
+</div>
+</body>
+</html>

@@ -6,9 +6,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController {
 
-    @GetMapping("/")
-    public String index() {
-        return "index";
+    @GetMapping("/tours/{tour}")
+    public String tourEdit() {
+        return "tour-edit";
+    }
+
+    @GetMapping("/tours")
+    public String tours() {
+        return "tours";
     }
 
     @GetMapping("/upload")

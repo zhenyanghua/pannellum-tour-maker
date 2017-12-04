@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @Configuration
 public class WebConfig extends WebMvcConfigurerAdapter{
 
-    public static final String TOURS = "tours";
+    public static final String TOURS = "resources/tours";
 
     private StorageProperties storageProperties;
 

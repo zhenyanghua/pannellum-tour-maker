@@ -9,8 +9,9 @@ import java.util.List;
 public class Tour {
     @Id
     private String name;
-    private List<Scene> scenes;
+    private String firstScene;
     private String mapPath;
+    private List<Scene> scenes;
 
     public String getName() {
         return name;
@@ -20,19 +21,27 @@ public class Tour {
         this.name = name;
     }
 
-    public List<Scene> getScenes() {
-        return scenes;
-    }
-
-    public void setScenes(final List<Scene> scenes) {
-        this.scenes = scenes;
-    }
-
     public String getMapPath() {
         return mapPath;
     }
 
     public void setMapPath(final String mapPath) {
         this.mapPath = mapPath;
+    }
+
+    public String getFirstScene() {
+        return firstScene;
+    }
+
+    public void setFirstScene(final String firstScene) {
+        this.firstScene = firstScene;
+    }
+
+    public List<Scene> getScenes() {
+        return scenes;
+    }
+
+    public void setScenes(final List<Scene> scenes) {
+        this.scenes = scenes;
     }
 }
