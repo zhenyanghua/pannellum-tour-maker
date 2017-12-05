@@ -507,6 +507,9 @@ function initSceneMarkers(tour) {
 	        boundingExtent = ol.proj.transformExtent(boundingExtent, ol.proj.get('EPSG:4326'), ol.proj.get('EPSG:3857'));
         }
         minimap.getView().fit(boundingExtent, minimap.getSize());
+    } else {
+    	var ext = minimap.getView().getProjection().getExtent();
+    	minimap.getView().fit(ext, minimap.getSize());
     }
 }
 

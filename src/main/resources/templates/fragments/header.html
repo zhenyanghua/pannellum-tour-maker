@@ -10,9 +10,6 @@
                     <img th:src="@{/img/logo.jpg}" alt="LeafyJava Logo" />
                 </a>
                 <ul class="right">
-                    <!--<li th:class="${#httpServletRequest.getRequestURI() == '/tours' ? 'active' : ''}">-->
-                        <!--<a th:href="@{/tours/}">Tour</a>-->
-                    <!--</li>-->
                     <li th:class="${#httpServletRequest.getRequestURI() == '/tours' ? 'active' : ''}">
                         <a th:href="@{/tours}">Tours</a>
                     </li>

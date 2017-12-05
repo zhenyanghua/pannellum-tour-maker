@@ -16,7 +16,6 @@ docker run -d --name my-mongo -p 27017:27017 mongo
 4. provide UI to import custom map image, e.g floor plan
 5. design a UI for user to place location on the map if GPS data is missing from the Scene.
 6. Build a graph of all connected scene on the floor plan
-7. Provide a UI to set Default View
 7. provide a backend service and UI to upload zipped tour to an existing tour.
 8. provide a backend service and UI to remove scenes and their related multi-res images from the server.
 9. Add Security

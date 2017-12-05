@@ -77,7 +77,7 @@
     height: 180px;
 }
 #hotspot-pano-list {
-    height: calc(100% - 418px);
+    height: calc(100% - 468px);
     overflow-y: auto;
 }
 #settings {
@@ -86,15 +86,14 @@
 }
 #mini-map {
     width: calc(100% - 20px);
-    height: 150px;
+    height: 200px;
     margin: 10px;
 }
 
 .custom-hotspot-target {
     width: 21px;
     height: 32px;
-    background-position: center;
-    background-image: url(../img/marker-light.png);
+    background: url(../img/marker-light.png) center;
     background-size: 21px 32px;
     animation: 3s ease-in-out infinite both anim;
     transform: translate(0, -18px);
@@ -120,9 +119,8 @@
     position: absolute;
     width: 0;
     height: 0;
-    border-width: 10px;
-    border-style: solid;
-    border-color: #fff transparent transparent transparent;
+    border: 10px solid transparent;
+    border-top-color: #fff;
     bottom: -20px;
     left: -10px;
     margin: 0 50%;
