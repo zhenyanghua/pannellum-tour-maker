@@ -30,19 +30,25 @@
 #left-panel .card-action a {
     cursor: pointer;
 }
-#pano-container {
-    position: relative;
+#center-panel {
     width: calc(100% - 650px);
     height: calc(100% - 20px);
     margin: 10px 0;
 }
-#panorama {
+#pano-container {
+    position: relative;
     width: 100%;
     height: calc(100% - 56px);
+}
+#panorama {
+    width: 100%;
+    height: 100%;
 }
 #scene-panel {
     margin-top: 10px;
     height: 56px;
+    display: flex;
+    justify-content: space-around;
 }
 #center-point {
     border-radius: 50%;
@@ -91,6 +97,7 @@
     background-image: url(../img/marker-light.png);
     background-size: 21px 32px;
     animation: 3s ease-in-out infinite both anim;
+    transform: translate(0, -18px);
 }
 .custom-hotspot span {
     /*visibility: hidden;*/
@@ -123,22 +130,22 @@
 
 @keyframes anim {
     from {
-        transform: scale(1);
+        transform: scale(1) translate(0, -18px);
     }
 
     25% {
-        transform: scale(1.3);
+        transform: scale(1.3) translate(0, -18px);
     }
 
     50% {
-        transform: scale(1);
+        transform: scale(1) translate(0, -18px);
     }
 
     75% {
-        transform: scale(1.3);
+        transform: scale(1.3) translate(0, -18px);
     }
 
     to {
-        transform: scale(1);
+        transform: scale(1) translate(0, -18px);
     }
 }

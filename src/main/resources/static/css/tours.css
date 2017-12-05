@@ -1,0 +1,14 @@
+#tour-list-container .card-content {
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+#tour-list-container .card .card-image div {
+    max-height: 150px;
+}
+.preview {
+    background-image: url("../img/panorama.png");
+    background-position: center;
+    background-size: 150px 150px;
+    background-repeat: no-repeat;
+    height: 150px;
+}

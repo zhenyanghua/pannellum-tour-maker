@@ -2,6 +2,7 @@ var $hotSpotsList = $("#settings-hotspot-list");
 var $sceneList = $("#scene-list-container");
 var $centerPoint = $("#center-point");
 var $firstSceneBtn = $("#first-scene-btn");
+var $saveTourBtn = $("#save-tour-btn");
 
 var tour;
 var sceneViewerList = {};
@@ -25,7 +26,6 @@ var defaultPreviewSettings = {
 getTour();
 
 function getTour() {
-
 	$.getJSON(apiUrl + "/public/guest/tours/" + getTourNameFromPath())
 		.done(function (data) {
 			tour = data;
@@ -36,6 +36,11 @@ function getTour() {
 function getTourNameFromPath() {
 	var segments = location.pathname.split('/');
 	return segments[segments.length - 1];
+}
+
+function setToFirstScene() {
+	tour.firstScene = viewer.getScene();
+	updateFirstSceneUI();
 }
 
 function initMainViewer(tour) {
@@ -69,10 +74,13 @@ function initMainViewer(tour) {
     viewer.on("load", loadSceneConfig);
     viewer.on("mouseup", updateNorthFace);
 
+    $firstSceneBtn.click(setToFirstScene);
+    $saveTourBtn.click(saveTour);
+
     loadSceneConfig();
 }
 
-function hotspot(hotSpotDiv, args) {
+function tooltipFunc(hotSpotDiv, args) {
     var argsArr = args.split("|");
     var sceneId = argsArr[0];
     var content = argsArr[1];
@@ -170,7 +178,6 @@ function updateHotSpotValue(val, hotspot) {
 }
 
 function updateHotSpotViewer(hotspot) {
-
     hsViewer.setPitch(hotspot.targetPitch);
     hsViewer.setYaw(hotspot.targetYaw);
 }
@@ -276,7 +283,7 @@ function addToScene(scene) {
         "targetYaw": scene.yaw,
         "targetPitch": scene.pitch,
         "cssClass": "custom-hotspot",
-        "createTooltipFunc": hotspot,
+        "createTooltipFunc": tooltipFunc,
         "createTooltipArgs": scene.id + "|" + scene.id
     };
 
@@ -371,7 +378,7 @@ function addMetaToHotSpots(tour) {
         scene.hotSpots.forEach(function(hs) {
             Object.assign(hs, {
                 "cssClass": "custom-hotspot",
-                "createTooltipFunc": hotspot,
+                "createTooltipFunc": tooltipFunc,
                 "createTooltipArgs": scene.id + "|" + scene.id
             });
         });
