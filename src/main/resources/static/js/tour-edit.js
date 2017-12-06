@@ -12,6 +12,7 @@ var viewer;
 var hsViewer;
 var minimap;
 var markerLayer;
+var markerGraphLayer;
 var activeMarkerLayer;
 
 var defaultPreviewSettings = {
@@ -81,7 +82,7 @@ function initMainViewer(tour) {
         "default": {
             "firstScene": firstScene,
             "author": "Demo",
-            "sceneFadeDuration": 1000
+            "sceneFadeDuration": 400
         },
 
         "scenes": scenes
@@ -308,6 +309,11 @@ function addToScene(scene) {
 
     syncNewHotSpotWithSceneList(hs, currentSceneId);
     populateSceneList();
+
+    var pos = getScenePosition(scenes[currentSceneId]);
+    if (pos) {
+	    handleDrawMarker(pos)
+    }
 }
 
 function syncNewHotSpotWithSceneList(newHs, sceneId) {
@@ -452,25 +458,63 @@ function handleDrawMarker(coordinate) {
 		scene.photoMeta.exif.longitude = longLat[0];
 		scene.photoMeta.exif.latitude = longLat[1];
 	}
-	var source = markerLayer.getSource();
-	source.getFeatures()
+	var markerSource = markerLayer.getSource();
+	markerSource.getFeatures()
 		.filter(function(feature) {
 			return feature.getId() === scene.id; })
 		.forEach(function(feature) {
-			source.removeFeature(feature); });
+			markerSource.removeFeature(feature); });
 
 	var marker = new ol.Feature({
 		type: 'icon',
 		geometry: new ol.geom.Point(coordinate)
 	});
 	marker.setId(scene.id);
-	source.addFeature(marker);
+	markerSource.addFeature(marker);
+
+	var markerGraphSource = markerGraphLayer.getSource();
+	markerGraphSource.getFeatures()
+		.filter(function(feature) {
+			return new RegExp(scene.id, 'i').test(feature.getId());
+		})
+		.forEach(function(feature) {
+			markerGraphSource.removeFeature(feature);
+		});
+	// search in all hotspots related to this scene.
+	scene.hotSpots.forEach(function(hotspot) {
+		var targetScene = scenes[hotspot.sceneId];
+		var dest = getScenePosition(targetScene);
+		if (dest) {
+			var line = new ol.Feature(new ol.geom.LineString([coordinate, dest]));
+			line.setId(hotspot.id);
+			markerGraphSource.addFeature(line);
+		}
+	});
+
+	// search in all scenes for related hotspots
+	Object.keys(scenes).forEach(function(sceneId) {
+		var targetScene = scenes[sceneId];
+		targetScene.hotSpots
+			.filter(function(hotpspot) {
+				return hotpspot.sceneId === scene.id;
+			})
+			.forEach(function(hotspot) {
+				var origin = getScenePosition(targetScene);
+				var dest = getScenePosition(scenes[hotspot.sceneId]);
+				if (origin && dest) {
+					var line = new ol.Feature(new ol.geom.LineString([origin, dest]));
+					line.setId(hotspot.id);
+					markerGraphSource.addFeature(line);
+				}
+			})
+	});
 
 	updateNorthFace();
 }
 
 function handleClickMarker(pixel) {
 	minimap.forEachFeatureAtPixel(pixel, function(feature) {
+		if (!feature || !scenes[feature.getId()]) return;
 		viewer.loadScene(feature.getId());
 	});
 }
@@ -483,8 +527,6 @@ function onMapClick(e) {
 	} else {
 		handleClickMarker(e.pixel);
 	}
-
-
 }
 
 function initCustomMiniMap(mapDiv, tour) {
@@ -537,16 +579,22 @@ function initSceneMarkers(tour) {
     if (markerLayer) {
         minimap.removeLayer(markerLayer);
     }
+    if (markerGraphLayer) {
+    	minimap.removeLayer(markerGraphLayer);
+    }
 
-    var availableScenes = tour.scenes
+	var markers = [];
+	var lines = [];
+    var scenesWithGeometry = tour.scenes
 	    .filter(function(scene) {
 	    	if (tour.mapPath) {
 	    		return scene.coordinates;
 		    }
 		    return scene.photoMeta && scene.photoMeta.exif;
 	    });
-    var markers = availableScenes
-	    .map(function(scene) {
+
+	scenesWithGeometry
+	    .forEach(function(scene) {
 		    var pos;
 
 	    	if (tour.mapPath) {
@@ -557,12 +605,20 @@ function initSceneMarkers(tour) {
 			    pos = ol.proj.fromLonLat([exif.longitude, exif.latitude]);
 		    }
 
-		    var feature = new ol.Feature({
-			    type: 'icon',
-			    geometry: new ol.geom.Point(pos)
-		    });
-	    	feature.setId(scene.id);
-	    	return feature;
+		    var marker = new ol.Feature(new ol.geom.Point(pos));
+	    	marker.setId(scene.id);
+		    markers.push(marker);
+
+		    scene.hotSpots
+			    .forEach(function(hotspot) {
+			    	var scene = scenes[hotspot.sceneId];
+			    	var dest = getScenePosition(scene);
+			    	if (dest) {
+					    var line = new ol.Feature(new ol.geom.LineString([pos, dest]));
+					    line.setId(hotspot.id);
+					    lines.push(line);
+				    }
+			    })
 	    });
 
     markerLayer = new ol.layer.Vector({
@@ -579,6 +635,47 @@ function initSceneMarkers(tour) {
 
     minimap.addLayer(markerLayer);
 
+	var styleFunction = function(feature) {
+		var geometry = feature.getGeometry();
+		var styles = [
+			// linestring
+			new ol.style.Style({
+				stroke: new ol.style.Stroke({
+					width: 3,
+					color: [255, 0, 0, 0.4],
+					lineDash: [.2, 5]
+				})
+			})
+		];
+
+		geometry.forEachSegment(function(start, end) {
+			var dx = end[0] - start[0];
+			var dy = end[1] - start[1];
+			var rotation = Math.atan2(dy, dx);
+			// arrows
+			styles.push(new ol.style.Style({
+				geometry: new ol.geom.Point(end),
+				image: new ol.style.Icon({
+					src: '../img/thin-arrow-red.png',
+					anchor: [1.3, 0.5],
+					rotateWithView: true,
+					rotation: -rotation
+				})
+			}));
+		});
+
+		return styles;
+	};
+
+    markerGraphLayer = new ol.layer.Vector({
+	    source: new ol.source.Vector({
+		    features: lines
+	    }),
+	    style: styleFunction
+    });
+
+    minimap.addLayer(markerGraphLayer);
+
 	var hoverInteraction = new ol.interaction.Select({
 		condition: ol.events.condition.pointerMove,
 		layers:[markerLayer],
@@ -591,8 +688,8 @@ function initSceneMarkers(tour) {
 	});
 	minimap.addInteraction(hoverInteraction);
 
-    if (availableScenes.length > 0 && !tour.mapPath) {
-        var coordinates = availableScenes.map(function(scene) {
+    if (scenesWithGeometry.length > 0 && !tour.mapPath) {
+        var coordinates = scenesWithGeometry.map(function(scene) {
         	if (tour.mapPath)
         		return [scene.coordinates.x, scene.coordinates.y];
 
@@ -609,21 +706,32 @@ function initSceneMarkers(tour) {
     }
 }
 
+function getScenePosition(scene) {
+	var pos;
+	if (tour.mapPath && scene.coordinates) {
+		pos = [scene.coordinates.x, scene.coordinates.y];
+	} else if (!tour.mapPath && scene.photoMeta && scene.photoMeta.exif) {
+		pos = ol.proj.fromLonLat([scene.photoMeta.exif.longitude, scene.photoMeta.exif.latitude]);
+	}
+	return pos;
+}
+
 function updateNorthFace() {
 
 	var scene = scenes[viewer.getScene()];
 	var rotationInRadian;
+	var compassRotate;
 
 	if (!tour.mapPath && (scene.photoMeta && scene.photoMeta.gpano && !isNaN(scene.photoMeta.gpano.poseHeadingDegrees))) {
 		var gpano = scene.photoMeta.gpano;
 		viewer.setNorthOffset(-gpano.poseHeadingDegrees);
-		var compassRotate = (viewer.getYaw() + gpano.poseHeadingDegrees).toFixed(4);
+		compassRotate = viewer.getYaw() + gpano.poseHeadingDegrees;
 		updateCompass(compassRotate);
-		rotationInRadian = degreeToRadian(viewer.getYaw() + gpano.poseHeadingDegrees);
+		rotationInRadian = degreeToRadian(compassRotate);
 	} else {
-		var compassRotate = (viewer.getYaw() + scene.northOffset).toFixed(4);
+		compassRotate = viewer.getYaw() + scene.northOffset;
 		updateCompass(compassRotate);
-		rotationInRadian = degreeToRadian(viewer.getYaw() + scene.northOffset);
+		rotationInRadian = degreeToRadian(compassRotate);
 	}
 
 	if (!minimap) return;
@@ -633,12 +741,7 @@ function updateNorthFace() {
 		activeMarkerLayer = undefined;
 	}
 
-	var pos;
-	if (tour.mapPath && scene.coordinates) {
-		pos = [scene.coordinates.x, scene.coordinates.y];
-	} else if (!tour.mapPath && scene.photoMeta && scene.photoMeta.exif) {
-		pos = ol.proj.fromLonLat([scene.photoMeta.exif.longitude, scene.photoMeta.exif.latitude]);
-	}
+	var pos = getScenePosition(scene);
 
 	if (pos) {
 		var marker = new ol.Feature({
