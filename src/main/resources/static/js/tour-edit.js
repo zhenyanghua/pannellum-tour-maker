@@ -2,6 +2,7 @@ var $hotSpotsList = $("#settings-hotspot-list");
 var $sceneList = $("#scene-list-container");
 var $centerPoint = $("#center-point");
 var $firstSceneBtn = $("#first-scene-btn");
+var $setToNorthBtn = $("#set-north-offset-btn");
 var $saveTourBtn = $("#save-tour-btn");
 
 var tour;
@@ -43,6 +44,20 @@ function setToFirstScene() {
 	updateFirstSceneUI();
 }
 
+function setToNorth() {
+	var northOffset = 0 - viewer.getYaw();
+	viewer.setNorthOffset(northOffset);
+	scenes[viewer.getScene()].northOffset = northOffset;
+	updateNorthFace();
+	viewer.loadScene(viewer.getScene(), viewer.getPitch(), viewer.getYaw(), viewer.getHfov());
+}
+
+function updateCompass(rotation) {
+	var $compass = $("#panorama").find(".pnlm-compass");
+	var transform = 'rotate(' + rotation + 'deg)';
+	$compass.css('transform', transform);
+}
+
 function initMainViewer(tour) {
     if (viewer) {
         viewer.destroy();
@@ -61,6 +76,7 @@ function initMainViewer(tour) {
 
     viewer = pannellum.viewer('panorama', {
         "autoLoad": true,
+	    "compass": true,
 
         "default": {
             "firstScene": firstScene,
@@ -75,6 +91,7 @@ function initMainViewer(tour) {
     viewer.on("mouseup", updateNorthFace);
 
     $firstSceneBtn.click(setToFirstScene);
+	$setToNorthBtn.click(setToNorth);
     $saveTourBtn.click(saveTour);
 
     loadSceneConfig();
@@ -331,7 +348,11 @@ function switchTour(tour) {
     initMainViewer(tour);
 
     var mapDiv = 'mini-map';
+
 	$("#" + mapDiv).empty();
+
+	ol.inherits(PlaceMarkerControl, ol.control.Control);
+
     if (tour.mapPath) {
         initCustomMiniMap(mapDiv, tour);
     } else {
@@ -396,15 +417,74 @@ function initMiniMap(mapDiv) {
             new ol.control.Attribution({
                 collapsible: false
             }),
-            new ol.control.Zoom()
+            new ol.control.Zoom(),
+	        new PlaceMarkerControl()
         ],
         logo: false,
         target: mapDiv,
         view: new ol.View({
             center: [0, 0],
-            zoom: 10
+            zoom: 10,
+	        maxZoom: 21
         })
     });
+	minimap.on('click', onMapClick);
+}
+
+function handleDrawMarker(coordinate) {
+	$('.place-marker').removeClass("active");
+
+	var scene = scenes[viewer.getScene()];
+
+	if (tour.mapPath) {
+		if (!scene.coordinates) scene.coordinates = {};
+
+		scene.coordinates.x = coordinate[0];
+		scene.coordinates.y = coordinate[1];
+	} else {
+		if (!scene.photoMeta) {
+			scene.photoMeta = {};
+			if (!scene.photoMeta.exif) {
+				scene.photoMeta.exif = {};
+			}
+		}
+		var longLat = ol.proj.transform(coordinate, ol.proj.get('EPSG:3857'), ol.proj.get('EPSG:4326'));
+		scene.photoMeta.exif.longitude = longLat[0];
+		scene.photoMeta.exif.latitude = longLat[1];
+	}
+	var source = markerLayer.getSource();
+	source.getFeatures()
+		.filter(function(feature) {
+			return feature.getId() === scene.id; })
+		.forEach(function(feature) {
+			source.removeFeature(feature); });
+
+	var marker = new ol.Feature({
+		type: 'icon',
+		geometry: new ol.geom.Point(coordinate)
+	});
+	marker.setId(scene.id);
+	source.addFeature(marker);
+
+	updateNorthFace();
+}
+
+function handleClickMarker(pixel) {
+	minimap.forEachFeatureAtPixel(pixel, function(feature) {
+		viewer.loadScene(feature.getId());
+	});
+}
+
+function onMapClick(e) {
+	var $placeMarker = $('.place-marker');
+
+	if ($placeMarker.hasClass('active')) {
+		handleDrawMarker(e.coordinate);
+	} else {
+		handleClickMarker(e.pixel);
+	}
+
+
 }
 
 function initCustomMiniMap(mapDiv, tour) {
@@ -431,16 +511,20 @@ function initCustomMiniMap(mapDiv, tour) {
 				new ol.control.Attribution({
 					collapsible: false
 				}),
-				new ol.control.Zoom()
+				new ol.control.Zoom(),
+				new PlaceMarkerControl()
 			],
 			logo: false,
 			target: mapDiv,
 			view: new ol.View({
 				projection: projection,
 				center: ol.extent.getCenter(extent),
-				zoom: 10
+				zoom: 10,
+				maxZoom: 3
 			})
 		});
+
+		minimap.on('click', onMapClick);
 
 		initSceneMarkers(tour);
 		updateNorthFace();
@@ -473,10 +557,12 @@ function initSceneMarkers(tour) {
 			    pos = ol.proj.fromLonLat([exif.longitude, exif.latitude]);
 		    }
 
-		    return new ol.Feature({
+		    var feature = new ol.Feature({
 			    type: 'icon',
 			    geometry: new ol.geom.Point(pos)
 		    });
+	    	feature.setId(scene.id);
+	    	return feature;
 	    });
 
     markerLayer = new ol.layer.Vector({
@@ -485,7 +571,7 @@ function initSceneMarkers(tour) {
         }),
         style: new ol.style.Style({
             image: new ol.style.Icon({
-                scale: 0.3,
+                scale: 0.24,
                 src: '/img/bullseye.png'
             })
         })
@@ -493,7 +579,19 @@ function initSceneMarkers(tour) {
 
     minimap.addLayer(markerLayer);
 
-    if (availableScenes.length > 0) {
+	var hoverInteraction = new ol.interaction.Select({
+		condition: ol.events.condition.pointerMove,
+		layers:[markerLayer],
+		style: new ol.style.Style({
+			image: new ol.style.Icon({
+				scale: 0.3,
+				src: '/img/bullseye.png'
+			})
+		})
+	});
+	minimap.addInteraction(hoverInteraction);
+
+    if (availableScenes.length > 0 && !tour.mapPath) {
         var coordinates = availableScenes.map(function(scene) {
         	if (tour.mapPath)
         		return [scene.coordinates.x, scene.coordinates.y];
@@ -503,9 +601,7 @@ function initSceneMarkers(tour) {
         });
 
         var boundingExtent = ol.extent.boundingExtent(coordinates);
-        if (!tour.mapPath) {
-	        boundingExtent = ol.proj.transformExtent(boundingExtent, ol.proj.get('EPSG:4326'), ol.proj.get('EPSG:3857'));
-        }
+	    boundingExtent = ol.proj.transformExtent(boundingExtent, ol.proj.get('EPSG:4326'), ol.proj.get('EPSG:3857'));
         minimap.getView().fit(boundingExtent, minimap.getSize());
     } else {
     	var ext = minimap.getView().getProjection().getExtent();
@@ -514,59 +610,87 @@ function initSceneMarkers(tour) {
 }
 
 function updateNorthFace() {
-    if (!minimap) return;
+
+	var scene = scenes[viewer.getScene()];
+	var rotationInRadian;
+
+	if (!tour.mapPath && (scene.photoMeta && scene.photoMeta.gpano && !isNaN(scene.photoMeta.gpano.poseHeadingDegrees))) {
+		var gpano = scene.photoMeta.gpano;
+		viewer.setNorthOffset(-gpano.poseHeadingDegrees);
+		var compassRotate = (viewer.getYaw() + gpano.poseHeadingDegrees).toFixed(4);
+		updateCompass(compassRotate);
+		rotationInRadian = degreeToRadian(viewer.getYaw() + gpano.poseHeadingDegrees);
+	} else {
+		var compassRotate = (viewer.getYaw() + scene.northOffset).toFixed(4);
+		updateCompass(compassRotate);
+		rotationInRadian = degreeToRadian(viewer.getYaw() + scene.northOffset);
+	}
+
+	if (!minimap) return;
 
 	if (activeMarkerLayer) {
 		minimap.removeLayer(activeMarkerLayer);
 		activeMarkerLayer = undefined;
 	}
 
-	var rotationInRadian;
-	var viewConfig = viewer.getConfig();
-
-	if (viewConfig.northOffset) {
-		rotationInRadian = degreeToRadian(viewConfig.northOffset);
-	} else if (viewConfig.photoMeta && viewConfig.photoMeta.exif) {
-		var gpano = viewConfig.photoMeta.gpano;
-
-		if (gpano && !isNaN(gpano.poseHeadingDegrees)) {
-			viewer.setNorthOffset(-gpano.poseHeadingDegrees);
-
-			var rotation = viewer.getYaw() + gpano.poseHeadingDegrees;
-			rotationInRadian = degreeToRadian(rotation);
-		}
+	var pos;
+	if (tour.mapPath && scene.coordinates) {
+		pos = [scene.coordinates.x, scene.coordinates.y];
+	} else if (!tour.mapPath && scene.photoMeta && scene.photoMeta.exif) {
+		pos = ol.proj.fromLonLat([scene.photoMeta.exif.longitude, scene.photoMeta.exif.latitude]);
 	}
 
-    if (rotationInRadian && ((tour.mapPath && viewConfig.coordinates) || (viewConfig.photoMeta && viewConfig.photoMeta.exif))) {
+	if (pos) {
+		var marker = new ol.Feature({
+			type: 'icon',
+			geometry: new ol.geom.Point(pos)
+		});
+		marker.setId(viewer.getScene());
 
-	    var pos = tour.mapPath ? (viewConfig.coordinates ?
-		    [viewConfig.coordinates.x, viewConfig.coordinates.y] : undefined) :
-		    ol.proj.fromLonLat([viewConfig.photoMeta.exif.longitude, viewConfig.photoMeta.exif.latitude]);
+		activeMarkerLayer = new ol.layer.Vector({
+			source: new ol.source.Vector({
+				features: [marker]
+			}),
+			style: new ol.style.Style({
+				image: new ol.style.Icon({
+					scale: 0.6,
+					src: '/img/arrow.png',
+					rotation: rotationInRadian
+				})
+			})
+		});
 
-	    if (!pos) return;
-
-	    var marker = new ol.Feature({
-		    type: 'icon',
-		    geometry: new ol.geom.Point(pos)
-	    });
-
-	    activeMarkerLayer = new ol.layer.Vector({
-		    source: new ol.source.Vector({
-			    features: [marker]
-		    }),
-		    style: new ol.style.Style({
-			    image: new ol.style.Icon({
-				    scale: 0.6,
-				    src: '/img/arrow.png',
-				    rotation: rotationInRadian
-			    })
-		    })
-	    });
-
-	    minimap.addLayer(activeMarkerLayer);
-    }
+		minimap.addLayer(activeMarkerLayer);
+	}
 }
 
 function degreeToRadian(degree) {
 	return degree * Math.PI / 180;
+}
+
+function PlaceMarkerControl(opt_options) {
+
+	var options = opt_options || {};
+
+	var button = document.createElement('button');
+	button.innerHTML = '<i class="material-icons">pin_drop</i>';
+
+	var this_ = this;
+
+	button.addEventListener('click', handlePlaceMarker, false);
+	button.addEventListener('touchstart', handlePlaceMarker, false);
+
+	var element = document.createElement('div');
+	element.className = 'place-marker ol-unselectable ol-control';
+	element.appendChild(button);
+
+	ol.control.Control.call(this, {
+		element: element,
+		target: options.target
+	});
+
+	function handlePlaceMarker() {
+		element.classList.add("active");
+	}
+
 }

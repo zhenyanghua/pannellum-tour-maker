@@ -89,6 +89,16 @@
     height: 200px;
     margin: 10px;
 }
+.place-marker {
+    top: 65px;
+    left: .5em;
+}
+.ol-touch .place-marker {
+    top: 80px;
+}
+.place-marker.active button{
+    background-color: #E57373;
+}
 
 .custom-hotspot-target {
     width: 21px;
