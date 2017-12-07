@@ -338,9 +338,18 @@ function syncRemovedHotSpotWithSceneList(removedHs, sceneId) {
     });
 }
 
-function removeHotSpot(hs) {
-    viewer.removeHotSpot(hs.id);
-    syncRemovedHotSpotWithSceneList(hs, viewer.getScene());
+function removeHotSpot(hotspot) {
+    viewer.removeHotSpot(hotspot.id);
+    syncRemovedHotSpotWithSceneList(hotspot, viewer.getScene());
+
+	var markerGraphSource = markerGraphLayer.getSource();
+	markerGraphSource.getFeatures()
+		.filter(function(feature) {
+			return feature.getId() === hotspot.id;
+		})
+		.forEach(function(feature) {
+			markerGraphSource.removeFeature(feature);
+		});
 }
 
 function switchTour(tour) {
