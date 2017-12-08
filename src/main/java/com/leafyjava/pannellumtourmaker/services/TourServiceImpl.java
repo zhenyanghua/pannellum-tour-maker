@@ -67,13 +67,13 @@ public class TourServiceImpl implements TourService{
     }
 
     @Override
-    public void createTourFromMultires(final String tourName, Map<String, PhotoMeta> metaMap, String mapPath) {
+    public void createTourFromMultires(final String tourName,  Map<String, PhotoMeta> metaMap, String mapPath, int northOffset) {
         Path tourPath = Paths.get(storageProperties.getTourLocation()).resolve(tourName).resolve(MULTIRES);
         try {
             List<Scene> scenes = Files.walk(tourPath, 1)
                 .filter(path -> !path.getFileName().toString().equalsIgnoreCase(MULTIRES) &&
                     !path.getFileName().toString().equalsIgnoreCase(".DS_Store"))
-                .map(scenePath -> mapConfigToScene(scenePath, metaMap))
+                .map(scenePath -> mapConfigToScene(scenePath, metaMap, northOffset))
                 .collect(Collectors.toList());
 
             Tour tour = new Tour();
@@ -165,7 +165,7 @@ public class TourServiceImpl implements TourService{
         return tourRepository.save(tour);
     }
 
-    private Scene mapConfigToScene(Path scenePath, Map<String, PhotoMeta> metaMap) {
+    private Scene mapConfigToScene(Path scenePath, Map<String, PhotoMeta> metaMap, int northOffset) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             Path config = scenePath.resolve("config.json");
@@ -174,6 +174,7 @@ public class TourServiceImpl implements TourService{
             scene.setId(sceneId);
             scene.setTitle(sceneId);
             scene.setType("multires");
+            scene.setNorthOffset(northOffset);
 
             if (metaMap != null) {
                 scene.setPhotoMeta(metaMap.get(sceneId));

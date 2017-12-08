@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface TourService {
-    void createTourFromMultires(String tourName, Map<String, PhotoMeta> metaMap, String mapPath);
+    void createTourFromMultires(String tourName, Map<String, PhotoMeta> metaMap, String mapPath, int northOffset);
 
     Map<String, PhotoMeta> convertToMultiresFromEquirectangular(String tourName);
 

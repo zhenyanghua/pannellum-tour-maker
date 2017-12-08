@@ -46,7 +46,8 @@ public class TourRestController {
     public void uploadTour(@RequestParam("name") String name,
                            @RequestParam("type") String type,
                            @RequestParam("file") MultipartFile tourFile,
-                           @RequestParam(value = "map", required = false) MultipartFile mapFile) {
+                           @RequestParam(value = "map", required = false) MultipartFile mapFile,
+                           @RequestParam(value = "northOffset", required = false, defaultValue = "0") Integer northOffset) {
         if (!Pattern.matches("[a-zA-Z\\d]*", name)) {
             throw new InvalidTourException("Tour name can only contain letters and numbers. " +
                 "No special characters or space is allowed.");
@@ -75,7 +76,11 @@ public class TourRestController {
 
         File tempTourFile = tourService.createTempFileFromMultipartFile(tourFile);
         File tempMapFile = mapFile != null ? tourService.createTempFileFromMultipartFile(mapFile) : null;
-        TourMessage tourMessage = new TourMessage(name, tempTourFile, tempMapFile);
+        TourMessage tourMessage = new TourMessage();
+        tourMessage.setName(name);
+        tourMessage.setMapFile(tempMapFile);
+        tourMessage.setTourFile(tempTourFile);
+        tourMessage.setNorthOffset(northOffset);
 
         switch(tourType) {
             case MULTIRES:

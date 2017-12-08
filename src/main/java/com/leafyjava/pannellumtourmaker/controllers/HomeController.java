@@ -16,6 +16,17 @@ public class HomeController {
         this.tourService = tourService;
     }
 
+
+    @GetMapping("/")
+    public String index() {
+        return "redirect:/tours";
+    }
+
+    @GetMapping("/tours")
+    public String tours() {
+        return "tours";
+    }
+
     @GetMapping("/tours/{tour}")
     public String tourEdit(@PathVariable(value = "tour") String tour) {
         if (tourService.findOne(tour) == null) {
@@ -23,11 +34,6 @@ public class HomeController {
         }
 
         return "tour-edit";
-    }
-
-    @GetMapping("/tours")
-    public String tours() {
-        return "tours";
     }
 
     @GetMapping("/upload")

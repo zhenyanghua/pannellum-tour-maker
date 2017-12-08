@@ -9,7 +9,7 @@
 <body>
 <div layout:fragment="content" th:remove="tag">
     <div class="container">
-        <h2>Upload Panoramic Photos</h2>
+        <h3 class="red-text text-lighten-2">Upload Panoramic Photos</h3>
         <form id="form-upload" action="#">
             <div class="input-field">
                 <input name="name" id="input-tourname" type="text" class="validate">
@@ -40,6 +40,10 @@
                 <div class="file-path-wrapper">
                     <input class="file-path validate" type="text" name="mapName" id="input-map-name" placeholder="Supported files: *.jpg, *.png">
                 </div>
+            </div>
+            <div class="range-field">
+                <input name="northOffset" id="input-north-offset" type="range" class="validate" min="-180" max="180" value="0">
+                <label for="input-north-offset">North Offset</label>
             </div>
             <div class="form-action">
                 <button id="photo-upload" class="btn waves-effect waves-light" type="submit" name="action">Upload

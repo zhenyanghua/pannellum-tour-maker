@@ -95,7 +95,7 @@ public class AsyncTourServiceImpl implements AsyncTourService {
                 mapPath = tourService.getMapPath(tourName, tourMessage.getMapFile());
             }
 
-            tourService.createTourFromMultires(tourName, null, mapPath);
+            tourService.createTourFromMultires(tourName, null, mapPath, tourMessage.getNorthOffset());
         } catch (IOException e) {
             logger.error("Failed to process received multires tour.", e);
         }
@@ -123,7 +123,7 @@ public class AsyncTourServiceImpl implements AsyncTourService {
 
             Map<String, PhotoMeta> photoMetaMap = tourService.convertToMultiresFromEquirectangular(tourName);
 
-            tourService.createTourFromMultires(tourName, photoMetaMap, mapPath);
+            tourService.createTourFromMultires(tourName, photoMetaMap, mapPath, tourMessage.getNorthOffset());
         } catch (IOException e) {
             logger.error("Failed to process received equirectangular tour.", e);
         }

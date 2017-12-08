@@ -33,12 +33,14 @@ $("#form-upload").validate({
         var file = $("#input-file")[0].files[0];
         var mapInput = $("#input-map")[0];
         var map = mapInput.files.length > 0 ? mapInput.files[0] : undefined;
+        var northOffset = $("#input-north-offset").val();
 
         var form = new FormData();
         form.append("file", file);
         form.append("name", name);
         form.append("type", type);
         if (map) form.append("map", map);
+        if (northOffset) form.append("northOffset", northOffset);
 
         var options = {
             method: "POST",
