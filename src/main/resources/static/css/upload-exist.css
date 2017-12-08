@@ -1,14 +1,11 @@
 .error {
     color: red;
 }
+
 .form-action {
     margin-top: 2rem;
 }
 
 .file-field {
     margin-top: 2rem;
-    margin-bottom: 2rem;
-}
-.select-field {
-    margin-top: 3rem;
 }

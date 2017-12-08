@@ -46,6 +46,11 @@ public class TourRestController {
         return tourService.findAllTours();
     }
 
+    @GetMapping("/names")
+    public List<String> getTourNames() {
+        return tourService.findAllTourNames();
+    }
+
     @PostMapping()
     public void uploadTour(@RequestParam("name") String name,
                            @RequestParam("file") MultipartFile tourFile,

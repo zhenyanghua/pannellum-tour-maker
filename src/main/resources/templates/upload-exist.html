@@ -4,16 +4,18 @@
       layout:decorate="~{fragments/layout}">
 <head>
     <link rel="stylesheet" th:href="@{/css/upload.css}" />
-    <title>Upload</title>
+    <title>Upload to Existing Tour</title>
 </head>
 <body>
 <div layout:fragment="content" th:remove="tag">
     <div class="container">
-        <h3 class="red-text text-lighten-2">Create New Tour</h3>
+        <h3 class="red-text text-lighten-2">Add to Existing Tour</h3>
         <form id="form-upload" action="#">
-            <div class="input-field">
-                <input name="name" id="input-tourname" type="text" class="validate">
-                <label for="input-tourname">Tour Name</label>
+            <div class="input-field select-field">
+                <select id="select-tour-name" name="name">
+                    <option value="" disabled selected>Choose tour</option>
+                </select>
+                <label for="select-tour-name">Tour Name</label>
             </div>
             <div class="file-field input-field">
                 <div class="btn">
@@ -24,17 +26,8 @@
                     <input class="file-path validate" type="text" name="fileName" id="input-file-name" placeholder="Supported files: *.zip">
                 </div>
             </div>
-            <div class="file-field input-field">
-                <div class="btn">
-                    <span>Map</span>
-                    <input type="file" name="map" id="input-map">
-                </div>
-                <div class="file-path-wrapper">
-                    <input class="file-path validate" type="text" name="mapName" id="input-map-name" placeholder="Supported files: *.jpg, *.png">
-                </div>
-            </div>
-            <div class="input-field">
-                <input name="northOffset" id="input-north-offset" type="number" class="validate" max="360">
+            <div class="range-field">
+                <input name="northOffset" id="input-north-offset" type="range" class="validate" min="-180" max="180" value="0">
                 <label for="input-north-offset">North Offset</label>
             </div>
             <div class="form-action">
@@ -46,7 +39,7 @@
     </div>
     <script th:src="@{/webjars/jquery-validation/1.17.0/jquery.validate.min.js}"></script>
     <script th:src="@{/webjars/jquery-validation/1.17.0/additional-methods.min.js}"></script>
-    <script th:src="@{/js/upload.js}"></script>
+    <script th:src="@{/js/upload-exist.js}"></script>
 </div>
 </body>
 </html>

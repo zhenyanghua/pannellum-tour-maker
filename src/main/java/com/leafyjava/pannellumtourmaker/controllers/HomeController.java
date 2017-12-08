@@ -46,6 +46,11 @@ public class HomeController {
         return "upload";
     }
 
+    @GetMapping("/upload-exist")
+    public String uploadExist() {
+        return "upload-exist";
+    }
+
     @GetMapping("/login")
     public String login() {
         return "login";

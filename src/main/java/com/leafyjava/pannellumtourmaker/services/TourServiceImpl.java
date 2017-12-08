@@ -144,6 +144,11 @@ public class TourServiceImpl implements TourService{
     }
 
     @Override
+    public List<String> findAllTourNames() {
+        return tourRepository.findAll().stream().map(Tour::getName).collect(Collectors.toList());
+    }
+
+    @Override
     public Tour findOne(final String name) {
         return tourRepository.findOne(name);
     }

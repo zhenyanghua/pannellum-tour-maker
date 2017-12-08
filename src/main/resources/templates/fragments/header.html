@@ -1,9 +1,13 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+>
 <body>
 <th:block th:fragment="header">
     <header>
+        <ul id="upload-dropdown" class="dropdown-content">
+            <li><a th:href="@{/upload}">New Tour</a></li>
+            <li><a th:href="@{/upload-exist}">Existing Tour</a></li>
+        </ul>
         <nav>
             <div class="nav-wrapper blue-grey">
                 <a class="brand-logo" th:href="@{/}">
@@ -17,7 +21,9 @@
                         <a th:href="@{/tasks}">Tasks</a>
                     </li>
                     <li th:class="${#httpServletRequest.getRequestURI() == '/upload' ? 'active' : ''}">
-                        <a th:href="@{/upload}">Upload</a>
+                        <a class="dropdown-button" data-activates="upload-dropdown">
+                            Upload<i class="material-icons right">arrow_drop_down</i>
+                        </a>
                     </li>
                 </ul>
             </div>
