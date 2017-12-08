@@ -7,6 +7,7 @@ public class TourMessage {
     private int northOffset;
     private File tourFile;
     private File mapFile;
+    private Task task;
 
     public String getName() {
         return name;
@@ -38,5 +39,13 @@ public class TourMessage {
 
     public void setNorthOffset(final int northOffset) {
         this.northOffset = northOffset;
+    }
+
+    public Task getTask() {
+        return task;
+    }
+
+    public void setTask(final Task task) {
+        this.task = task;
     }
 }

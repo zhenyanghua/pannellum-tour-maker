@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <link rel="stylesheet" th:href="@{/css/tasks.css}"/>
+    <title>Tasks</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="container">
+        <h5 class="card-panel red-text text-lighten-2">Tasks</h5>
+        <div id="task-list-container" class="row"></div>
+    </div>
+
+    <script th:src="@{/js/polyfill.js}"></script>
+    <script th:src="@{/js/tasks.js}"></script>
+</div>
+</body>
+</html>

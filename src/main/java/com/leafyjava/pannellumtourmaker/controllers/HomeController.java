@@ -36,6 +36,11 @@ public class HomeController {
         return "tour-edit";
     }
 
+    @GetMapping("/tasks")
+    public String tasks() {
+        return "tasks";
+    }
+
     @GetMapping("/upload")
     public String upload() {
         return "upload";

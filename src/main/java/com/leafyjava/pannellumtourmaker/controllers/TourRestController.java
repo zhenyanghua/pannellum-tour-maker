@@ -1,11 +1,13 @@
 package com.leafyjava.pannellumtourmaker.controllers;
 
+import com.leafyjava.pannellumtourmaker.domains.Task;
 import com.leafyjava.pannellumtourmaker.domains.Tour;
 import com.leafyjava.pannellumtourmaker.domains.TourMessage;
 import com.leafyjava.pannellumtourmaker.exceptions.InvalidTourException;
 import com.leafyjava.pannellumtourmaker.exceptions.TourAlreadyExistsException;
 import com.leafyjava.pannellumtourmaker.exceptions.UnsupportedFileExtensionException;
 import com.leafyjava.pannellumtourmaker.services.AsyncTourService;
+import com.leafyjava.pannellumtourmaker.services.TaskService;
 import com.leafyjava.pannellumtourmaker.services.TourService;
 import com.leafyjava.pannellumtourmaker.utils.SupportedTourUploadType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +31,15 @@ import java.util.regex.Pattern;
 public class TourRestController {
     private TourService tourService;
     private AsyncTourService asyncTourService;
+    private TaskService taskService;
 
     @Autowired
     public TourRestController(final TourService tourService,
-                              final AsyncTourService asyncTourService) {
+                              final AsyncTourService asyncTourService,
+                              final TaskService taskService) {
         this.tourService = tourService;
         this.asyncTourService = asyncTourService;
+        this.taskService = taskService;
     }
 
     @GetMapping()
@@ -81,6 +86,9 @@ public class TourRestController {
         tourMessage.setMapFile(tempMapFile);
         tourMessage.setTourFile(tempTourFile);
         tourMessage.setNorthOffset(northOffset);
+        Task task = new Task(name);
+        taskService.save(task);
+        tourMessage.setTask(task);
 
         switch(tourType) {
             case MULTIRES:

@@ -3,9 +3,11 @@ package com.leafyjava.pannellumtourmaker.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.leafyjava.pannellumtourmaker.domains.PhotoMeta;
+import com.leafyjava.pannellumtourmaker.domains.Task;
 import com.leafyjava.pannellumtourmaker.domains.TourMessage;
 import com.leafyjava.pannellumtourmaker.storage.configs.StorageProperties;
 import com.leafyjava.pannellumtourmaker.storage.services.StorageService;
+import com.leafyjava.pannellumtourmaker.utils.TaskStatus;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.Map;
 
 import static com.leafyjava.pannellumtourmaker.utils.QueueNames.TOUR_ZIP_EQUIRECTANGULAR;
@@ -35,6 +37,7 @@ public class AsyncTourServiceImpl implements AsyncTourService {
     private TourService tourService;
     private StorageService storageService;
     private StorageProperties storageProperties;
+    private TaskService taskService;
 
     @Autowired
     public AsyncTourServiceImpl(final RabbitTemplate rabbitTemplate,
@@ -42,13 +45,15 @@ public class AsyncTourServiceImpl implements AsyncTourService {
                                 @Qualifier(TOUR_ZIP_EQUIRECTANGULAR) final Queue toursZipEquirectangularQueue,
                                 final TourService tourService,
                                 final StorageService storageService,
-                                final StorageProperties storageProperties) {
+                                final StorageProperties storageProperties,
+                                final TaskService taskService) {
         this.rabbitTemplate = rabbitTemplate;
         this.toursZipMultiresQueue = toursZipMultiresQueue;
         this.toursZipEquirectangularQueue = toursZipEquirectangularQueue;
         this.tourService = tourService;
         this.storageService = storageService;
         this.storageProperties = storageProperties;
+        this.taskService = taskService;
     }
 
     @Override
@@ -77,9 +82,11 @@ public class AsyncTourServiceImpl implements AsyncTourService {
     @RabbitListener(queues = TOUR_ZIP_MULTIRES)
     public void receiveInToursZipMultires(String message) {
         ObjectMapper mapper = new ObjectMapper();
-        TourMessage tourMessage;
+        TourMessage tourMessage = null;
         try {
             tourMessage = mapper.readValue(message, TourMessage.class);
+            handleRunningTask(tourMessage);
+
             String tourName = tourMessage.getName();
             String mapPath = null;
 
@@ -96,17 +103,22 @@ public class AsyncTourServiceImpl implements AsyncTourService {
             }
 
             tourService.createTourFromMultires(tourName, null, mapPath, tourMessage.getNorthOffset());
-        } catch (IOException e) {
+
+            handleSucceededTask(tourMessage);
+        } catch (Exception e) {
             logger.error("Failed to process received multires tour.", e);
+            handleFailedTask(tourMessage);
         }
     }
 
     @RabbitListener(queues = TOUR_ZIP_EQUIRECTANGULAR)
     public void receiveInToursZipEquirectangular(String message) {
         ObjectMapper mapper = new ObjectMapper();
-        TourMessage tourMessage;
+        TourMessage tourMessage = null;
         try {
             tourMessage = mapper.readValue(message, TourMessage.class);
+            handleRunningTask(tourMessage);
+
             String tourName = tourMessage.getName();
             String mapPath = null;
 
@@ -124,8 +136,34 @@ public class AsyncTourServiceImpl implements AsyncTourService {
             Map<String, PhotoMeta> photoMetaMap = tourService.convertToMultiresFromEquirectangular(tourName);
 
             tourService.createTourFromMultires(tourName, photoMetaMap, mapPath, tourMessage.getNorthOffset());
-        } catch (IOException e) {
+
+            handleSucceededTask(tourMessage);
+        } catch (Exception e) {
             logger.error("Failed to process received equirectangular tour.", e);
+            handleFailedTask(tourMessage);
+        }
+    }
+
+    private void handleRunningTask(final TourMessage tourMessage) {
+        Task task = tourMessage.getTask();
+        task.setStartDateTime(new Date());
+        task.setStatus(TaskStatus.RUNNING);
+        taskService.save(task);
+    }
+
+    private void handleSucceededTask(final TourMessage tourMessage) {
+        Task task = tourMessage.getTask();
+        task.setEndDateTime(new Date());
+        task.setStatus(TaskStatus.SUCCEEDED);
+        taskService.save(task);
+    }
+
+    private void handleFailedTask(final TourMessage tourMessage) {
+        if (tourMessage != null) {
+            Task task = tourMessage.getTask();
+            task.setEndDateTime(new Date());
+            task.setStatus(TaskStatus.FAILED);
+            taskService.save(task);
         }
     }
 }
