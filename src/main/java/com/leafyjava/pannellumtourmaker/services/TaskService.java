@@ -9,4 +9,5 @@ public interface TaskService {
     Task insert(Task task);
     void delete(Task task);
     Task save(Task task);
+    List<Task> findAllPaginatedAndSorted(int page, int size, String sortBy, String sortOrder);
 }

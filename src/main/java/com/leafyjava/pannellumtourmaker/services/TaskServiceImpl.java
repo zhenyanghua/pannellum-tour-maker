@@ -3,12 +3,13 @@ package com.leafyjava.pannellumtourmaker.services;
 import com.leafyjava.pannellumtourmaker.domains.Task;
 import com.leafyjava.pannellumtourmaker.repositories.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class TaskServiceImpl implements TaskService {
+public class TaskServiceImpl extends AbstractRawService<Task> implements TaskService {
 
     private TaskRepository taskRepository;
 
@@ -35,5 +36,10 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Task save(final Task task) {
         return taskRepository.save(task);
+    }
+
+    @Override
+    protected PagingAndSortingRepository<Task, String> getDao() {
+        return taskRepository;
     }
 }

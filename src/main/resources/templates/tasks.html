@@ -10,7 +10,27 @@
 <div layout:fragment="content" th:remove="tag">
     <div class="container">
         <h5 class="card-panel red-text text-lighten-2">Tasks</h5>
-        <div id="task-list-container" class="row"></div>
+        <div id="task-list-container" class="row hide">
+            <p class="teal-text text-lighten-2">
+                <span>Most recent 5 tasks</span>
+                <a id="refresh-btn" class="btn-floating btn waves-effect waves-light teal">
+                    <i class="material-icons">refresh</i>
+                </a>
+            </p>
+
+            <table class="highlight">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Created At</th>
+                        <th>Started At</th>
+                        <th>Ended At</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
     </div>
 
     <script th:src="@{/js/polyfill.js}"></script>

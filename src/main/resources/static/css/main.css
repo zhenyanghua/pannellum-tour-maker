@@ -28,4 +28,7 @@ main {
     margin-left: 1em;
 }
 
+.capitalize {
+    text-transform: capitalize;
+}
 
