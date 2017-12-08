@@ -1,6 +1,5 @@
 package com.leafyjava.pannellumtourmaker.storage.services;
 
-import com.leafyjava.pannellumtourmaker.utils.SupportedTourUploadType;
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,7 +18,7 @@ public interface StorageService {
 
     File createTempFileFromMultipartFile(final MultipartFile file);
 
-    void storeTourContent(String name, SupportedTourUploadType type, File file);
+    void storeTourContent(String name, File file);
 
     Stream<Path> loadAll();
 

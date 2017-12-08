@@ -23,16 +23,12 @@ import java.util.Date;
 import java.util.Map;
 
 import static com.leafyjava.pannellumtourmaker.utils.QueueNames.TOUR_ZIP_EQUIRECTANGULAR;
-import static com.leafyjava.pannellumtourmaker.utils.QueueNames.TOUR_ZIP_MULTIRES;
-import static com.leafyjava.pannellumtourmaker.utils.SupportedTourUploadType.EQUIRECTANGULAR;
-import static com.leafyjava.pannellumtourmaker.utils.SupportedTourUploadType.MULTIRES;
 
 @Service
 public class AsyncTourServiceImpl implements AsyncTourService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private RabbitTemplate rabbitTemplate;
-    private Queue toursZipMultiresQueue;
     private Queue toursZipEquirectangularQueue;
     private TourService tourService;
     private StorageService storageService;
@@ -41,31 +37,17 @@ public class AsyncTourServiceImpl implements AsyncTourService {
 
     @Autowired
     public AsyncTourServiceImpl(final RabbitTemplate rabbitTemplate,
-                                @Qualifier(TOUR_ZIP_MULTIRES) final Queue toursZipMultiresQueue,
                                 @Qualifier(TOUR_ZIP_EQUIRECTANGULAR) final Queue toursZipEquirectangularQueue,
                                 final TourService tourService,
                                 final StorageService storageService,
                                 final StorageProperties storageProperties,
                                 final TaskService taskService) {
         this.rabbitTemplate = rabbitTemplate;
-        this.toursZipMultiresQueue = toursZipMultiresQueue;
         this.toursZipEquirectangularQueue = toursZipEquirectangularQueue;
         this.tourService = tourService;
         this.storageService = storageService;
         this.storageProperties = storageProperties;
         this.taskService = taskService;
-    }
-
-    @Override
-    public void sendToToursZipMultires(TourMessage tourMessage) {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            String message = mapper.writeValueAsString(tourMessage);
-            rabbitTemplate.convertAndSend(toursZipMultiresQueue.getName(), message);;
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
     }
 
     @Override
@@ -76,38 +58,6 @@ public class AsyncTourServiceImpl implements AsyncTourService {
             rabbitTemplate.convertAndSend(toursZipEquirectangularQueue.getName(), message);;
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-        }
-    }
-
-    @RabbitListener(queues = TOUR_ZIP_MULTIRES)
-    public void receiveInToursZipMultires(String message) {
-        ObjectMapper mapper = new ObjectMapper();
-        TourMessage tourMessage = null;
-        try {
-            tourMessage = mapper.readValue(message, TourMessage.class);
-            handleRunningTask(tourMessage);
-
-            String tourName = tourMessage.getName();
-            String mapPath = null;
-
-            storageService.storeTourContent(tourName, MULTIRES, tourMessage.getTourFile());
-
-            if (tourMessage.getMapFile() != null) {
-                String extension = "." + FilenameUtils.getExtension(tourMessage.getMapFile().getAbsolutePath());
-
-                storageService.store(tourName,
-                    tourMessage.getMapFile().toPath(),
-                    Paths.get(storageProperties.getTourLocation()).resolve(tourName).resolve("map" + extension));
-
-                mapPath = tourService.getMapPath(tourName, tourMessage.getMapFile());
-            }
-
-            tourService.createTourFromMultires(tourName, null, mapPath, tourMessage.getNorthOffset());
-
-            handleSucceededTask(tourMessage);
-        } catch (Exception e) {
-            logger.error("Failed to process received multires tour.", e);
-            handleFailedTask(tourMessage);
         }
     }
 
@@ -122,7 +72,7 @@ public class AsyncTourServiceImpl implements AsyncTourService {
             String tourName = tourMessage.getName();
             String mapPath = null;
 
-            storageService.storeTourContent(tourName, EQUIRECTANGULAR, tourMessage.getTourFile());
+            storageService.storeTourContent(tourName, tourMessage.getTourFile());
 
             if (tourMessage.getMapFile() != null) {
                 String extension = "." + FilenameUtils.getExtension(tourMessage.getMapFile().getAbsolutePath());

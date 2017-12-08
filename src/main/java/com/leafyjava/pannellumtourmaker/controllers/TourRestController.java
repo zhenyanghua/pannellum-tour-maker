@@ -9,7 +9,6 @@ import com.leafyjava.pannellumtourmaker.exceptions.UnsupportedFileExtensionExcep
 import com.leafyjava.pannellumtourmaker.services.AsyncTourService;
 import com.leafyjava.pannellumtourmaker.services.TaskService;
 import com.leafyjava.pannellumtourmaker.services.TourService;
-import com.leafyjava.pannellumtourmaker.utils.SupportedTourUploadType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,7 +48,6 @@ public class TourRestController {
 
     @PostMapping()
     public void uploadTour(@RequestParam("name") String name,
-                           @RequestParam("type") String type,
                            @RequestParam("file") MultipartFile tourFile,
                            @RequestParam(value = "map", required = false) MultipartFile mapFile,
                            @RequestParam(value = "northOffset", required = false, defaultValue = "0") Integer northOffset) {
@@ -59,13 +57,6 @@ public class TourRestController {
         }
         if (tourService.findOne(name) != null) {
             throw new TourAlreadyExistsException("Tour " + name + " already exists.");
-        }
-
-        SupportedTourUploadType tourType = null;
-        try{
-            tourType = SupportedTourUploadType.valueOf(type.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new InvalidTourException("Tour type is not supported.");
         }
 
         if (!StringUtils.getFilenameExtension(tourFile.getOriginalFilename()).equalsIgnoreCase("zip")) {
@@ -79,9 +70,10 @@ public class TourRestController {
             }
         }
 
+        TourMessage tourMessage = new TourMessage();
+
         File tempTourFile = tourService.createTempFileFromMultipartFile(tourFile);
         File tempMapFile = mapFile != null ? tourService.createTempFileFromMultipartFile(mapFile) : null;
-        TourMessage tourMessage = new TourMessage();
         tourMessage.setName(name);
         tourMessage.setMapFile(tempMapFile);
         tourMessage.setTourFile(tempTourFile);
@@ -90,14 +82,7 @@ public class TourRestController {
         taskService.save(task);
         tourMessage.setTask(task);
 
-        switch(tourType) {
-            case MULTIRES:
-                asyncTourService.sendToToursZipMultires(tourMessage);
-                break;
-            case EQUIRECTANGULAR:
-                asyncTourService.sendToToursZipEquirectangular(tourMessage);
-                break;
-        }
+        asyncTourService.sendToToursZipEquirectangular(tourMessage);
     }
 
     @GetMapping("/{name}")

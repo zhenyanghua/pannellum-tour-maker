@@ -3,7 +3,6 @@ package com.leafyjava.pannellumtourmaker.storage.services;
 import com.leafyjava.pannellumtourmaker.storage.configs.StorageProperties;
 import com.leafyjava.pannellumtourmaker.storage.exceptions.StorageException;
 import com.leafyjava.pannellumtourmaker.storage.exceptions.StorageFileNotFoundException;
-import com.leafyjava.pannellumtourmaker.utils.SupportedTourUploadType;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.io.FilenameUtils;
@@ -111,17 +110,9 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public void storeTourContent(final String name, final SupportedTourUploadType type, final File file) {
+    public void storeTourContent(final String name, final File file) {
         try {
-            Path destination = null;
-            switch (type) {
-                case MULTIRES:
-                    destination = tourLocation.resolve(name);
-                    break;
-                case EQUIRECTANGULAR:
-                    destination = equirectangularLocation.resolve(name);
-                    break;
-            }
+            Path destination = equirectangularLocation.resolve(name);
             ZipFile zipFile = new ZipFile(file);
             zipFile.extractAll(destination.toString());
             FileSystemUtils.deleteRecursively(destination.resolve("__MACOSX").toFile());

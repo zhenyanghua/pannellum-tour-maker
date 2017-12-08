@@ -1,8 +1,11 @@
 var $taskList = $("#task-list-container");
+var $lastUpdate = $("#last-updated");
 
 getTasks();
-setInterval(getTasks, 10000);
+
 $("#refresh-btn").click(getTasks);
+
+setInterval(getTasks, 10000);
 
 function getTasks() {
 	$.getJSON(apiUrl + "/public/guest/tasks?page=0&size=5&sortBy=createdDateTime&sortOrder=desc")
@@ -22,6 +25,7 @@ function getTasks() {
 						.append($("<td>").text(parseDate(task.endDateTime))))
 				});
 			}
+			$lastUpdate.text("Updated: " + parseDate(Date.now()));
 		});
 }
 
@@ -42,3 +46,4 @@ function getColorByStatus(status) {
 			return '#ff1744';
 	}
 }
+

@@ -29,7 +29,6 @@ $("#form-upload").validate({
 
     submitHandler: function (form) {
         var name = $("#input-tourname").val();
-        var type = $("[name='type']:checked").val();
         var file = $("#input-file")[0].files[0];
         var mapInput = $("#input-map")[0];
         var map = mapInput.files.length > 0 ? mapInput.files[0] : undefined;
@@ -38,7 +37,6 @@ $("#form-upload").validate({
         var form = new FormData();
         form.append("file", file);
         form.append("name", name);
-        form.append("type", type);
         if (map) form.append("map", map);
         if (northOffset) form.append("northOffset", northOffset);
 

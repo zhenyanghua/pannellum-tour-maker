@@ -10,7 +10,6 @@ docker run -d --name my-mongo -p 27017:27017 mongo
 ```
 
 # Big To Do
-9. Notify client when tour is created.
 10. Create preview thumnails in backend queue service.
 11. Use thumnails in preview instead of pannellum.
 7. provide a backend service and UI to upload zipped tour to an existing tour.
