@@ -7,10 +7,13 @@ spring:
 application:
   baseUrl: http://localhost:8080
   nona: /Applications/Hugin/HuginStitchProject.app/Contents/MacOS/nona
+  photo-preview:
+    width: 400
+    height: 200
   upload:
-    directory: /Users/hua/IdeaProjects/pannellum-tour-maker-service/upload-dir
-    tours: /Users/hua/IdeaProjects/pannellum-tour-maker-service/upload-dir/tours
-    equirectangular: /Users/hua/IdeaProjects/pannellum-tour-maker-service/upload-dir/equirectangular
+    directory: /Users/hua/IdeaProjects/pannellum-tour-maker/upload-dir
+    tours: /Users/hua/IdeaProjects/pannellum-tour-maker/upload-dir/tours
+    equirectangular: /Users/hua/IdeaProjects/pannellum-tour-maker/upload-dir/equirectangular
 
 ---
 spring:

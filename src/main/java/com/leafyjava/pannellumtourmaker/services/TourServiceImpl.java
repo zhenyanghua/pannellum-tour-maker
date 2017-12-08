@@ -26,6 +26,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -52,6 +55,12 @@ public class TourServiceImpl implements TourService{
 
     @Value("${application.nona}")
     private String nona;
+
+    @Value("${application.photo-preview.width}")
+    private int previewWidth;
+
+    @Value("${application.photo-preview.height}")
+    private int previewHeight;
 
     private StorageService storageService;
     private StorageProperties storageProperties;
@@ -105,30 +114,8 @@ public class TourServiceImpl implements TourService{
                 .filter(path -> path.toString().toLowerCase().endsWith(".jpg"))
                 .forEach(path -> {
                     extractMeta(metaMap, path.toFile());
-
-                    String pyPath = null;
-                    try {
-                        pyPath = new ClassPathResource("generate.py").getURL().toString().substring(5);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    String output = storageProperties.getTourLocation() + "/" + tourName + "/" + MULTIRES + "/" +
-                        FilenameUtils.getBaseName(path.toString());
-                    String[] cmd = {
-                        "/bin/bash",
-                        "-c",
-                        "python " + pyPath  + " -o " + output +
-                            " -n " + nona + " " + path
-                    };
-                    try {
-                        Process process = Runtime.getRuntime().exec(cmd);
-                        int result = process.waitFor();
-                        if (result != 0) {
-                            logger.error("Command failed: " + String.join(" ", cmd));
-                        }
-                    } catch (IOException | InterruptedException e) {
-                        logger.error("Command failed: " + String.join(" ", cmd), e);
-                    }
+                    makeTiles(tourName, path);
+                    makePreview(tourName, path);
                 });
             FileSystemUtils.deleteRecursively(equirectangularPath.toFile());
         } catch (IOException e) {
@@ -137,6 +124,7 @@ public class TourServiceImpl implements TourService{
 
         return metaMap;
     }
+
 
     @Override
     public File createTempFileFromMultipartFile(final MultipartFile file) {
@@ -163,6 +151,47 @@ public class TourServiceImpl implements TourService{
     @Override
     public Tour save(final Tour tour) {
         return tourRepository.save(tour);
+    }
+
+    private void makeTiles(final String tourName, final Path path) {
+        String pyPath = null;
+        try {
+            pyPath = new ClassPathResource("generate.py").getURL().toString().substring(5);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String output = storageProperties.getTourLocation() + "/" + tourName + "/" + MULTIRES + "/" +
+            FilenameUtils.getBaseName(path.toString());
+        String[] cmd = {
+            "/bin/bash",
+            "-c",
+            "python " + pyPath  + " -o " + output +
+                " -n " + nona + " " + path
+        };
+        try {
+            Process process = Runtime.getRuntime().exec(cmd);
+            int result = process.waitFor();
+            if (result != 0) {
+                logger.error("Command failed: " + String.join(" ", cmd));
+            }
+        } catch (IOException | InterruptedException e) {
+            logger.error("Command failed: " + String.join(" ", cmd), e);
+        }
+    }
+
+    private void makePreview(final String tourName, final Path path) {
+        try {
+            BufferedImage originalImage = ImageIO.read(path.toFile());
+            int type = originalImage.getType() == 0? BufferedImage.TYPE_INT_ARGB : originalImage.getType();
+
+            BufferedImage resizeImagePng = resizeImage(originalImage, type);
+
+            Path output = Paths.get(storageProperties.getTourLocation())
+                .resolve(tourName).resolve(MULTIRES).resolve(FilenameUtils.getBaseName(path.toString())).resolve("preview.png");
+            ImageIO.write(resizeImagePng, "png", output.toFile());
+        } catch (IOException e) {
+            logger.error("Failed to create preview image for " + path);
+        }
     }
 
     private Scene mapConfigToScene(Path scenePath, Map<String, PhotoMeta> metaMap, int northOffset) {
@@ -241,5 +270,14 @@ public class TourServiceImpl implements TourService{
             sb.append(m.group(1).replace("GPano:", ""));
         }
         return "<GPano>" + sb.toString() + "</GPano>";
+    }
+
+    private BufferedImage resizeImage(BufferedImage originalImage, int type){
+        BufferedImage resizedImage = new BufferedImage(previewWidth, previewHeight, type);
+        Graphics2D g = resizedImage.createGraphics();
+        g.drawImage(originalImage, 0, 0, previewWidth, previewHeight, null);
+        g.dispose();
+
+        return resizedImage;
     }
 }

@@ -6,7 +6,6 @@ var $setToNorthBtn = $("#set-north-offset-btn");
 var $saveTourBtn = $("#save-tour-btn");
 
 var tour;
-var sceneViewerList = {};
 var scenes = {};
 var viewer;
 var hsViewer;
@@ -81,7 +80,6 @@ function initMainViewer(tour) {
 
         "default": {
             "firstScene": firstScene,
-            "author": "Demo",
             "sceneFadeDuration": 400
         },
 
@@ -268,24 +266,16 @@ function populateSceneList() {
             return sceneId !== viewer.getScene() && connectedSceneIds.indexOf(sceneId) === -1;
         })
         .forEach(function(sceneId) {
-            var id = "scene-preview-" + sceneId;
             var scene = scenes[sceneId];
 
             $sceneList.append($("<div>").addClass('card')
                 .append($("<div>").addClass('card-image')
-                    .append($("<div>").attr('id', id).addClass("scene-preview"))
+                    .append($("<img>").attr('src', scene.multiRes.basePath + "/preview.png").addClass("scene-preview"))
                     .append($("<span>").addClass('card-title').text(scene.title)))
                 .append($("<div>").addClass('card-action')
                     .append($("<a>").append($("<i>").addClass("material-icons").text("add_circle_outline"))
                         .click(function() { addToScene(scene);}))
                 ));
-
-            var viewerOptions = Object.assign({
-                "multiRes": scene.multiRes,
-                "id": sceneId
-            }, defaultPreviewSettings);
-
-            sceneViewerList[sceneId] = pannellum.viewer(id, viewerOptions);
         });
 }
 
