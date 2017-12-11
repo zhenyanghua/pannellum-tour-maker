@@ -3,7 +3,7 @@ package com.leafyjava.pannellumtourmaker.domains;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.List;
+import java.util.Set;
 
 @Document(collection = "tours")
 public class Tour {
@@ -11,7 +11,7 @@ public class Tour {
     private String name;
     private String firstScene;
     private String mapPath;
-    private List<Scene> scenes;
+    private Set<Scene> scenes;
 
     public String getName() {
         return name;
@@ -37,11 +37,15 @@ public class Tour {
         this.firstScene = firstScene;
     }
 
-    public List<Scene> getScenes() {
+    public Set<Scene> getScenes() {
         return scenes;
     }
 
-    public void setScenes(final List<Scene> scenes) {
+    public void setScenes(final Set<Scene> scenes) {
         this.scenes = scenes;
+    }
+
+    public void addScenes(Set<Scene> scenes) {
+        this.scenes.addAll(scenes);
     }
 }

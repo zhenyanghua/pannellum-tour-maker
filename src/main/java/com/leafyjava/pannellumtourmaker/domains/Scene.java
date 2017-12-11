@@ -96,4 +96,19 @@ public class Scene {
     public void setHotSpots(final List<HotSpot> hotSpots) {
         this.hotSpots = hotSpots;
     }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Scene scene = (Scene) o;
+
+        return id.equals(scene.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }

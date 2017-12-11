@@ -52,7 +52,7 @@ public class TourRestController {
     }
 
     @PostMapping()
-    public void uploadTour(@RequestParam("name") String name,
+    public void uploadNewTour(@RequestParam("name") String name,
                            @RequestParam("file") MultipartFile tourFile,
                            @RequestParam(value = "map", required = false) MultipartFile mapFile,
                            @RequestParam(value = "northOffset", required = false, defaultValue = "0") Integer northOffset) {
@@ -87,7 +87,32 @@ public class TourRestController {
         taskService.save(task);
         tourMessage.setTask(task);
 
-        asyncTourService.sendToToursZipEquirectangular(tourMessage);
+        asyncTourService.sendToToursNew(tourMessage);
+    }
+
+    @PostMapping("/exist")
+    public void uploadToTour(@RequestParam("name") String name,
+                              @RequestParam("file") MultipartFile tourFile,
+                              @RequestParam(value = "northOffset", required = false, defaultValue = "0") Integer northOffset) {
+        if (tourService.findOne(name) == null) {
+            throw new TourAlreadyExistsException("Tour " + name + " does not exist.");
+        }
+
+        if (!StringUtils.getFilenameExtension(tourFile.getOriginalFilename()).equalsIgnoreCase("zip")) {
+            throw new UnsupportedFileExtensionException("The uploaded file must be a zip file.");
+        }
+
+        TourMessage tourMessage = new TourMessage();
+
+        File tempTourFile = tourService.createTempFileFromMultipartFile(tourFile);
+        tourMessage.setName(name);
+        tourMessage.setTourFile(tempTourFile);
+        tourMessage.setNorthOffset(northOffset);
+        Task task = new Task(name);
+        taskService.save(task);
+        tourMessage.setTask(task);
+
+        asyncTourService.sendToToursAdd(tourMessage);
     }
 
     @GetMapping("/{name}")

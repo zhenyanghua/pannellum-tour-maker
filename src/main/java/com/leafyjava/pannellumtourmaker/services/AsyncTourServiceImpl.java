@@ -22,14 +22,16 @@ import java.nio.file.Paths;
 import java.util.Date;
 import java.util.Map;
 
-import static com.leafyjava.pannellumtourmaker.utils.QueueNames.TOUR_ZIP_EQUIRECTANGULAR;
+import static com.leafyjava.pannellumtourmaker.utils.QueueNames.TOURS_ADD;
+import static com.leafyjava.pannellumtourmaker.utils.QueueNames.TOURS_NEW;
 
 @Service
 public class AsyncTourServiceImpl implements AsyncTourService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private RabbitTemplate rabbitTemplate;
-    private Queue toursZipEquirectangularQueue;
+    private Queue toursQueueNew;
+    private Queue toursQueueAdd;
     private TourService tourService;
     private StorageService storageService;
     private StorageProperties storageProperties;
@@ -37,13 +39,15 @@ public class AsyncTourServiceImpl implements AsyncTourService {
 
     @Autowired
     public AsyncTourServiceImpl(final RabbitTemplate rabbitTemplate,
-                                @Qualifier(TOUR_ZIP_EQUIRECTANGULAR) final Queue toursZipEquirectangularQueue,
+                                @Qualifier(TOURS_NEW) final Queue toursQueueNew,
+                                @Qualifier(TOURS_ADD) final Queue toursQueueAdd,
                                 final TourService tourService,
                                 final StorageService storageService,
                                 final StorageProperties storageProperties,
                                 final TaskService taskService) {
         this.rabbitTemplate = rabbitTemplate;
-        this.toursZipEquirectangularQueue = toursZipEquirectangularQueue;
+        this.toursQueueNew = toursQueueNew;
+        this.toursQueueAdd = toursQueueAdd;
         this.tourService = tourService;
         this.storageService = storageService;
         this.storageProperties = storageProperties;
@@ -51,18 +55,17 @@ public class AsyncTourServiceImpl implements AsyncTourService {
     }
 
     @Override
-    public void sendToToursZipEquirectangular(final TourMessage tourMessage) {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            String message = mapper.writeValueAsString(tourMessage);
-            rabbitTemplate.convertAndSend(toursZipEquirectangularQueue.getName(), message);;
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+    public void sendToToursNew(final TourMessage tourMessage) {
+        serializeAndSend(tourMessage, toursQueueNew);
     }
 
-    @RabbitListener(queues = TOUR_ZIP_EQUIRECTANGULAR)
-    public void receiveInToursZipEquirectangular(String message) {
+    @Override
+    public void sendToToursAdd(final TourMessage tourMessage) {
+        serializeAndSend(tourMessage, toursQueueAdd);
+    }
+
+    @RabbitListener(queues = TOURS_NEW)
+    public void receiveInToursNew(String message) {
         ObjectMapper mapper = new ObjectMapper();
         TourMessage tourMessage = null;
         try {
@@ -91,6 +94,40 @@ public class AsyncTourServiceImpl implements AsyncTourService {
         } catch (Exception e) {
             logger.error("Failed to process received equirectangular tour.", e);
             handleFailedTask(tourMessage);
+        }
+    }
+
+    @RabbitListener(queues = TOURS_ADD)
+    public void receiveInToursAdd(String message) {
+        ObjectMapper mapper = new ObjectMapper();
+        TourMessage tourMessage = null;
+        try {
+            tourMessage = mapper.readValue(message, TourMessage.class);
+            handleRunningTask(tourMessage);
+
+            String tourName = tourMessage.getName();
+            String mapPath = null;
+
+            storageService.storeTourContent(tourName, tourMessage.getTourFile());
+
+            Map<String, PhotoMeta> photoMetaMap = tourService.convertToMultiresFromEquirectangular(tourName);
+
+            tourService.addToTourFromMultires(tourName, photoMetaMap, tourMessage.getNorthOffset());
+
+            handleSucceededTask(tourMessage);
+        } catch (Exception e) {
+            logger.error("Failed to process received equirectangular tour.", e);
+            handleFailedTask(tourMessage);
+        }
+    }
+
+    private void serializeAndSend(final TourMessage tourMessage, final Queue queue) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            String message = mapper.writeValueAsString(tourMessage);
+            rabbitTemplate.convertAndSend(queue.getName(), message);
+        } catch (JsonProcessingException e) {
+            logger.error("Failed to serialize TourMessage", e);
         }
     }
 

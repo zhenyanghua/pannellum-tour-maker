@@ -29,6 +29,11 @@ public class ExceptionHandlingController {
         return getResponseEntity(ex, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(TourNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> tourNotFound(TourNotFoundException ex) {
+        return getResponseEntity(ex, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(InvalidTourException.class)
     public ResponseEntity<ExceptionResponse> invalidTour(InvalidTourException ex) {
         return getResponseEntity(ex, HttpStatus.BAD_REQUEST);

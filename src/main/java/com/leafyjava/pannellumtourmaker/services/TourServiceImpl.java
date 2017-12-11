@@ -7,11 +7,14 @@ import com.leafyjava.pannellumtourmaker.domains.GPano;
 import com.leafyjava.pannellumtourmaker.domains.PhotoMeta;
 import com.leafyjava.pannellumtourmaker.domains.Scene;
 import com.leafyjava.pannellumtourmaker.domains.Tour;
+import com.leafyjava.pannellumtourmaker.exceptions.ExternalCommandException;
 import com.leafyjava.pannellumtourmaker.exceptions.TourAlreadyExistsException;
+import com.leafyjava.pannellumtourmaker.exceptions.TourNotFoundException;
 import com.leafyjava.pannellumtourmaker.exceptions.UnsupportedFileTreeException;
 import com.leafyjava.pannellumtourmaker.repositories.TourRepository;
 import com.leafyjava.pannellumtourmaker.storage.configs.StorageProperties;
 import com.leafyjava.pannellumtourmaker.storage.services.StorageService;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.sanselan.ImageReadException;
 import org.apache.sanselan.Sanselan;
@@ -38,6 +41,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -79,18 +84,18 @@ public class TourServiceImpl implements TourService{
     public void createTourFromMultires(final String tourName,  Map<String, PhotoMeta> metaMap, String mapPath, int northOffset) {
         Path tourPath = Paths.get(storageProperties.getTourLocation()).resolve(tourName).resolve(MULTIRES);
         try {
-            List<Scene> scenes = Files.walk(tourPath, 1)
+            Set<Scene> scenes = Files.walk(tourPath, 1)
                 .filter(path -> !path.getFileName().toString().equalsIgnoreCase(MULTIRES) &&
                     !path.getFileName().toString().equalsIgnoreCase(".DS_Store"))
                 .map(scenePath -> mapConfigToScene(scenePath, metaMap, northOffset))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
 
             Tour tour = new Tour();
             tour.setName(tourName);
             tour.setScenes(scenes);
             tour.setMapPath(mapPath);
             if (scenes.size() > 0) {
-                tour.setFirstScene(scenes.get(0).getId());
+                tour.setFirstScene(scenes.iterator().next().getId());
             }
 
             if(tourRepository.findOne(tourName) != null) {
@@ -103,6 +108,29 @@ public class TourServiceImpl implements TourService{
             throw new UnsupportedFileTreeException("Multi-resolution directory is not found.", e);
         }
     }
+
+    @Override
+    public void addToTourFromMultires(final String tourName,  Map<String, PhotoMeta> metaMap, int northOffset) {
+        Path tourPath = Paths.get(storageProperties.getTourLocation()).resolve(tourName).resolve(MULTIRES);
+        try {
+            Set<Scene> scenes = Files.walk(tourPath, 1)
+                .filter(path -> !path.getFileName().toString().equalsIgnoreCase(MULTIRES) &&
+                    !path.getFileName().toString().equalsIgnoreCase(".DS_Store"))
+                .map(scenePath -> mapConfigToScene(scenePath, metaMap, northOffset))
+                .collect(Collectors.toSet());
+
+            Tour tour = tourRepository.findOne(tourName);
+            if (tour == null) {
+                throw new TourNotFoundException("Could not find tour " + tourName);
+            }
+            tour.addScenes(scenes);
+            tourRepository.save(tour);
+
+        } catch (IOException e) {
+            throw new UnsupportedFileTreeException("Multi-resolution directory is not found.", e);
+        }
+    }
+
 
     @Override
     public Map<String, PhotoMeta> convertToMultiresFromEquirectangular(final String tourName) {
@@ -165,8 +193,21 @@ public class TourServiceImpl implements TourService{
         } catch (IOException e) {
             e.printStackTrace();
         }
-        String output = storageProperties.getTourLocation() + "/" + tourName + "/" + MULTIRES + "/" +
-            FilenameUtils.getBaseName(path.toString());
+
+        Path output = Paths.get(storageProperties.getTourLocation())
+            .resolve(tourName).resolve(MULTIRES).resolve(FilenameUtils.getBaseName(path.toString()));
+
+        File tempFile = null;
+        File outputFile = output.toFile();
+        if (outputFile.exists()) {
+            try {
+                tempFile = FileUtils.getTempDirectory().toPath().resolve(UUID.randomUUID().toString()).toFile();
+                FileUtils.moveDirectory(outputFile, tempFile);
+            } catch (IOException e) {
+                throw new ExternalCommandException("Failed to move temp file", e);
+            }
+        }
+
         String[] cmd = {
             "/bin/bash",
             "-c",
@@ -177,10 +218,25 @@ public class TourServiceImpl implements TourService{
             Process process = Runtime.getRuntime().exec(cmd);
             int result = process.waitFor();
             if (result != 0) {
-                logger.error("Command failed: " + String.join(" ", cmd));
+                if (tempFile != null) {
+                    FileUtils.moveDirectory(tempFile, outputFile);
+                }
+                throw new ExternalCommandException("Command failed: " + String.join(" ", cmd));
             }
         } catch (IOException | InterruptedException e) {
-            logger.error("Command failed: " + String.join(" ", cmd), e);
+            if (tempFile != null) {
+                try {
+                    FileUtils.moveDirectory(tempFile, outputFile);
+                } catch (IOException e1) {
+                    throw new ExternalCommandException("Failed to restore the original file", e);
+                }
+            }
+            throw new ExternalCommandException("Command failed: " + String.join(" ", cmd), e);
+        }
+        finally {
+            if (tempFile != null) {
+                tempFile.delete();
+            }
         }
     }
 

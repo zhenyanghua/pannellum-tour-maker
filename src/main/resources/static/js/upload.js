@@ -52,9 +52,8 @@ $("#form-upload").validate({
         $.ajax(apiUrl + "/public/guest/tours", options)
             .done(function (response, status, xhr) {
                 if (xhr.status === 200) {
-                    Materialize.toast('Photos were successfully uploaded to the server. ' +
-                        'It might take a moment for the server to process these photos. ' +
-                        'You will find the successfully processed tour in the tour list.', 10000)
+	                Materialize.toast('<span>Photos were successfully uploaded to the server. ' +
+		                'You may find the status in the <a href="/tasks">Tasks</a> page</span>', 10000);
                 }
             })
             .fail(function(xhr) {
