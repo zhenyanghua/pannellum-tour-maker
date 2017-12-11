@@ -3,7 +3,10 @@ var $sceneList = $("#scene-list-container");
 var $centerPoint = $("#center-point");
 var $firstSceneBtn = $("#first-scene-btn");
 var $setToNorthBtn = $("#set-north-offset-btn");
+var $deleteSceneBtn = $("#delete-scene-btn");
 var $saveTourBtn = $("#save-tour-btn");
+var $modalDeleteScene = $("#modal-delete-scene");
+var $deleteSceneYes = $("#delete-scene-yes");
 
 var tour;
 var scenes = {};
@@ -58,6 +61,17 @@ function updateCompass(rotation) {
 	$compass.css('transform', transform);
 }
 
+function openDeleteSceneModal() {
+	var sceneId = viewer.getScene();
+	$modalDeleteScene.find('code').text(sceneId);
+	$modalDeleteScene.modal("open");
+}
+
+function doDeleteScene() {
+	var sceneId = viewer.getScene();
+	console.log("delete scene " + sceneId);
+}
+
 function initMainViewer(tour) {
     if (viewer) {
         viewer.destroy();
@@ -91,9 +105,14 @@ function initMainViewer(tour) {
 
     $firstSceneBtn.click(setToFirstScene);
 	$setToNorthBtn.click(setToNorth);
+	$deleteSceneBtn.click(openDeleteSceneModal);
     $saveTourBtn.click(saveTour);
 
     loadSceneConfig();
+    $(".modal").modal({
+	    dismissible: false
+    });
+    $deleteSceneYes.click(doDeleteScene);
 }
 
 function tooltipFunc(hotSpotDiv, args) {
@@ -118,10 +137,16 @@ function tooltipFunc(hotSpotDiv, args) {
 function updateFirstSceneUI() {
 	if (viewer.getScene() === tour.firstScene) {
 		$firstSceneBtn.find("i").text("star");
-		$firstSceneBtn.find("span").text("First Scene");
+		$firstSceneBtn.attr('data-tooltip', 'First scene')
+			.attr('data-delay', 50)
+			.attr('data-position', 'right')
+			.tooltip();
 	} else {
 		$firstSceneBtn.find("i").text("star_border");
-		$firstSceneBtn.find("span").text("Set as first scene");
+		$firstSceneBtn.attr('data-tooltip', 'Set as first scene')
+			.attr('data-delay', 50)
+			.attr('data-position', 'right')
+			.tooltip();
 	}
 }
 
@@ -272,8 +297,8 @@ function populateSceneList() {
                 .append($("<div>").addClass('card-image')
                     .append($("<img>").attr('src', scene.multiRes.basePath + "/preview.png").addClass("scene-preview"))
                     .append($("<span>").addClass('card-title').text(scene.title)))
-                .append($("<div>").addClass('card-action')
-                    .append($("<a>").append($("<i>").addClass("material-icons").text("add_circle_outline"))
+                .append($("<div>").addClass('card-action center-align')
+                    .append($("<a>").text('Add to Scene')
                         .click(function() { addToScene(scene);}))
                 ));
         });

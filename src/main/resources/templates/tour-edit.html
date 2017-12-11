@@ -10,6 +10,11 @@
 </head>
 <body>
 <div layout:fragment="content" th:remove="tag">
+    <div class="fixed-action-btn">
+        <a id="save-tour-btn" class="btn-floating btn-large waves-effect waves-light blue">
+            <i class="material-icons">save</i>
+        </a>
+    </div>
     <div id="left-panel">
         <div id="scene-list">
             <h5 class="card-panel red-text text-lighten-2">Available Scenes</h5>
@@ -22,17 +27,16 @@
             <div id="center-point" class="hide"></div>
         </div>
         <div id="scene-panel" class="center align">
-            <a id="first-scene-btn" class="waves-effect waves-light btn">
+            <a id="first-scene-btn" class="btn-floating waves-effect waves-light btn tooltipped">
                 <i class="material-icons left">star_border</i>
-                <span>Set as first scene</span>
             </a>
-            <a id="set-north-offset-btn" class="waves-effect waves-light btn">
+            <a id="set-north-offset-btn" class="btn-floating waves-effect waves-light btn tooltipped"
+               data-position="right" data-delay="50" data-tooltip="Set as north">
                 <i class="material-icons left">navigation</i>
-                <span>Set as north</span>
             </a>
-            <a id="save-tour-btn" class="waves-effect waves-light btn">
-                <i class="material-icons left">save</i>
-                <span>Save Tour</span>
+            <a id="delete-scene-btn" class="btn-floating waves-effect waves-light btn tooltipped red"
+               data-position="right" data-delay="50" data-tooltip="Delete scene">
+                <i class="material-icons left">delete</i>
             </a>
         </div>
     </div>
@@ -46,6 +50,19 @@
         </div>
         <div id="hotspot-pano-list">
             <ul id="settings-hotspot-list" class="collapsible popout" data-collapsible="accordion"></ul>
+        </div>
+    </div>
+    <!-- Modal Structure -->
+    <div id="modal-delete-scene" class="modal">
+        <div class="modal-content">
+            <h4>Confirm Delete Scene</h4>
+            <p>Delete a scene will result in the scene setting and associated hotspots and multi-resolution images
+                <strong>permanently removed</strong> from the server. <em>This operation could not be undo.</em></p>
+            <p>Please confirm to delete scene <code>xxs.999</code>.</p>
+        </div>
+        <div class="modal-footer">
+            <a id="delete-scene-yes" class="modal-action modal-close waves-effect waves-light btn red">Delete</a>
+            <a class="modal-action modal-close waves-effect waves-light btn">Cancel</a>
         </div>
     </div>
     <script th:src="@{/webjars/pannellum/2.3.2/build/pannellum.js}"></script>
