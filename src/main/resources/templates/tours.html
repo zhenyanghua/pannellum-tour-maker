@@ -12,6 +12,19 @@
         <h5 class="card-panel red-text text-lighten-2">Available Tours</h5>
         <div id="tour-list-container" class="row"></div>
     </div>
+    <!-- Modal Structure -->
+    <div id="modal-delete-tour" class="modal">
+        <div class="modal-content">
+            <h4>Confirm Delete Tour</h4>
+            <p>Delete a tour will result in the tour and its associated multi-resolution images
+                <strong>permanently removed</strong> from the server. <em>This operation could not be undo.</em></p>
+            <p>Please confirm to delete tour <code>xxs.999</code>.</p>
+        </div>
+        <div class="modal-footer">
+            <a id="delete-tour-yes" class="modal-action modal-close waves-effect waves-light btn red">Delete</a>
+            <a class="modal-action modal-close waves-effect waves-light btn">Cancel</a>
+        </div>
+    </div>
 
     <script th:src="@{/js/polyfill.js}"></script>
     <script th:src="@{/js/tours.js}"></script>

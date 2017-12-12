@@ -12,3 +12,13 @@
     background-repeat: no-repeat;
     height: 150px;
 }
+
+.card .card-action {
+    display: flex;
+    justify-content: space-around;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+.card .card-image {
+    padding: 10px;
+}
