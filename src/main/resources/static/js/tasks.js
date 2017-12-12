@@ -19,6 +19,7 @@ function getTasks() {
 				tasks.forEach(function (task) {
 					$table.append($("<tr>")
 						.append($("<td>").text(task.name))
+						.append($("<td>").text(parseOperation(task.operation)))
 						.append($("<td>").text(task.status).css('color', getColorByStatus(task.status)))
 						.append($("<td>").text(parseDate(task.createdDateTime)))
 						.append($("<td>").text(parseDate(task.startDateTime)))
@@ -47,3 +48,6 @@ function getColorByStatus(status) {
 	}
 }
 
+function parseOperation(value) {
+	return value.replace('_', ' ');
+}

@@ -27,6 +27,11 @@ import java.io.File;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import static com.leafyjava.pannellumtourmaker.utils.TaskOperation.ADD_SCENE;
+import static com.leafyjava.pannellumtourmaker.utils.TaskOperation.DELETE_SCENE;
+import static com.leafyjava.pannellumtourmaker.utils.TaskOperation.DELETE_TOUR;
+import static com.leafyjava.pannellumtourmaker.utils.TaskOperation.NEW_TOUR;
+
 @RestController
 @RequestMapping("/api/v1/public/guest/tours")
 public class TourRestController {
@@ -85,7 +90,7 @@ public class TourRestController {
         tourMessage.setMapFile(tempMapFile);
         tourMessage.setTourFile(tempTourFile);
         tourMessage.setNorthOffset(northOffset);
-        Task task = new Task(name);
+        Task task = new Task(name, NEW_TOUR);
         taskService.save(task);
         tourMessage.setTask(task);
 
@@ -110,7 +115,7 @@ public class TourRestController {
         tourMessage.setName(name);
         tourMessage.setTourFile(tempTourFile);
         tourMessage.setNorthOffset(northOffset);
-        Task task = new Task(name);
+        Task task = new Task(name, ADD_SCENE);
         taskService.save(task);
         tourMessage.setTask(task);
 
@@ -145,7 +150,7 @@ public class TourRestController {
         TourMessage tourMessage = new TourMessage();
         tourMessage.setName(name);
         tourMessage.setDeletedSceneId(sceneId);
-        Task task = new Task(name);
+        Task task = new Task(name, DELETE_SCENE);
         taskService.save(task);
         tourMessage.setTask(task);
 
@@ -164,7 +169,7 @@ public class TourRestController {
 
         TourMessage tourMessage = new TourMessage();
         tourMessage.setName(name);
-        Task task = new Task(name);
+        Task task = new Task(name, DELETE_TOUR);
         taskService.save(task);
         tourMessage.setTask(task);
 

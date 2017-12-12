@@ -1,5 +1,6 @@
 package com.leafyjava.pannellumtourmaker.domains;
 
+import com.leafyjava.pannellumtourmaker.utils.TaskOperation;
 import com.leafyjava.pannellumtourmaker.utils.TaskStatus;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -13,6 +14,7 @@ public class Task implements Serializable {
     @Id
     private UUID id;
     private String name;
+    private TaskOperation operation;
     private Date createdDateTime;
     private Date startDateTime;
     private Date endDateTime;
@@ -24,8 +26,9 @@ public class Task implements Serializable {
         this.status = TaskStatus.QUEUED;
     }
 
-    public Task(final String name) {
+    public Task(final String name, final TaskOperation operation) {
         this.name = name;
+        this.operation = operation;
         this.id = UUID.randomUUID();
         this.createdDateTime = new Date();
         this.status = TaskStatus.QUEUED;
@@ -41,6 +44,14 @@ public class Task implements Serializable {
 
     public void setName(final String name) {
         this.name = name;
+    }
+
+    public TaskOperation getOperation() {
+        return operation;
+    }
+
+    public void setOperation(final TaskOperation operation) {
+        this.operation = operation;
     }
 
     public Date getCreatedDateTime() {
