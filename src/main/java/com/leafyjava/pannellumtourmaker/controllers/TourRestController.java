@@ -5,12 +5,14 @@ import com.leafyjava.pannellumtourmaker.domains.Tour;
 import com.leafyjava.pannellumtourmaker.domains.TourMessage;
 import com.leafyjava.pannellumtourmaker.exceptions.InvalidTourException;
 import com.leafyjava.pannellumtourmaker.exceptions.TourAlreadyExistsException;
+import com.leafyjava.pannellumtourmaker.exceptions.TourNotFoundException;
 import com.leafyjava.pannellumtourmaker.exceptions.UnsupportedFileExtensionException;
 import com.leafyjava.pannellumtourmaker.services.AsyncTourService;
 import com.leafyjava.pannellumtourmaker.services.TaskService;
 import com.leafyjava.pannellumtourmaker.services.TourService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -112,19 +114,43 @@ public class TourRestController {
         taskService.save(task);
         tourMessage.setTask(task);
 
-        asyncTourService.sendToToursAdd(tourMessage);
+        asyncTourService.sendToToursAddScene(tourMessage);
     }
 
     @GetMapping("/{name}")
-    public Tour getTourByName(@PathVariable(value = "name") String name) {
+    public Tour getTourByName(@PathVariable("name") String name) {
         return tourService.findOne(name);
     }
 
     @PutMapping("/{name}")
-    public Tour saveTourByName(@PathVariable(value = "name") String name, @RequestBody Tour tour) {
+    public Tour saveTourByName(@PathVariable("name") String name, @RequestBody Tour tour) {
         if (!name.equalsIgnoreCase(tour.getName()))
             throw new InvalidTourException("Tour name must match in the path and the request body.");
 
         return tourService.save(tour);
     }
+
+    @DeleteMapping("/{name}/scenes/{sceneId:.+}")
+    public void deleteScene(@PathVariable("name") String name, @PathVariable("sceneId") String sceneId) {
+        System.out.println(name + " " + sceneId);
+        Tour tour = tourService.findOne(name);
+        if (tour == null) {
+            throw new TourNotFoundException("Tour " + name + " does not exist.");
+        }
+        if (tour.getScenes().stream().noneMatch(scene -> scene.getId().equalsIgnoreCase(sceneId))) {
+            throw new InvalidTourException("Scene " + sceneId + " was not found in Tour " + name);
+        }
+
+        tourService.deleteScene(name, sceneId);
+
+        TourMessage tourMessage = new TourMessage();
+        tourMessage.setName(name);
+        tourMessage.setDeletedSceneId(sceneId);
+        Task task = new Task(name);
+        taskService.save(task);
+        tourMessage.setTask(task);
+
+        asyncTourService.sendToToursDeleteSceneFiles(tourMessage);
+    }
+
 }

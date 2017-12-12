@@ -26,4 +26,6 @@ public interface TourService {
     Tour findOne(String name);
 
     Tour save(Tour tour);
+
+    void deleteScene(String name, String sceneId);
 }

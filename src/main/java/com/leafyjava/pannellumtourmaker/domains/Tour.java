@@ -4,6 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Document(collection = "tours")
 public class Tour {
@@ -47,5 +48,13 @@ public class Tour {
 
     public void addScenes(Set<Scene> scenes) {
         this.scenes.addAll(scenes);
+    }
+
+    public void deleteScene(String sceneId) {
+        scenes = scenes.stream()
+            .filter(scene -> !scene.getId().equalsIgnoreCase(sceneId))
+            .collect(Collectors.toSet());
+
+        scenes.forEach(scene -> scene.deleteHotSpots(sceneId));
     }
 }

@@ -4,5 +4,6 @@ import com.leafyjava.pannellumtourmaker.domains.TourMessage;
 
 public interface AsyncTourService {
     void sendToToursNew(TourMessage tourMessage);
-    void sendToToursAdd(TourMessage tourMessage);
+    void sendToToursAddScene(TourMessage tourMessage);
+    void sendToToursDeleteSceneFiles(TourMessage tourMessage);
 }

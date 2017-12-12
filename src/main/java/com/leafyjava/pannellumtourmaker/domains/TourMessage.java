@@ -8,6 +8,7 @@ public class TourMessage {
     private File tourFile;
     private File mapFile;
     private Task task;
+    private String deletedSceneId;
 
     public String getName() {
         return name;
@@ -47,5 +48,13 @@ public class TourMessage {
 
     public void setTask(final Task task) {
         this.task = task;
+    }
+
+    public String getDeletedSceneId() {
+        return deletedSceneId;
+    }
+
+    public void setDeletedSceneId(final String deletedSceneId) {
+        this.deletedSceneId = deletedSceneId;
     }
 }

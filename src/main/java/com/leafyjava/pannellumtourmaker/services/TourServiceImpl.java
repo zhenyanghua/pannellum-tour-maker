@@ -48,12 +48,12 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.leafyjava.pannellumtourmaker.configs.WebConfig.TOURS;
+import static com.leafyjava.pannellumtourmaker.utils.FileConstants.MULTIRES;
 
 @Service
 public class TourServiceImpl implements TourService{
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-    private static final String MULTIRES = "multires";
 
     @Value("${application.baseUrl}")
     private String baseUrl;
@@ -124,6 +124,9 @@ public class TourServiceImpl implements TourService{
                 throw new TourNotFoundException("Could not find tour " + tourName);
             }
             tour.addScenes(scenes);
+            if (tour.getFirstScene() == null && scenes.size() > 0) {
+                tour.setFirstScene(scenes.iterator().next().getId());
+            }
             tourRepository.save(tour);
 
         } catch (IOException e) {
@@ -184,6 +187,25 @@ public class TourServiceImpl implements TourService{
     @Override
     public Tour save(final Tour tour) {
         return tourRepository.save(tour);
+    }
+
+    @Override
+    public void deleteScene(final String name, final String sceneId) {
+        Tour tour = tourRepository.findOne(name);
+
+        if (tour == null) return;
+
+        tour.deleteScene(sceneId);
+
+        if (sceneId.equalsIgnoreCase(tour.getFirstScene())) {
+            if (tour.getScenes().size() > 0) {
+                tour.setFirstScene(tour.getScenes().iterator().next().getId());
+            } else {
+                tour.setFirstScene(null);
+            }
+        }
+
+        tourRepository.save(tour);
     }
 
     private void makeTiles(final String tourName, final Path path) {

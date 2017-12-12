@@ -3,6 +3,7 @@ package com.leafyjava.pannellumtourmaker.domains;
 import org.springframework.data.annotation.Id;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Scene {
     @Id
@@ -95,6 +96,12 @@ public class Scene {
 
     public void setHotSpots(final List<HotSpot> hotSpots) {
         this.hotSpots = hotSpots;
+    }
+
+    public void deleteHotSpots(String sceneId) {
+        hotSpots = hotSpots.stream()
+            .filter(hotSpot -> !hotSpot.getSceneId().equalsIgnoreCase(sceneId))
+            .collect(Collectors.toList());
     }
 
     @Override

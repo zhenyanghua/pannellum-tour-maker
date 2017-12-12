@@ -68,8 +68,17 @@ function openDeleteSceneModal() {
 }
 
 function doDeleteScene() {
-	var sceneId = viewer.getScene();
-	console.log("delete scene " + sceneId);
+	saveTour().then(function() {
+		var sceneId = viewer.getScene();
+		console.log("delete scene " + sceneId);
+		$.ajax(apiUrl + "/public/guest/tours/" + tour.name + "/scenes/" + sceneId, {
+			method: "DELETE",
+			contentType: "application/json"
+		})
+			.done(function () {
+				window.location.reload();
+			})
+	});
 }
 
 function initMainViewer(tour) {
@@ -381,6 +390,8 @@ function switchTour(tour) {
 
 	$("#" + mapDiv).empty();
 
+	if (tour.scenes.length === 0) return;
+
 	ol.inherits(PlaceMarkerControl, ol.control.Control);
 
     if (tour.mapPath) {
@@ -400,7 +411,7 @@ function saveTour() {
         });
     tour = removeMetaFromHotSpots(tour);
 
-    $.ajax(apiUrl + "/public/guest/tours/" + tour.name, {
+    return $.ajax(apiUrl + "/public/guest/tours/" + tour.name, {
         method: "PUT",
         data: JSON.stringify(tour),
         dataType: "json",

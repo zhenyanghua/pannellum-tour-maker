@@ -5,7 +5,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static com.leafyjava.pannellumtourmaker.utils.QueueNames.TOURS_ADD;
+import static com.leafyjava.pannellumtourmaker.utils.QueueNames.TOURS_ADD_SCENE;
+import static com.leafyjava.pannellumtourmaker.utils.QueueNames.TOURS_DELETE_SCENE;
 import static com.leafyjava.pannellumtourmaker.utils.QueueNames.TOURS_NEW;
 
 @Configuration
@@ -18,8 +19,15 @@ public class BeanConfig {
     }
 
     @Bean
-    @Qualifier(TOURS_ADD)
-    public Queue toursQueueAdd() {
-        return new Queue("tours.add");
+    @Qualifier(TOURS_ADD_SCENE)
+    public Queue toursQueueAddScene() {
+        return new Queue("tours.add.scene");
     }
+
+    @Bean
+    @Qualifier(TOURS_DELETE_SCENE)
+    public Queue toursQueueDeleteScene() {
+        return new Queue("tours.delete.scene");
+    }
+
 }

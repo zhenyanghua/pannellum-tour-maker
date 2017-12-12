@@ -162,6 +162,11 @@ public class FileSystemStorageService implements StorageService {
         FileSystemUtils.deleteRecursively(rootLocation.toFile());
     }
 
+    @Override
+    public void delete(final Path path) {
+        FileSystemUtils.deleteRecursively(path.toFile());
+    }
+
     private String getNewFileName(final String name, final String originalFileNameWithExtension) {
         String extension = StringUtils.getFilenameExtension(originalFileNameWithExtension);
         return StringUtils.cleanPath(name + "." + extension);
