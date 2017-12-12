@@ -24,6 +24,7 @@ import java.util.Map;
 
 import static com.leafyjava.pannellumtourmaker.utils.FileConstants.MULTIRES;
 import static com.leafyjava.pannellumtourmaker.utils.QueueNames.TOURS_ADD_SCENE;
+import static com.leafyjava.pannellumtourmaker.utils.QueueNames.TOURS_DELETE;
 import static com.leafyjava.pannellumtourmaker.utils.QueueNames.TOURS_DELETE_SCENE;
 import static com.leafyjava.pannellumtourmaker.utils.QueueNames.TOURS_NEW;
 
@@ -33,6 +34,7 @@ public class AsyncTourServiceImpl implements AsyncTourService {
 
     private RabbitTemplate rabbitTemplate;
     private Queue toursQueueNew;
+    private Queue toursQueueDelete;
     private Queue toursQueueAddScene;
     private Queue toursQueueDeleteScene;
     private TourService tourService;
@@ -43,6 +45,7 @@ public class AsyncTourServiceImpl implements AsyncTourService {
     @Autowired
     public AsyncTourServiceImpl(final RabbitTemplate rabbitTemplate,
                                 @Qualifier(TOURS_NEW) final Queue toursQueueNew,
+                                @Qualifier(TOURS_DELETE) final Queue toursQueueDelete,
                                 @Qualifier(TOURS_ADD_SCENE) final Queue toursQueueAddScene,
                                 @Qualifier(TOURS_DELETE_SCENE) final Queue toursQueueDeleteScene,
                                 final TourService tourService,
@@ -51,6 +54,7 @@ public class AsyncTourServiceImpl implements AsyncTourService {
                                 final TaskService taskService) {
         this.rabbitTemplate = rabbitTemplate;
         this.toursQueueNew = toursQueueNew;
+        this.toursQueueDelete = toursQueueDelete;
         this.toursQueueAddScene = toursQueueAddScene;
         this.toursQueueDeleteScene = toursQueueDeleteScene;
         this.tourService = tourService;
@@ -62,6 +66,11 @@ public class AsyncTourServiceImpl implements AsyncTourService {
     @Override
     public void sendToToursNew(final TourMessage tourMessage) {
         serializeAndSend(tourMessage, toursQueueNew);
+    }
+
+    @Override
+    public void sendToToursDeleteFiles(final TourMessage tourMessage) {
+        serializeAndSend(tourMessage, toursQueueDelete);
     }
 
     @Override
@@ -107,6 +116,24 @@ public class AsyncTourServiceImpl implements AsyncTourService {
         }
     }
 
+    @RabbitListener(queues = TOURS_DELETE)
+    public void receiveInToursDelete(String message) {
+        ObjectMapper mapper = new ObjectMapper();
+        TourMessage tourMessage = null;
+        try {
+            tourMessage = mapper.readValue(message, TourMessage.class);
+            handleRunningTask(tourMessage);
+
+            String tourName = tourMessage.getName();
+            storageService.delete(Paths.get(storageProperties.getTourLocation()).resolve(tourName));
+
+            handleSucceededTask(tourMessage);
+        } catch (Exception e) {
+            logger.error("Failed to delete tour files.", e);
+            handleFailedTask(tourMessage);
+        }
+    }
+
     @RabbitListener(queues = TOURS_ADD_SCENE)
     public void receiveInToursAddScene(String message) {
         ObjectMapper mapper = new ObjectMapper();
@@ -147,7 +174,7 @@ public class AsyncTourServiceImpl implements AsyncTourService {
 
             handleSucceededTask(tourMessage);
         } catch (Exception e) {
-            logger.error("Failed to delete tour tile images.", e);
+            logger.error("Failed to delete scene files.", e);
             handleFailedTask(tourMessage);
         }
     }

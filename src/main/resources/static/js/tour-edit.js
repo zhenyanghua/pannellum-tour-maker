@@ -70,7 +70,6 @@ function openDeleteSceneModal() {
 function doDeleteScene() {
 	saveTour().then(function() {
 		var sceneId = viewer.getScene();
-		console.log("delete scene " + sceneId);
 		$.ajax(apiUrl + "/public/guest/tours/" + tour.name + "/scenes/" + sceneId, {
 			method: "DELETE",
 			contentType: "application/json"

@@ -19,9 +19,14 @@
             <p>Delete a tour will result in the tour and its associated multi-resolution images
                 <strong>permanently removed</strong> from the server. <em>This operation could not be undo.</em></p>
             <p>Please confirm to delete tour <code>xxs.999</code>.</p>
+
+            <div class="input-field">
+                <input id="tour-name" type="text">
+                <label for="tour-name">Enter The Tour Name</label>
+            </div>
         </div>
         <div class="modal-footer">
-            <a id="delete-tour-yes" class="modal-action modal-close waves-effect waves-light btn red">Delete</a>
+            <a id="delete-tour-yes" class="modal-action modal-close waves-effect waves-light btn red disabled">Delete</a>
             <a class="modal-action modal-close waves-effect waves-light btn">Cancel</a>
         </div>
     </div>

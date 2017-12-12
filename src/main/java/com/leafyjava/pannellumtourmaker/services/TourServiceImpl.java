@@ -208,6 +208,11 @@ public class TourServiceImpl implements TourService{
         tourRepository.save(tour);
     }
 
+    @Override
+    public void delete(final Tour tour) {
+        tourRepository.delete(tour);
+    }
+
     private void makeTiles(final String tourName, final Path path) {
         String pyPath = null;
         try {

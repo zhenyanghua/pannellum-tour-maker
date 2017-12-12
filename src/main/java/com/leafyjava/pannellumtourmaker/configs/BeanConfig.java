@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static com.leafyjava.pannellumtourmaker.utils.QueueNames.TOURS_ADD_SCENE;
+import static com.leafyjava.pannellumtourmaker.utils.QueueNames.TOURS_DELETE;
 import static com.leafyjava.pannellumtourmaker.utils.QueueNames.TOURS_DELETE_SCENE;
 import static com.leafyjava.pannellumtourmaker.utils.QueueNames.TOURS_NEW;
 
@@ -16,6 +17,12 @@ public class BeanConfig {
     @Qualifier(TOURS_NEW)
     public Queue toursQueueNew() {
         return new Queue("tours.new");
+    }
+
+    @Bean
+    @Qualifier(TOURS_DELETE)
+    public Queue toursQueueDelete() {
+        return new Queue("tours.delete");
     }
 
     @Bean

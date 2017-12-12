@@ -1,10 +1,33 @@
 var $tourList = $("#tour-list-container");
 var $modalDeleteTour = $("#modal-delete-tour");
 var $deleteTourYes = $("#delete-tour-yes");
+var $tourNameInput = $("#tour-name");
 
 var selectedTourName;
 
 getTours();
+
+$(".modal").modal({
+	dismissible: false,
+	complete: resetInput
+});
+
+$deleteTourYes.click(doDeleteTour);
+
+$tourNameInput.keyup(validateName);
+
+function resetInput() {
+	$tourNameInput.val(null);
+	Materialize.updateTextFields();
+}
+
+function validateName(e) {
+	if (e.target.value === selectedTourName) {
+		$deleteTourYes.removeClass('disabled');
+	} else {
+		$deleteTourYes.addClass('disabled');
+	}
+}
 
 function onDeleteTour(tourName) {
 	$modalDeleteTour.find('code').text(tourName);
@@ -15,9 +38,18 @@ function onDeleteTour(tourName) {
 function doDeleteTour() {
 	if (!selectedTourName) return;
 	console.log('delete tour ' + selectedTourName);
+
+	$.ajax(apiUrl + "/public/guest/tours/" + selectedTourName, {
+		method: "DELETE",
+		contentType: "application/json"
+	}).done(function () {
+		selectedTourName = undefined;
+		getTours();
+	})
 }
 
 function getTours() {
+	$tourList.empty();
 	$.getJSON(apiUrl + "/public/guest/tours/")
 		.done(function (tours) {
 			tours.forEach(function (tour) {
@@ -42,9 +74,5 @@ function getTours() {
 			});
 
 			$('.tooltipped').tooltip();
-			$(".modal").modal({
-				dismissible: false
-			});
-			$deleteTourYes.click(doDeleteTour);
 		});
 }

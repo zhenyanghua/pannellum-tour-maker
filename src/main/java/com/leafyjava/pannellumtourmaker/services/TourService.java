@@ -28,4 +28,6 @@ public interface TourService {
     Tour save(Tour tour);
 
     void deleteScene(String name, String sceneId);
+
+    void delete(Tour tour);
 }

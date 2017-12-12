@@ -132,7 +132,6 @@ public class TourRestController {
 
     @DeleteMapping("/{name}/scenes/{sceneId:.+}")
     public void deleteScene(@PathVariable("name") String name, @PathVariable("sceneId") String sceneId) {
-        System.out.println(name + " " + sceneId);
         Tour tour = tourService.findOne(name);
         if (tour == null) {
             throw new TourNotFoundException("Tour " + name + " does not exist.");
@@ -151,6 +150,25 @@ public class TourRestController {
         tourMessage.setTask(task);
 
         asyncTourService.sendToToursDeleteSceneFiles(tourMessage);
+    }
+
+    @DeleteMapping("/{name}")
+    public void deleteScene(@PathVariable("name") String name) {
+        Tour tour = tourService.findOne(name);
+
+        if (tour == null) {
+            throw new TourNotFoundException("Tour " + name + " does not exist.");
+        }
+
+        tourService.delete(tour);
+
+        TourMessage tourMessage = new TourMessage();
+        tourMessage.setName(name);
+        Task task = new Task(name);
+        taskService.save(task);
+        tourMessage.setTask(task);
+
+        asyncTourService.sendToToursDeleteFiles(tourMessage);
     }
 
 }
