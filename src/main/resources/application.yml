@@ -3,6 +3,8 @@ spring:
     active: default, prod
   jackson:
     default-property-inclusion: non_null
+server:
+  port: 80
 application:
   photo-preview:
     width: 400
@@ -25,7 +27,7 @@ spring:
     username: guest
     password: guest
 application:
-  baseUrl: http://localhost:8080
+  baseUrl: http://localhost
   nona: /Applications/Hugin/HuginStitchProject.app/Contents/MacOS/nona
   tile-generate-script: /Users/hua/IdeaProjects/pannellum-tour-maker/generate.py
   upload:
@@ -50,7 +52,7 @@ spring:
     username: guest
     password: guest
 application:
-  baseUrl: http://localhost:8080
+  baseUrl: http://localhost
   nona: nona
   tile-generate-script: /home/generate.py
   upload:
