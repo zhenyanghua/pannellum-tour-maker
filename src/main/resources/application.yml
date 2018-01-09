@@ -39,7 +39,7 @@ spring:
   profiles: prod
   data:
     mongodb:
-      uri: mongodb://one-mongo:27017/panorama-test
+      uri: mongodb://localhost:27017/panorama-test
   http:
     multipart:
       max-file-size: 1000MB

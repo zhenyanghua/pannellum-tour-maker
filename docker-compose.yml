@@ -11,7 +11,11 @@ services:
       - my-rabbit
     container_name: tour-editor
     environment:
-      SPRING_APPLICATION_JSON: '{"spring": {"profiles": {"active": "default, prod"}}, "application": {"baseUrl": "http://52.224.165.47"}}'
+      SPRING_APPLICATION_JSON: '{\
+      "spring": {\
+        "profiles": {"active": "default, prod"}\
+        "data":{"mongodb":{"uri":"mongodb://one-mongo:27017/panorama-test"}}}, \
+      "application": {"baseUrl": "http://52.224.165.47"}}'
     image: downhillski/pannellum-tour-maker:latest
   my-mongo:
     image: mongo

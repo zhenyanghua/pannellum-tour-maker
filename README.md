@@ -1,9 +1,24 @@
-# Quick Deployment
+# Quick Demo
 This application can be deployed in a traditional way, 
 but it is recommended using docker for production deployment because of the complexity of 
 dependencies of a multi-resolution tiles generator. Please refer to the example below
 of deploy it using docker on a fresh installed Ubuntu 16.04.
+## Use the web application only
+### Requirements
+1. jre8
+2. docker-ce
+```
+docker pull downhillski/pannellum-tour-maker
+docker run -it -e SPRING_APPLICATION_JSON='{\
+    "spring":{\
+        "data":{"mongodb":{"uri":"mongodb://localhost:27017/panorama-test"}}, \
+        "rabbitmq": {"host": "localhost", "port": "5672", "username": "guest", "password": "guest"}}\
+    "application": {"baseUrl": "http://52.224.165.47"}}' \
+    --name tour-editor-pull \
+    downhillski/pannellum-tour-maker
+```
 
+## Deploy the full solution
 ### Requirements
 1. jdk8
 1. maven
@@ -50,8 +65,7 @@ docker-compose down
 # Local Development Dependency
 ### RabbitMQ
 ```
-docker run -d --hostname localhost --name my-rabbit -p 5672:5672 -p 15672:15672 rabbitmq:3
-docker exec -it my-rabbit rabbitmq-plugins enable rabbitmq_management
+docker run -d --hostname localhost --name my-rabbit -p 5672:5672 -p 15672:15672 rabbitmq:management
 ```
 ### MongoDB
 ```
