@@ -12,7 +12,6 @@ services:
     container_name: tour-editor
     environment:
       SPRING_APPLICATION_JSON: '{"spring": {"profiles": {"active": "default, prod"}}}'
-#      SPRING_APPLICATION_JSON: '{"spring": {"data": {"mongodb": {"uri": "mongodb://one-mongo:27017/panorama-test"}}, "rabbitmq": {"host": "one-rabbit"}}}'
   my-mongo:
     image: mongo
     ports:
