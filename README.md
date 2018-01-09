@@ -10,7 +10,6 @@ docker run -d --name my-mongo -p 27017:27017 mongo
 ```
 
 # Big To Do
-8. provide a backend service and UI to remove scenes and their related multi-res images from the server.
 9. Add Security
 10. docker compose it.
 11. provide a way to save files from application directory to externally mounted storage, such as Google Cloud Storage and AWS S3 Storage

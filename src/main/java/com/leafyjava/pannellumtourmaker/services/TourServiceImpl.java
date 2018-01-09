@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -66,6 +65,9 @@ public class TourServiceImpl implements TourService{
 
     @Value("${application.photo-preview.height}")
     private int previewHeight;
+
+    @Value("${application.tile-generate-script}")
+    private String generateScript;
 
     private StorageService storageService;
     private StorageProperties storageProperties;
@@ -214,13 +216,6 @@ public class TourServiceImpl implements TourService{
     }
 
     private void makeTiles(final String tourName, final Path path) {
-        String pyPath = null;
-        try {
-            pyPath = new ClassPathResource("generate.py").getURL().toString().substring(5);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         Path output = Paths.get(storageProperties.getTourLocation())
             .resolve(tourName).resolve(MULTIRES).resolve(FilenameUtils.getBaseName(path.toString()));
 
@@ -238,7 +233,7 @@ public class TourServiceImpl implements TourService{
         String[] cmd = {
             "/bin/bash",
             "-c",
-            "python " + pyPath  + " -o " + output +
+            "python " + generateScript  + " -o " + output +
                 " -n " + nona + " " + path
         };
         try {

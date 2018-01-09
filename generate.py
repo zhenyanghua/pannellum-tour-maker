@@ -27,12 +27,12 @@
 from __future__ import print_function
 
 import argparse
-from PIL import Image
-import os
-import sys
 import math
-from distutils.spawn import find_executable
+import os
 import subprocess
+import sys
+from PIL import Image
+from distutils.spawn import find_executable
 
 # Find external programs
 try:

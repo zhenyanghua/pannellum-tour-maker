@@ -1,41 +1,63 @@
 spring:
   profiles:
-    active: default, dev
+    active: default, prod
   jackson:
     default-property-inclusion: non_null
-
 application:
-  baseUrl: http://localhost:8080
-  nona: /Applications/Hugin/HuginStitchProject.app/Contents/MacOS/nona
   photo-preview:
     width: 400
     height: 200
-  upload:
-    directory: /Users/hua/IdeaProjects/pannellum-tour-maker/upload-dir
-    tours: /Users/hua/IdeaProjects/pannellum-tour-maker/upload-dir/tours
-    equirectangular: /Users/hua/IdeaProjects/pannellum-tour-maker/upload-dir/equirectangular
-
 ---
 spring:
   profiles: dev
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/panorama-test
   http:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
   thymeleaf:
     cache: false
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+application:
+  baseUrl: http://localhost:8080
+  nona: /Applications/Hugin/HuginStitchProject.app/Contents/MacOS/nona
+  tile-generate-script: /Users/hua/IdeaProjects/pannellum-tour-maker/generate.py
+  upload:
+    directory: /Users/hua/IdeaProjects/pannellum-tour-maker/upload-dir
+    tours: /Users/hua/IdeaProjects/pannellum-tour-maker/upload-dir/tours
+    equirectangular: /Users/hua/IdeaProjects/pannellum-tour-maker/upload-dir/equirectangular
 ---
 spring:
   profiles: prod
   data:
-      mongodb:
-        host: localhost
-        port: 27017
-        database: test
+    mongodb:
+      uri: mongodb://one-mongo:27017/panorama-test
   http:
-      multipart:
-        max-file-size: 1000MB
-        max-request-size: 1000MB
+    multipart:
+      max-file-size: 1000MB
+      max-request-size: 1000MB
   thymeleaf:
     cache: true
-
+  rabbitmq:
+    host: one-rabbit
+    port: 5672
+    username: guest
+    password: guest
+application:
+  baseUrl: http://localhost:8080
+  nona: nona
+  tile-generate-script: /home/generate.py
+  upload:
+    directory: /home/pannellum-tour-maker/upload-dir
+    tours: /home/pannellum-tour-maker/upload-dir/tours
+    equirectangular: /home/pannellum-tour-maker/upload-dir/equirectangular
+logging:
+  level:
+    org.springframework: ERROR
+    com.mongodb: ERROR

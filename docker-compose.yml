@@ -1,0 +1,28 @@
+version: "3"
+services:
+  web:
+    build: .
+    ports:
+      - 8080:8080
+    expose:
+      - 8080
+    links:
+      - my-mongo
+      - my-rabbit
+    container_name: tour-editor
+    environment:
+      SPRING_APPLICATION_JSON: '{"spring": {"profiles": {"active": "default, prod"}}}'
+#      SPRING_APPLICATION_JSON: '{"spring": {"data": {"mongodb": {"uri": "mongodb://one-mongo:27017/panorama-test"}}, "rabbitmq": {"host": "one-rabbit"}}}'
+  my-mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    hostname: one-mongo
+    container_name: one-mongo
+  my-rabbit:
+    image: rabbitmq:management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    hostname: one-rabbit
+    container_name: one-rabbit
