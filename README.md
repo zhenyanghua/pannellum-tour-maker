@@ -9,12 +9,15 @@ of deploy it using docker on a fresh installed Ubuntu 16.04.
 2. docker-ce
 ```
 docker pull downhillski/pannellum-tour-maker
-docker run -it -e SPRING_APPLICATION_JSON='{\
-    "spring":{\
-        "data":{"mongodb":{"uri":"mongodb://localhost:27017/panorama-test"}}, \
-        "rabbitmq": {"host": "localhost", "port": "5672", "username": "guest", "password": "guest"}}\
-    "application": {"baseUrl": "http://52.224.165.47"}}' \
+docker run -it -e "SPRING_PROFILES_ACTIVE=default, production" \
+               -e "SPRING_DATA_MONGODB_URI=mongodb://172.17.0.3:27017/panorama" \
+               -e "SPRING_RABBITMQ_HOST=172.17.0.2" \
+               -e "SPRING_RABBITMQ_PORT=5672" \
+               -e "SPRING_RABBITMQ_USERNAME=guest" \
+               -e "SPRING_RABBITMQ_PASSWORD=guest" \
+               -e "APPLICATION_BASEURL=http://tour-editor.eastus.cloudapp.azure.com" \
     --name tour-editor-pull \
+    -p 80:80 \
     downhillski/pannellum-tour-maker
 ```
 

@@ -11,4 +11,5 @@ VOLUME /tmp
 ADD ./target/pannellum-tour-maker-0.0.1-SNAPSHOT.jar tour-editor.jar
 ADD ./generate.py /home/generate.py
 RUN sh -c 'touch /tour-editor.jar'
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/tour-editor.jar"]
+
+ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/tour-editor.jar"]

@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: default, prod
+    active: default, development
   jackson:
     default-property-inclusion: non_null
 server:
@@ -11,7 +11,7 @@ application:
     height: 200
 ---
 spring:
-  profiles: dev
+  profiles: development
   data:
     mongodb:
       uri: mongodb://localhost:27017/panorama-test
@@ -36,10 +36,10 @@ application:
     equirectangular: /Users/hua/IdeaProjects/pannellum-tour-maker/upload-dir/equirectangular
 ---
 spring:
-  profiles: prod
+  profiles: production
   data:
     mongodb:
-      uri: mongodb://localhost:27017/panorama-test
+      uri: mongodb://localhost:27017/panorama
   http:
     multipart:
       max-file-size: 1000MB
