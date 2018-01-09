@@ -47,7 +47,7 @@ spring:
   thymeleaf:
     cache: true
   rabbitmq:
-    host: one-rabbit
+    host: localhost
     port: 5672
     username: guest
     password: guest

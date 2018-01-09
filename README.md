@@ -62,7 +62,8 @@ docker-compose down
 ```
 
 
-# Local Development Dependency
+# Resources
+Here shows how to setup the RabbitMQ and MongoDB using docker
 ### RabbitMQ
 ```
 docker run -d --hostname localhost --name my-rabbit -p 5672:5672 -p 15672:15672 rabbitmq:management

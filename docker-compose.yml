@@ -14,7 +14,8 @@ services:
       SPRING_APPLICATION_JSON: '{\
       "spring": {\
         "profiles": {"active": "default, prod"}\
-        "data":{"mongodb":{"uri":"mongodb://one-mongo:27017/panorama-test"}}}, \
+        "data":{"mongodb":{"uri":"mongodb://one-mongo:27017/panorama-test"}},\
+        "rabbitmq": {"host": "one-rabbit", "port": "5672", "username": "guest", "password": "guest"}}, \
       "application": {"baseUrl": "http://52.224.165.47"}}'
     image: downhillski/pannellum-tour-maker:latest
   my-mongo:
