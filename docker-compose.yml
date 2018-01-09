@@ -12,6 +12,7 @@ services:
     container_name: tour-editor
     environment:
       SPRING_APPLICATION_JSON: '{"spring": {"profiles": {"active": "default, prod"}}}'
+    image: downhillski/pannellum-tour-maker:latest
   my-mongo:
     image: mongo
     ports:
