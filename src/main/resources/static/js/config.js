@@ -1,1 +1,1 @@
-var apiUrl = "http://localhost/api/v1";
+var apiUrl = "/api/v1";
