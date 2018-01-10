@@ -9,11 +9,11 @@ of deploy it using docker on a fresh installed Ubuntu 16.04.
 2. MongoDB 3
 3. RabbitMQ 3
 
-1. Pull the latest tour editor software
+Pull the latest tour editor software
 ```
 docker pull downhillski/pannellum-tour-maker
 ```
-2. Run the docker image. 
+Run the docker image. 
 
 - `-e` specifies environment variables for MongoDB and RabbitMQ service information
 
