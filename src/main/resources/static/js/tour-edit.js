@@ -417,8 +417,11 @@ function saveTour() {
         contentType: "application/json"
     })
         .done(function (res) {
-            console.log(res);
+	        Materialize.toast('Saved at ' + new Date().toLocaleTimeString(), 4000);
         })
+	    .fail(function(err) {
+		    Materialize.toast('Failed to save. ' + err.message, 4000)
+	    })
 
 }
 
