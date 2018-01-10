@@ -30,4 +30,6 @@ public interface TourService {
     void deleteScene(String name, String sceneId);
 
     void delete(Tour tour);
+
+    boolean exists(String name);
 }

@@ -1,3 +1,6 @@
+var $progressBar = $('.progress');
+var $determinateBar = $progressBar.find('.determinate');
+var $uploadButton = $('#photo-upload');
 
 $("#form-upload").validate({
     errorElement: 'div',
@@ -27,7 +30,8 @@ $("#form-upload").validate({
         }
     },
 
-    submitHandler: function (form) {
+    submitHandler: function () {
+	    $uploadButton.addClass('disabled');
         var name = $("#input-tourname").val();
         var file = $("#input-file")[0].files[0];
         var mapInput = $("#input-map")[0];
@@ -46,19 +50,60 @@ $("#form-upload").validate({
             data: form,
             cache: false,
             contentType: false,
-            processData: false
+            processData: false,
+            xhr: function() {
+                var xhr = new XMLHttpRequest();
+                xhr.upload.onloadstart = onLoadStart;
+                xhr.upload.onprogress = onProgress;
+                return xhr;
+            }
         };
 
-        $.ajax(apiUrl + "/public/guest/tours", options)
-            .done(function (response, status, xhr) {
-                if (xhr.status === 200) {
-	                Materialize.toast('<span>Photos were successfully uploaded to the server. ' +
-		                'You may find the status in the <a href="/tasks">Tasks</a> page</span>', 10000);
+        $.getJSON(apiUrl + "/public/guest/tours/" + name + "/exists")
+            .done(function(response) {
+                if (response.exists) {
+                    return uploadExistsHandler();
                 }
+	            $.ajax(apiUrl + "/public/guest/tours", options)
+		            .done(function (response, status, xhr) {
+			            if (xhr.status === 200) {
+				            Materialize.toast('<span>Photos were successfully uploaded to the server. ' +
+					            'You may find the status in the <a href="/tasks">Tasks</a> page</span>', 10000);
+			            }
+		            })
+		            .fail(uploadFailHanlder)
+		            .always(uploadAlwaysHandler);
             })
             .fail(function(xhr) {
-                var message = JSON.parse(xhr.responseText).message;
-                Materialize.toast('Photos upload failed. ' + message, 10000)
+                uploadFailHanlder(xhr);
+                uploadAlwaysHandler();
             });
     }
 });
+
+function onLoadStart(e) {
+	$progressBar.removeClass('hide');
+}
+
+function onProgress(e) {
+	if (e.lengthComputable) {
+		var percentComplete = e.loaded / e.total;
+		percentComplete = parseInt(percentComplete * 100);
+		$determinateBar.css('width', percentComplete + "%");
+	}
+}
+
+function uploadFailHanlder(xhr) {
+	var message = JSON.parse(xhr.responseText).message;
+	Materialize.toast('Photos upload failed. ' + message, 10000)
+}
+
+function uploadAlwaysHandler() {
+	$progressBar.addClass('hide');
+	$uploadButton.removeClass('disabled');
+}
+
+function uploadExistsHandler() {
+	Materialize.toast('Photos upload failed. Tour Name is used.', 10000);
+	uploadAlwaysHandler();
+}

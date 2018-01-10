@@ -215,6 +215,11 @@ public class TourServiceImpl implements TourService{
         tourRepository.delete(tour);
     }
 
+    @Override
+    public boolean exists(final String name) {
+        return tourRepository.exists(name);
+    }
+
     private void makeTiles(final String tourName, final Path path) {
         Path output = Paths.get(storageProperties.getTourLocation())
             .resolve(tourName).resolve(MULTIRES).resolve(FilenameUtils.getBaseName(path.toString()));

@@ -1,3 +1,7 @@
+var $progressBar = $('.progress');
+var $determinateBar = $progressBar.find('.determinate');
+var $uploadButton = $('#photo-upload');
+
 $.validator.setDefaults({ ignore: [] });
 
 $('select').change(function(){ $(this).valid(); })
@@ -29,6 +33,7 @@ $("#form-upload").validate({
 	},
 
 	submitHandler: function (form) {
+		$uploadButton.addClass('disabled');
 		var name = $("#select-tour-name").val();
 		var file = $("#input-file")[0].files[0];
 		var northOffset = $("#input-north-offset").val();
@@ -44,7 +49,13 @@ $("#form-upload").validate({
 			data: form,
 			cache: false,
 			contentType: false,
-			processData: false
+			processData: false,
+			xhr: function() {
+				var xhr = new XMLHttpRequest();
+				xhr.upload.onloadstart = onLoadStart;
+				xhr.upload.onprogress = onProgress;
+				return xhr;
+			}
 		};
 
 		$.ajax(apiUrl + "/public/guest/tours/exist", options)
@@ -57,6 +68,10 @@ $("#form-upload").validate({
 			.fail(function(xhr) {
 				var message = JSON.parse(xhr.responseText).message;
 				Materialize.toast('Photos upload failed. ' + message, 10000)
+			})
+			.always(function() {
+				$progressBar.addClass('hide');
+				$uploadButton.removeClass('disabled');
 			});
 	}
 });
@@ -70,4 +85,17 @@ function getTourNames() {
 			$selectTourName.material_select();
 		});
 }
+
+function onLoadStart(e) {
+	$progressBar.removeClass('hide');
+}
+
+function onProgress(e) {
+	if (e.lengthComputable) {
+		var percentComplete = e.loaded / e.total;
+		percentComplete = parseInt(percentComplete * 100);
+		$determinateBar.css('width', percentComplete + "%");
+	}
+}
+
 

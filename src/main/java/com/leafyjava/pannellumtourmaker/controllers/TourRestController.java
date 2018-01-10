@@ -2,6 +2,7 @@ package com.leafyjava.pannellumtourmaker.controllers;
 
 import com.leafyjava.pannellumtourmaker.domains.Task;
 import com.leafyjava.pannellumtourmaker.domains.Tour;
+import com.leafyjava.pannellumtourmaker.domains.TourExist;
 import com.leafyjava.pannellumtourmaker.domains.TourMessage;
 import com.leafyjava.pannellumtourmaker.exceptions.InvalidTourException;
 import com.leafyjava.pannellumtourmaker.exceptions.TourAlreadyExistsException;
@@ -125,6 +126,11 @@ public class TourRestController {
     @GetMapping("/{name}")
     public Tour getTourByName(@PathVariable("name") String name) {
         return tourService.findOne(name);
+    }
+
+    @GetMapping("/{name}/exists")
+    public TourExist checkTourExists(@PathVariable("name") String name) {
+        return new TourExist(tourService.exists(name));
     }
 
     @PutMapping("/{name}")
