@@ -11,14 +11,15 @@ of deploy it using docker on a fresh installed Ubuntu 16.04.
 docker pull downhillski/pannellum-tour-maker
 docker run -it -e "SPRING_PROFILES_ACTIVE=default, production" \
                -e "SPRING_DATA_MONGODB_URI=mongodb://172.17.0.3:27017/panorama" \
-               -e "SPRING_RABBITMQ_HOST=172.17.0.2" \
+               -e "SPRING_RABBITMQ_HOST=172.17.0.4" \
                -e "SPRING_RABBITMQ_PORT=5672" \
                -e "SPRING_RABBITMQ_USERNAME=guest" \
                -e "SPRING_RABBITMQ_PASSWORD=guest" \
                -e "APPLICATION_BASEURL=http://tour-editor.eastus.cloudapp.azure.com" \
-    --name tour-editor-pull \
+    --name tour-editor \
     -p 80:80 \
-    downhillski/pannellum-tour-maker
+    -d \
+    downhillski/pannellum-tour-maker:0.0.2
 ```
 
 ## Deploy the full solution
@@ -53,7 +54,7 @@ sudo chmod +x /usr/local/bin/docker-compose
 
 ### Build the jar
 ```
-mvn clean package -Dmaven.test.skip=true
+mvn clean package
 ```
 ### Running the services
 ```

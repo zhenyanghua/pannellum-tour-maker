@@ -1,6 +1,15 @@
 var $progressBar = $('.progress');
 var $determinateBar = $progressBar.find('.determinate');
 var $uploadButton = $('#photo-upload');
+var $abortButton = $('#abort');
+var xhrUpload;
+
+$abortButton.click(function () {
+	if (xhrUpload) {
+		xhrUpload.abort();
+		xhrUpload = undefined;
+	}
+});
 
 $.validator.setDefaults({ ignore: [] });
 
@@ -58,7 +67,7 @@ $("#form-upload").validate({
 			}
 		};
 
-		$.ajax(apiUrl + "/public/guest/tours/exist", options)
+		xhrUpload = $.ajax(apiUrl + "/public/guest/tours/exist", options)
 			.done(function (response, status, xhr) {
 				if (xhr.status === 200) {
 					Materialize.toast('<span>Photos were successfully uploaded to the server. ' +
@@ -66,12 +75,13 @@ $("#form-upload").validate({
 				}
 			})
 			.fail(function(xhr) {
-				var message = JSON.parse(xhr.responseText).message;
+				var message = xhr.status === 0 ? "Upload was cancelled" : JSON.parse(xhr.responseText).message;
 				Materialize.toast('Photos upload failed. ' + message, 10000)
 			})
 			.always(function() {
 				$progressBar.addClass('hide');
 				$uploadButton.removeClass('disabled');
+				$abortButton.addClass('hide');
 			});
 	}
 });
@@ -88,6 +98,8 @@ function getTourNames() {
 
 function onLoadStart(e) {
 	$progressBar.removeClass('hide');
+	$determinateBar.css('width', '0%');
+	$abortButton.removeClass('hide');
 }
 
 function onProgress(e) {

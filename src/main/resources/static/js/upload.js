@@ -1,6 +1,15 @@
 var $progressBar = $('.progress');
 var $determinateBar = $progressBar.find('.determinate');
 var $uploadButton = $('#photo-upload');
+var $abortButton = $('#abort');
+var xhrUpload;
+
+$abortButton.click(function () {
+	if (xhrUpload) {
+		xhrUpload.abort();
+		xhrUpload = undefined;
+	}
+});
 
 $("#form-upload").validate({
     errorElement: 'div',
@@ -64,7 +73,7 @@ $("#form-upload").validate({
                 if (response.exists) {
                     return uploadExistsHandler();
                 }
-	            $.ajax(apiUrl + "/public/guest/tours", options)
+	            xhrUpload = $.ajax(apiUrl + "/public/guest/tours", options)
 		            .done(function (response, status, xhr) {
 			            if (xhr.status === 200) {
 				            Materialize.toast('<span>Photos were successfully uploaded to the server. ' +
@@ -83,6 +92,8 @@ $("#form-upload").validate({
 
 function onLoadStart(e) {
 	$progressBar.removeClass('hide');
+	$determinateBar.css('width', '0%');
+	$abortButton.removeClass('hide');
 }
 
 function onProgress(e) {
@@ -94,13 +105,14 @@ function onProgress(e) {
 }
 
 function uploadFailHanlder(xhr) {
-	var message = JSON.parse(xhr.responseText).message;
+	var message = xhr.status === 0 ? "Upload was cancelled" : JSON.parse(xhr.responseText).message;
 	Materialize.toast('Photos upload failed. ' + message, 10000)
 }
 
 function uploadAlwaysHandler() {
 	$progressBar.addClass('hide');
 	$uploadButton.removeClass('disabled');
+	$abortButton.addClass('hide');
 }
 
 function uploadExistsHandler() {
