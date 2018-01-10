@@ -1,10 +1,17 @@
 # Quick Demo
+[Live Demo](http://tour-editor.eastus.cloudapp.azure.com/) 
+support zipped equirectangular photos with optional 
+[Google Photo Sphere XMP metadata](https://developers.google.com/streetview/spherical-metadata)
+support if each photo contains the `GPano` metadata. **There is a 1000MB limit on the zip file you could upload in this demo.*
+
 This application can be deployed in a traditional way, 
 but it is recommended using docker for production deployment because of the complexity of 
 dependencies of a multi-resolution tiles generator. Please refer to the example below
-of deploy it using docker on a fresh installed Ubuntu 16.04.
+of deployment using **the web application only** or **the full solution using 
+docker-compose** on a fresh installed Ubuntu 16.04.
+
 ## Use the web application only
-### Requirements
+### Requirements for Docker Deployment 
 1. docker-ce
 2. MongoDB 3
 3. RabbitMQ 3
@@ -40,7 +47,7 @@ docker run -it -e "SPRING_DATA_MONGODB_URI=mongodb://172.17.0.3:27017/panorama" 
     downhillski/pannellum-tour-maker
 ```
 
-## Deploy the full solution
+## Deploy the full solution with Docker Compose
 ### Requirements
 1. jdk8
 1. maven
