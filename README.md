@@ -5,21 +5,36 @@ dependencies of a multi-resolution tiles generator. Please refer to the example 
 of deploy it using docker on a fresh installed Ubuntu 16.04.
 ## Use the web application only
 ### Requirements
-1. jre8
-2. docker-ce
+1. docker-ce
+2. MongoDB 3
+3. RabbitMQ 3
+
+1. Pull the latest tour editor software
 ```
 docker pull downhillski/pannellum-tour-maker
-docker run -it -e "SPRING_PROFILES_ACTIVE=default, production" \
-               -e "SPRING_DATA_MONGODB_URI=mongodb://172.17.0.3:27017/panorama" \
+```
+2. Run the docker image. 
+
+- `-e` specifies environment variables for MongoDB and RabbitMQ service information
+
+- `-v` mounts the host directory (`/data`) to the container (`/home/pannellum-tour-maker`)
+to persist all uploaded resources.
+- `--name` specifies the container name
+- `-p` map requests to host port 80 to container port 80.
+- `-d` run the image in detached mode.
+ 
+```
+docker run -it -e "SPRING_DATA_MONGODB_URI=mongodb://172.17.0.3:27017/panorama" \
                -e "SPRING_RABBITMQ_HOST=172.17.0.4" \
                -e "SPRING_RABBITMQ_PORT=5672" \
                -e "SPRING_RABBITMQ_USERNAME=guest" \
                -e "SPRING_RABBITMQ_PASSWORD=guest" \
                -e "APPLICATION_BASEURL=http://tour-editor.eastus.cloudapp.azure.com" \
+    -v /data:/home/pannellum-tour-maker \
     --name tour-editor \
     -p 80:80 \
     -d \
-    downhillski/pannellum-tour-maker:0.0.2
+    downhillski/pannellum-tour-maker
 ```
 
 ## Deploy the full solution
