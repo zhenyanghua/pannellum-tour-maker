@@ -17,7 +17,10 @@ Run the docker image.
 
 - `-e` specifies environment variables for MongoDB and RabbitMQ service information
 
-- `-v` mounts the host directory (`/data`) to the container (`/home/pannellum-tour-maker`)
+- `-v` mounts the host directory (`/data`, create one if it does not exist, 
+if can be anywhere in your host file system ) to the container (`/home/pannellum-tour-maker`, 
+the container data location should be the same in the `application.yml`, in most cases, 
+there is no need to change this setting.)
 to persist all uploaded resources.
 - `--name` specifies the container name
 - `-p` map requests to host port 80 to container port 80.
