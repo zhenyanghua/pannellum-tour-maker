@@ -1,5 +1,5 @@
 # Introduction
-If you like using [Pannellum] to create panoramic tours, this tool is made for this purpose. It can take time and
+If you like using [Pannellum](https://pannellum.org/) to create panoramic tours, this tool is made for this purpose. It can take time and
 efforts to configure a tour hotspots without any visual assistance, this tool is developed to ease the tour-making
 process. Once you've done with a tour creation, you may choose to export it as a JSON file for your Pannellum tour.
 
