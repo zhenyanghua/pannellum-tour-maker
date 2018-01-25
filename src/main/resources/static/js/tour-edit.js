@@ -3,6 +3,7 @@ var $sceneList = $("#scene-list-container");
 var $centerPoint = $("#center-point");
 var $firstSceneBtn = $("#first-scene-btn");
 var $setToNorthBtn = $("#set-north-offset-btn");
+var $setAsOrientation = $("#set-scene-yaw-pitch-btn");
 var $deleteSceneBtn = $("#delete-scene-btn");
 var $saveTourBtn = $("#save-tour-btn");
 var $modalDeleteScene = $("#modal-delete-scene");
@@ -53,6 +54,15 @@ function setToNorth() {
 	scenes[viewer.getScene()].northOffset = northOffset;
 	updateNorthFace();
 	viewer.loadScene(viewer.getScene(), viewer.getPitch(), viewer.getYaw(), viewer.getHfov());
+}
+
+function setAsOrientation() {
+	var scene = scenes[viewer.getScene()];
+	var yaw = viewer.getYaw();
+	var pitch = viewer.getPitch();
+
+	scene.yaw = yaw;
+	scene.pitch = pitch;
 }
 
 function updateCompass(rotation) {
@@ -113,6 +123,7 @@ function initMainViewer(tour) {
 
     $firstSceneBtn.click(setToFirstScene);
 	$setToNorthBtn.click(setToNorth);
+	$setAsOrientation.click(setAsOrientation);
 	$deleteSceneBtn.click(openDeleteSceneModal);
     $saveTourBtn.click(saveTour);
 
