@@ -4,7 +4,7 @@ efforts to configure a tour hotspots without any visual assistance, this tool is
 process. Once you've done with a tour creation, you may choose to export it as a JSON file for your Pannellum tour.
 
 # Quick Demo
-[Live Demo](http://tour-editor.eastus.cloudapp.azure.com/) 
+[Live Demo](http://tour-editor.leafyjava.com/) 
 support zipped equirectangular photos with optional 
 [Google Photo Sphere XMP metadata](https://developers.google.com/streetview/spherical-metadata)
 support if each photo contains the `GPano` metadata. **There is a 1000MB limit on the zip file you could upload in this demo.*
@@ -44,7 +44,7 @@ docker run -it -e "SPRING_DATA_MONGODB_URI=mongodb://172.17.0.3:27017/panorama" 
                -e "SPRING_RABBITMQ_PORT=5672" \
                -e "SPRING_RABBITMQ_USERNAME=guest" \
                -e "SPRING_RABBITMQ_PASSWORD=guest" \
-               -e "APPLICATION_BASEURL=http://tour-editor.eastus.cloudapp.azure.com" \
+               -e "APPLICATION_BASEURL=http://tour-editor.leafyjava.com" \
     -v /data:/home/pannellum-tour-maker \
     --name tour-editor \
     -p 80:80 \
