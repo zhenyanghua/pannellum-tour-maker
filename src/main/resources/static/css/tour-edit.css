@@ -100,6 +100,11 @@
     background-color: #E57373;
 }
 
+.available-scene:hover {
+    cursor: pointer;
+}
+
+
 .custom-hotspot-target {
     width: 21px;
     height: 32px;

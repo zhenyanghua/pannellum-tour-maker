@@ -5,13 +5,13 @@
 <th:block th:fragment="header">
     <header>
         <ul id="upload-dropdown" class="dropdown-content">
-            <li><a th:href="@{/upload}">New Tour</a></li>
-            <li><a th:href="@{/upload-exist}">Existing Tour</a></li>
+            <li><a th:href="@{/upload}" th:class="blue-text">New Tour</a></li>
+            <li><a th:href="@{/upload-exist}" th:class="blue-text">Existing Tour</a></li>
         </ul>
         <nav>
-            <div class="nav-wrapper blue-grey">
+            <div class="nav-wrapper blue">
                 <a class="brand-logo" th:href="@{/}">
-                    <img th:src="@{/img/logo.jpg}" alt="LeafyJava Logo" />
+                    <img th:src="@{/img/logo.jpg}" alt="LeafyJava Logo" /> Panorama Tour Editor
                 </a>
                 <ul class="right">
                     <li th:class="${#httpServletRequest.getRequestURI() == '/tours' ? 'active' : ''}">

@@ -313,12 +313,13 @@ function populateSceneList() {
             var scene = scenes[sceneId];
 
             $sceneList.append($("<div>").addClass('card')
-                .append($("<div>").addClass('card-image')
+                .append($("<div>").addClass('card-image available-scene')
+	                .click(function () { goToScene(sceneId); })
                     .append($("<img>").attr('src', scene.multiRes.basePath + "/preview.png").addClass("scene-preview"))
                     .append($("<span>").addClass('card-title').text(scene.title)))
                 .append($("<div>").addClass('card-action center-align')
                     .append($("<a>").text('Add to Scene')
-                        .click(function() { addToScene(scene);}))
+                        .click(function() { addToScene(scene); }))
                 ));
         });
 }
@@ -563,7 +564,7 @@ function handleDrawMarker(coordinate) {
 function handleClickMarker(pixel) {
 	minimap.forEachFeatureAtPixel(pixel, function(feature) {
 		if (!feature || !scenes[feature.getId()]) return;
-		viewer.loadScene(feature.getId());
+		goToScene(feature.getId());
 	});
 }
 
@@ -575,6 +576,10 @@ function onMapClick(e) {
 	} else {
 		handleClickMarker(e.pixel);
 	}
+}
+
+function goToScene(sceneId) {
+	viewer.loadScene(sceneId);
 }
 
 function initCustomMiniMap(mapDiv, tour) {
