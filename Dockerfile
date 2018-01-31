@@ -8,7 +8,7 @@ RUN pip install Pillow
 
 VOLUME /tmp
 
-ADD ./target/pannellum-tour-maker-0.0.4-SNAPSHOT.jar tour-editor.jar
+ADD ./target/pannellum-tour-maker-0.0.7-SNAPSHOT.jar tour-editor.jar
 ADD ./generate.py /home/generate.py
 RUN sh -c 'touch /tour-editor.jar'
 
