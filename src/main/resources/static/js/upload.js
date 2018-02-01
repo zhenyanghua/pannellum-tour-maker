@@ -65,28 +65,50 @@ $("#form-upload").validate({
                 xhr.upload.onloadstart = onLoadStart;
                 xhr.upload.onprogress = onProgress;
                 return xhr;
-            }
+            },
+	        headers: checkAuthHeaders()
         };
 
-        $.getJSON(apiUrl + "/public/guest/tours/" + name + "/exists")
-            .done(function(response) {
-                if (response.exists) {
-                    return uploadExistsHandler();
-                }
-	            xhrUpload = $.ajax(serverletPath + apiUrl + "/public/guest/tours", options)
-		            .done(function (response, status, xhr) {
-			            if (xhr.status === 200) {
-				            Materialize.toast('<span>Photos were successfully uploaded to the server. ' +
-					            'You may find the status in the <a href="' + serverPath + '/tasks">Tasks</a> page</span>', 10000);
-			            }
-		            })
-		            .fail(uploadFailHanlder)
-		            .always(uploadAlwaysHandler);
-            })
-            .fail(function(xhr) {
-                uploadFailHanlder(xhr);
-                uploadAlwaysHandler();
-            });
+	    validateTour();
+
+        function validateTour() {
+        	$.ajax({
+		        url: apiUrl + "/public/guest/tours/" + name + "/exists",
+		        type: 'GET',
+		        dataType: 'json',
+		        headers: checkAuthHeaders()
+	        }).done(function(response) {
+		        if (response.exists) {
+			        return uploadExistsHandler();
+		        }
+		        xhrUpload = upload();
+
+		        function upload() {
+			        return $.ajax(serverletPath + apiUrl + "/public/guest/tours", options)
+				        .done(function (response, status, xhr) {
+					        if (xhr.status === 200) {
+						        Materialize.toast('<span>Photos were successfully uploaded to the server. ' +
+							        'You may find the status in the <a href="' + serverPath + '/tasks">Tasks</a> page</span>', 10000);
+					        }
+				        }).fail(function(xhr) {
+					        handleAuthError(xhr,
+						        function() { return upload(); },
+						        function () {
+							        uploadFailHanlder(xhr);
+							        Materialize.toast('Failed to upload.', 4000);
+						        });
+				        }).always(uploadAlwaysHandler);
+		        }
+	        }).fail(function(xhr) {
+		        handleAuthError(xhr,
+			        function() { return validateTour(); },
+			        function () {
+				        uploadFailHanlder(xhr);
+				        uploadAlwaysHandler();
+				        Materialize.toast('Failed to validate tour.', 4000);
+			        });
+	        });
+        }
     }
 });
 

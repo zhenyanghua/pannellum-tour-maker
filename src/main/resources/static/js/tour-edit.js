@@ -31,11 +31,21 @@ var defaultPreviewSettings = {
 getTour();
 
 function getTour() {
-	$.getJSON(apiUrl + "/public/guest/tours/" + getTourNameFromPath())
-		.done(function (data) {
-			tour = data;
-			switchTour(tour);
-		})
+	$.ajax({
+		url: apiUrl + "/public/guest/tours/" + getTourNameFromPath(),
+		type: 'GET',
+		dataType: 'json',
+		headers: checkAuthHeaders()
+	}).done(function (data) {
+		tour = data;
+		switchTour(tour);
+	}).fail(function(xhr) {
+		handleAuthError(xhr,
+			function() { return getTour(); },
+			function () {
+				return Materialize.toast('Failed to load tour.', 4000);
+			});
+	});
 }
 
 function getTourNameFromPath() {
@@ -82,11 +92,18 @@ function doDeleteScene() {
 		var sceneId = viewer.getScene();
 		$.ajax(apiUrl + "/public/guest/tours/" + tour.name + "/scenes/" + sceneId, {
 			method: "DELETE",
-			contentType: "application/json"
-		})
-			.done(function () {
-				window.location.reload();
-			})
+			contentType: "application/json",
+			dataType: 'json',
+			headers: checkAuthHeaders()
+		}).done(function () {
+			window.location.reload();
+		}).fail(function(xhr) {
+			handleAuthError(xhr,
+				function() { return doDeleteScene(); },
+				function () {
+					return Materialize.toast('Failed to delete scene.', 4000);
+				});
+		});
 	});
 }
 
@@ -426,14 +443,17 @@ function saveTour() {
         method: "PUT",
         data: JSON.stringify(tour),
         dataType: "json",
-        contentType: "application/json"
-    })
-        .done(function (res) {
-	        Materialize.toast('Saved at ' + new Date().toLocaleTimeString(), 4000);
-        })
-	    .fail(function(err) {
-		    Materialize.toast('Failed to save. ' + err.message, 4000)
-	    })
+        contentType: "application/json",
+	    headers: checkAuthHeaders()
+    }).done(function (res) {
+        Materialize.toast('Saved at ' + new Date().toLocaleTimeString(), 4000);
+    }).fail(function(xhr) {
+	    handleAuthError(xhr,
+		    function() { return saveTour(); },
+		    function () {
+			    return Materialize.toast('Failed to save.', 4000);
+		    });
+    });
 
 }
 
@@ -830,8 +850,6 @@ function PlaceMarkerControl(opt_options) {
 
 	var button = document.createElement('button');
 	button.innerHTML = '<i class="material-icons">pin_drop</i>';
-
-	var this_ = this;
 
 	button.addEventListener('click', handlePlaceMarker, false);
 	button.addEventListener('touchstart', handlePlaceMarker, false);

@@ -64,36 +64,58 @@ $("#form-upload").validate({
 				xhr.upload.onloadstart = onLoadStart;
 				xhr.upload.onprogress = onProgress;
 				return xhr;
-			}
+			},
+			headers: checkAuthHeaders()
 		};
+		xhrUpload = upload()
 
-		xhrUpload = $.ajax(serverletPath + apiUrl + "/public/guest/tours/exist", options)
-			.done(function (response, status, xhr) {
-				if (xhr.status === 200) {
-					Materialize.toast('<span>Photos were successfully uploaded to the server. ' +
-						'You may find the status in the <a href="' + serverPath + '/tasks">Tasks</a> page</span>', 10000);
-				}
-			})
-			.fail(function(xhr) {
-				var message = xhr.status === 0 ? "Upload was cancelled" : JSON.parse(xhr.responseText).message;
-				Materialize.toast('Photos upload failed. ' + message, 10000)
-			})
-			.always(function() {
-				$progressBar.addClass('hide');
-				$uploadButton.removeClass('disabled');
-				$abortButton.addClass('hide');
-			});
+		function upload() {
+			return $.ajax(serverletPath + apiUrl + "/public/guest/tours/exist", options)
+				.done(function (response, status, xhr) {
+					if (xhr.status === 200) {
+						Materialize.toast('<span>Photos were successfully uploaded to the server. ' +
+							'You may find the status in the <a href="' + serverPath + '/tasks">Tasks</a> page</span>', 10000);
+					}
+				})
+				.fail(function(xhr) {
+					if (xhr.status === 0) {
+						Materialize.toast('Upload was cancelled', 10000);
+					} else {
+						handleAuthError(xhr,
+							function() { return upload(); },
+							function() { Materialize.toast('Failed to upload.', 4000); });
+					}
+				})
+				.fail(function (xhr) {
+					var message = xhr.status === 0 ? "Upload was cancelled" : JSON.parse(xhr.responseText).message;
+					Materialize.toast('Photos upload failed. ' + message, 10000);
+					if (xhr.status === 401) {
+						redirectToLogin();
+					}
+				})
+				.always(function () {
+					$progressBar.addClass('hide');
+					$uploadButton.removeClass('disabled');
+					$abortButton.addClass('hide');
+				});
+		}
 	}
 });
 
 function getTourNames() {
-	$.getJSON(apiUrl + "/public/guest/tours/names")
-		.done(function (names) {
-			names.forEach(function (name) {
-				$selectTourName.append($("<option>").val(name).text(name));
-			});
-			$selectTourName.material_select();
+	$.ajax({
+		url: apiUrl + "/public/guest/tours/names",
+		type: 'GET',
+		dataType: 'json',
+		headers: checkAuthHeaders()
+	}).done(function (names) {
+		names.forEach(function (name) {
+			$selectTourName.append($("<option>").val(name).text(name));
 		});
+		$selectTourName.material_select();
+	}).fail(function(xhr) {
+		handleAuthError(xhr, function() { return getTourNames(); });
+	});
 }
 
 function onLoadStart(e) {
