@@ -3,7 +3,7 @@
       xmlns:th="http://www.thymeleaf.org"
       layout:decorate="~{fragments/layout}">
 <head>
-    <link rel="stylesheet" th:href="@{/css/tasks.css}"/>
+    <link rel="stylesheet" th:href="@{${serverPath} + '/css/tasks.css'}"/>
     <title>Tasks</title>
 </head>
 <body>
@@ -35,8 +35,8 @@
         </div>
     </div>
 
-    <script th:src="@{/js/polyfill.js}"></script>
-    <script th:src="@{/js/tasks.js}"></script>
+    <script th:src="@{${serverPath} + '/js/polyfill.js'}"></script>
+    <script th:src="@{${serverPath} + '/js/tasks.js'}"></script>
 </div>
 </body>
 </html>

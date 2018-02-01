@@ -3,9 +3,9 @@
       xmlns:th="http://www.thymeleaf.org"
       layout:decorate="~{fragments/layout}">
 <head>
-    <link rel="stylesheet" th:href="@{/webjars/pannellum/2.3.2/build/pannellum.css}"/>
-    <link rel="stylesheet" th:href="@{/webjars/openlayers/4.3.1/ol.css}"/>
-    <link rel="stylesheet" th:href="@{/css/tour-edit.css}"/>
+    <link rel="stylesheet" th:href="@{${serverPath} + '/webjars/pannellum/2.3.2/build/pannellum.css'}"/>
+    <link rel="stylesheet" th:href="@{${serverPath} + '/webjars/openlayers/4.3.1/ol.css'}"/>
+    <link rel="stylesheet" th:href="@{${serverPath} + '/css/tour-edit.css'}"/>
     <title>Pano Editor</title>
 </head>
 <body>
@@ -69,10 +69,10 @@
             <a class="modal-action modal-close waves-effect waves-light btn">Cancel</a>
         </div>
     </div>
-    <script th:src="@{/webjars/pannellum/2.3.2/build/pannellum.js}"></script>
-    <script th:src="@{/webjars/openlayers/4.3.1/ol.js}"></script>
-    <script th:src="@{/js/polyfill.js}"></script>
-    <script th:src="@{/js/tour-edit.js}"></script>
+    <script th:src="@{${serverPath} + '/webjars/pannellum/2.3.2/build/pannellum.js'}"></script>
+    <script th:src="@{${serverPath} + '/webjars/openlayers/4.3.1/ol.js'}"></script>
+    <script th:src="@{${serverPath} + '/js/polyfill.js'}"></script>
+    <script th:src="@{${serverPath} + '/js/tour-edit.js'}"></script>
 </div>
 </body>
 </html>

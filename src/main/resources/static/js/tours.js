@@ -63,7 +63,7 @@ function getTours() {
 						.append($("<div>").addClass("card-content")
 							.append($("<span>").addClass("card-title red-text text-lighten-2").text(tour.name)))
 						.append($("<div>").addClass("card-action")
-							.append($("<a>").addClass('btn-floating blue tooltipped').attr("href", "/tours/" + tour.name)
+							.append($("<a>").addClass('btn-floating blue tooltipped').attr("href", serverPath + "/tours/" + tour.name)
 								.attr('data-position', 'top').attr('data-delay', 50).attr('data-tooltip', 'Edit Tour')
 								.append($("<i>").addClass('material-icons').text("edit")))
 							.append($("<a>").addClass('btn-floating red tooltipped').attr("href", "#")

@@ -5,11 +5,11 @@
     <meta charset="UTF-8">
     <title layout:title-pattern="$LAYOUT_TITLE - $CONTENT_TITLE">Leafy Java</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" th:href="@{/webjars/materializecss/0.100.2/css/materialize.min.css}"/>
-    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}"/>
-    <script th:src="@{/webjars/jquery/3.2.1/jquery.min.js}"></script>
-    <script th:src="@{/webjars/materializecss/0.100.2/js/materialize.min.js}"></script>
-    <script th:src="@{/js/config.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{${serverPath} + '/webjars/materializecss/0.100.2/css/materialize.min.css'}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{${serverPath} + '/css/main.css'}"/>
+    <script th:src="@{${serverPath} + '/webjars/jquery/3.2.1/jquery.min.js'}"></script>
+    <script th:src="@{${serverPath} + '/webjars/materializecss/0.100.2/js/materialize.min.js'}"></script>
+    <script th:src="@{${serverPath} + '/js/config.js'}"></script>
 </head>
 <body>
     <th:block th:replace="fragments/header :: header" />

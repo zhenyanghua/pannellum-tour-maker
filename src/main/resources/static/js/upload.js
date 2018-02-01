@@ -73,11 +73,11 @@ $("#form-upload").validate({
                 if (response.exists) {
                     return uploadExistsHandler();
                 }
-	            xhrUpload = $.ajax(apiUrl + "/public/guest/tours", options)
+	            xhrUpload = $.ajax(serverletPath + apiUrl + "/public/guest/tours", options)
 		            .done(function (response, status, xhr) {
 			            if (xhr.status === 200) {
 				            Materialize.toast('<span>Photos were successfully uploaded to the server. ' +
-					            'You may find the status in the <a href="/tasks">Tasks</a> page</span>', 10000);
+					            'You may find the status in the <a href="' + serverPath + '/tasks">Tasks</a> page</span>', 10000);
 			            }
 		            })
 		            .fail(uploadFailHanlder)

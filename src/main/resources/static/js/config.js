@@ -1,1 +1,3 @@
-var apiUrl = "/api/v1";
+var serverletPath = "/zuul";
+var serverPath = "/tour-editor";
+var apiUrl = serverPath + "/api/v1";

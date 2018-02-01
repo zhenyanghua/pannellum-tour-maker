@@ -5,22 +5,22 @@
 <th:block th:fragment="header">
     <header>
         <ul id="upload-dropdown" class="dropdown-content">
-            <li><a th:href="@{/upload}" th:class="blue-text">New Tour</a></li>
-            <li><a th:href="@{/upload-exist}" th:class="blue-text">Existing Tour</a></li>
+            <li><a th:href="@{${serverPath} + '/upload'}" th:class="blue-text">New Tour</a></li>
+            <li><a th:href="@{${serverPath} + '/upload-exist'}" th:class="blue-text">Existing Tour</a></li>
         </ul>
         <nav>
             <div class="nav-wrapper blue">
-                <a class="brand-logo" th:href="@{/}">
-                    <img th:src="@{/img/logo.jpg}" alt="LeafyJava Logo" /> Panorama Tour Editor
+                <a class="brand-logo" th:href="@{${serverPath} + '/'}">
+                    <img th:src="@{${serverPath} + '/img/logo.jpg'}" alt="LeafyJava Logo" /> Panorama Tour Editor
                 </a>
                 <ul class="right">
-                    <li th:class="${#httpServletRequest.getRequestURI() == '/tours' ? 'active' : ''}">
-                        <a th:href="@{/tours}">Tours</a>
+                    <li th:class="${#httpServletRequest.getRequestURI() ==  (serverPath + '/tours') ? 'active' : ''}">
+                        <a th:href="@{${serverPath} + '/tours'}">Tours</a>
                     </li>
-                    <li th:class="${#httpServletRequest.getRequestURI() == '/tasks' ? 'active' : ''}">
-                        <a th:href="@{/tasks}">Tasks</a>
+                    <li th:class="${#httpServletRequest.getRequestURI() == (serverPath + '/tasks') ? 'active' : ''}">
+                        <a th:href="@{${serverPath} + '/tasks'}">Tasks</a>
                     </li>
-                    <li th:class="${#httpServletRequest.getRequestURI() == '/upload' ? 'active' : ''}">
+                    <li th:class="${#httpServletRequest.getRequestURI() == (serverPath + '/upload') ? 'active' : ''}">
                         <a class="dropdown-button" data-activates="upload-dropdown">
                             Upload<i class="material-icons right">arrow_drop_down</i>
                         </a>

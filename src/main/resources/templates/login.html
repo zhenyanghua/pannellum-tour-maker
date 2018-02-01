@@ -13,7 +13,7 @@
                 <div class="col s12">
                     <div class="container">
                         <h2 class="header">User Sign In</h2>
-                        <form th:action="@{/login}" method="post">
+                        <form th:action="@{${serverPath} + '/login'}" method="post">
                             <div th:if="${param.error}">
                                 <div class="card-panel red lighten-4 red-text text-darken-4">
                                     Invalid username or password.

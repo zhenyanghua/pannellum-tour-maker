@@ -23,6 +23,14 @@ public class WebConfig extends WebMvcConfigurerAdapter{
     public void addResourceHandlers(final ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/" + TOURS + "/**")
             .addResourceLocations("file://" + storageProperties.getTourLocation() + "/");
+        registry.addResourceHandler("/tour-editor/webjars/**")
+            .addResourceLocations("/webjars/");
+        registry.addResourceHandler("/tour-editor/js/**")
+            .addResourceLocations("/js/");
+        registry.addResourceHandler("/tour-editor/css/**")
+            .addResourceLocations("/css/");
+        registry.addResourceHandler("/tour-editor/img/**")
+            .addResourceLocations("/img/");
         super.addResourceHandlers(registry);
     }
 

@@ -1,6 +1,9 @@
 spring:
   profiles:
     active: default, development
+  application:
+    name: tour-editor
+    path: /${spring.application.name}
   jackson:
     default-property-inclusion: non_null
 application:
@@ -10,6 +13,7 @@ application:
     height: 200
 server:
   port: 8091
+  use-forward-headers: true
 ---
 spring:
   profiles: development

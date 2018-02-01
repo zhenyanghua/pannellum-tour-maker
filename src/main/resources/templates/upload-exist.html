@@ -3,7 +3,7 @@
       xmlns:th="http://www.thymeleaf.org"
       layout:decorate="~{fragments/layout}">
 <head>
-    <link rel="stylesheet" th:href="@{/css/upload.css}" />
+    <link rel="stylesheet" th:href="@{${serverPath} + '/css/upload.css'}" />
     <title>Upload to Existing Tour</title>
 </head>
 <body>
@@ -45,9 +45,9 @@
             </div>
         </form>
     </div>
-    <script th:src="@{/webjars/jquery-validation/1.17.0/jquery.validate.min.js}"></script>
-    <script th:src="@{/webjars/jquery-validation/1.17.0/additional-methods.min.js}"></script>
-    <script th:src="@{/js/upload-exist.js}"></script>
+    <script th:src="@{${serverPath} + '/webjars/jquery-validation/1.17.0/jquery.validate.min.js'}"></script>
+    <script th:src="@{${serverPath} + '/webjars/jquery-validation/1.17.0/additional-methods.min.js'}"></script>
+    <script th:src="@{${serverPath} + '/js/upload-exist.js'}"></script>
 </div>
 </body>
 </html>
