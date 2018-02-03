@@ -5,12 +5,28 @@
 <th:block th:fragment="header">
     <header>
         <ul id="upload-dropdown" class="dropdown-content">
-            <li><a th:href="@{${serverPath} + '/upload'}" th:class="blue-text">New Tour</a></li>
-            <li><a th:href="@{${serverPath} + '/upload-exist'}" th:class="blue-text">Existing Tour</a></li>
+            <li>
+                <a th:href="@{${serverPath} + '/upload'}" th:class="blue-text">
+                    <i class="material-icons">panorama</i>New Tour
+                </a>
+            </li>
+            <li>
+                <a th:href="@{${serverPath} + '/upload-exist'}" th:class="blue-text">
+                    <i class="material-icons">add_a_photo</i>Existing Tour
+                </a>
+            </li>
         </ul>
         <ul id="user-dropdown" class="dropdown-content">
-            <li><a th:href="@{'/um/login?logout'}" th:class="blue-text" onclick="sessionStorage.clear();">Log out</a></li>
-            <li><a th:href="@{'/tour-viewer'}" th:class="blue-text">Tour Viewer</a></li>
+            <li>
+                <a th:href="@{'/um/login?logout'}" th:class="blue-text" onclick="sessionStorage.clear();">
+                    <i class="material-icons">exit_to_app</i>Log out
+                </a>
+            </li>
+            <li>
+                <a th:href="@{'/tour-viewer'}" th:class="blue-text">
+                    <i class="material-icons">panorama</i>Tour Viewer
+                </a>
+            </li>
         </ul>
         <nav>
             <div class="nav-wrapper blue">
@@ -31,7 +47,7 @@
                     </li>
                     <li>
                         <a class="dropdown-button" data-activates="user-dropdown">
-                            <span id="username"></span><i class="material-icons right">person</i>
+                            <span id="username"></span><i class="material-icons right">account_circle</i>
                         </a>
                     </li>
                 </ul>
