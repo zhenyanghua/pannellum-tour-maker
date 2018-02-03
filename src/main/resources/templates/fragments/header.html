@@ -8,6 +8,10 @@
             <li><a th:href="@{${serverPath} + '/upload'}" th:class="blue-text">New Tour</a></li>
             <li><a th:href="@{${serverPath} + '/upload-exist'}" th:class="blue-text">Existing Tour</a></li>
         </ul>
+        <ul id="user-dropdown" class="dropdown-content">
+            <li><a th:href="@{'/um/login?logout'}" th:class="blue-text" onclick="sessionStorage.clear();">Log out</a></li>
+            <li><a th:href="@{'/tour-viewer'}" th:class="blue-text">Tour Viewer</a></li>
+        </ul>
         <nav>
             <div class="nav-wrapper blue">
                 <a class="brand-logo" th:href="@{${serverPath} + '/'}">
@@ -25,10 +29,16 @@
                             Upload<i class="material-icons right">arrow_drop_down</i>
                         </a>
                     </li>
+                    <li>
+                        <a class="dropdown-button" data-activates="user-dropdown">
+                            <span id="username"></span><i class="material-icons right">person</i>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </nav>
     </header>
+    <script th:src="@{${serverPath} + '/js/header.js'}"></script>
 </th:block>
 </body>
 </html>

@@ -7,7 +7,6 @@ spring:
   jackson:
     default-property-inclusion: non_null
 application:
-  baseUrl: http://localhost:8091
   photo-preview:
     width: 400
     height: 200
@@ -35,12 +34,13 @@ spring:
     username: guest
     password: guest
 application:
+  baseUrl: http://localhost:8080${spring.application.path}
   nona: /Applications/Hugin/HuginStitchProject.app/Contents/MacOS/nona
   tile-generate-script: /Users/hua/IdeaProjects/pannellum-tour-maker/generate.py
   upload:
     directory: /Users/hua/IdeaProjects/pannellum-tour-maker/upload-dir
-    tours: /Users/hua/IdeaProjects/pannellum-tour-maker/upload-dir/tours
-    equirectangular: /Users/hua/IdeaProjects/pannellum-tour-maker/upload-dir/equirectangular
+    tours: ${application.upload.directory}/tours
+    equirectangular: ${application.upload.directory}/equirectangular
 security:
   oauth2:
     resource:
@@ -67,12 +67,13 @@ spring:
     username: guest
     password: guest
 application:
+  baseUrl: http://localhost${spring.application.path}
   nona: nona
   tile-generate-script: /home/generate.py
   upload:
     directory: /home/pannellum-tour-maker/upload-dir
-    tours: /home/pannellum-tour-maker/upload-dir/tours
-    equirectangular: /home/pannellum-tour-maker/upload-dir/equirectangular
+    tours: ${application.upload.directory}/tours
+    equirectangular: ${application.upload.directory}/equirectangular
 logging:
   level:
     org.springframework: ERROR
