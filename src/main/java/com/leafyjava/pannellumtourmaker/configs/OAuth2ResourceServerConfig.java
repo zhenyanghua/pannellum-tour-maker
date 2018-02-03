@@ -13,8 +13,8 @@ public class OAuth2ResourceServerConfig extends ResourceServerConfigurerAdapter 
     public void configure(final HttpSecurity http) throws Exception {
         http.antMatcher("/api/v1/**")
             .authorizeRequests()
-                .antMatchers("/api/v1/tasks/**").hasRole("EDITOR")
-                .antMatchers("/api/v1/tours/**").hasRole("EDITOR");
+                .antMatchers("/api/v1/tasks/**").hasAnyRole("EDITOR", "ADMIN")
+                .antMatchers("/api/v1/tours/**").hasAnyRole("EDITOR", "ADMIN");
     }
 
 }

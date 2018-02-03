@@ -3,6 +3,7 @@ var INVALID_TOKEN = "invalid_token";
 var INVALID_ACCESS_TOKEN_DESCRIPTION = "Access token expired";
 var INVALID_REFRESH_TOKEN_DESCRIPTION = "Invalid refresh token";
 var UNAUTHORIZED = "unauthorized";
+var ACCESS_DENIED = "access_denied";
 
 function checkAuthHeaders() {
 	var headers = {};
@@ -32,13 +33,13 @@ function handleAuthError(xhr, retryCallback, failCallback) {
 				var err = refreshXhr.responseJSON;
 				if ((err.error === INVALID_TOKEN &&
 					new RegExp(INVALID_REFRESH_TOKEN_DESCRIPTION).test(err.error_description)) ||
-					err.error === UNAUTHORIZED) {
+					err.error === UNAUTHORIZED || err.error === ACCESS_DENIED) {
 					redirectToLogin();
 				} else {
 					failCallback();
 				}
 			});
-	} else if (err.error === UNAUTHORIZED) {
+	} else if (err.error === UNAUTHORIZED || err.error === ACCESS_DENIED) {
 		redirectToLogin();
 	} else {
 		failCallback();
