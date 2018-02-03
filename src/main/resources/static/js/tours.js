@@ -39,7 +39,7 @@ function doDeleteTour() {
 	if (!selectedTourName) return;
 	console.log('delete tour ' + selectedTourName);
 
-	$.ajax(apiUrl + "/public/guest/tours/" + selectedTourName, {
+	$.ajax(apiUrl + "/tours/" + selectedTourName, {
 		method: "DELETE",
 		contentType: "application/json",
 		dataType: 'json',
@@ -56,7 +56,7 @@ function doDeleteTour() {
 function getTours() {
 	$tourList.empty();
 	$.ajax({
-		url: apiUrl + "/public/guest/tours/",
+		url: apiUrl + "/tours/",
 		type: 'GET',
 		dataType: 'json',
 		headers: checkAuthHeaders()

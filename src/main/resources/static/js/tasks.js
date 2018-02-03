@@ -9,7 +9,7 @@ setInterval(getTasks, 10000);
 
 function getTasks() {
 	$.ajax({
-		url: apiUrl + "/public/guest/tasks?page=0&size=5&sortBy=createdDateTime&sortOrder=desc",
+		url: apiUrl + "/tasks?page=0&size=5&sortBy=createdDateTime&sortOrder=desc",
 		type: 'GET',
 		dataType: 'json',
 		headers: checkAuthHeaders()

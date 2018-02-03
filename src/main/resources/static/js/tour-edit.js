@@ -32,7 +32,7 @@ getTour();
 
 function getTour() {
 	$.ajax({
-		url: apiUrl + "/public/guest/tours/" + getTourNameFromPath(),
+		url: apiUrl + "/tours/" + getTourNameFromPath(),
 		type: 'GET',
 		dataType: 'json',
 		headers: checkAuthHeaders()
@@ -90,7 +90,7 @@ function openDeleteSceneModal() {
 function doDeleteScene() {
 	saveTour().then(function() {
 		var sceneId = viewer.getScene();
-		$.ajax(apiUrl + "/public/guest/tours/" + tour.name + "/scenes/" + sceneId, {
+		$.ajax(apiUrl + "/tours/" + tour.name + "/scenes/" + sceneId, {
 			method: "DELETE",
 			contentType: "application/json",
 			dataType: 'json',
@@ -439,7 +439,7 @@ function saveTour() {
         });
     tour = removeMetaFromHotSpots(tour);
 
-    return $.ajax(apiUrl + "/public/guest/tours/" + tour.name, {
+    return $.ajax(apiUrl + "/tours/" + tour.name, {
         method: "PUT",
         data: JSON.stringify(tour),
         dataType: "json",

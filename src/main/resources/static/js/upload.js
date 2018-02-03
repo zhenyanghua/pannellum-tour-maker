@@ -73,7 +73,7 @@ $("#form-upload").validate({
 
         function validateTour() {
         	$.ajax({
-		        url: apiUrl + "/public/guest/tours/" + name + "/exists",
+		        url: apiUrl + "/tours/" + name + "/exists",
 		        type: 'GET',
 		        dataType: 'json',
 		        headers: checkAuthHeaders()
@@ -84,7 +84,7 @@ $("#form-upload").validate({
 		        xhrUpload = upload();
 
 		        function upload() {
-			        return $.ajax(serverletPath + apiUrl + "/public/guest/tours", options)
+			        return $.ajax(serverletPath + apiUrl + "/tours", options)
 				        .done(function (response, status, xhr) {
 					        if (xhr.status === 200) {
 						        Materialize.toast('<span>Photos were successfully uploaded to the server. ' +

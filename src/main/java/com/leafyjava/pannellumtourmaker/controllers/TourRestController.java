@@ -34,7 +34,7 @@ import static com.leafyjava.pannellumtourmaker.utils.TaskOperation.DELETE_TOUR;
 import static com.leafyjava.pannellumtourmaker.utils.TaskOperation.NEW_TOUR;
 
 @RestController
-@RequestMapping("/api/v1/public/guest/tours")
+@RequestMapping("/api/v1/tours")
 public class TourRestController {
     private TourService tourService;
     private AsyncTourService asyncTourService;

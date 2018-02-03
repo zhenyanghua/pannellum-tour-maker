@@ -70,7 +70,7 @@ $("#form-upload").validate({
 		xhrUpload = upload()
 
 		function upload() {
-			return $.ajax(serverletPath + apiUrl + "/public/guest/tours/exist", options)
+			return $.ajax(serverletPath + apiUrl + "/tours/exist", options)
 				.done(function (response, status, xhr) {
 					if (xhr.status === 200) {
 						Materialize.toast('<span>Photos were successfully uploaded to the server. ' +
@@ -104,7 +104,7 @@ $("#form-upload").validate({
 
 function getTourNames() {
 	$.ajax({
-		url: apiUrl + "/public/guest/tours/names",
+		url: apiUrl + "/tours/names",
 		type: 'GET',
 		dataType: 'json',
 		headers: checkAuthHeaders()

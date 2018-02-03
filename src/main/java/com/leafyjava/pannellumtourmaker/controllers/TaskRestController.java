@@ -16,7 +16,7 @@ import static com.leafyjava.pannellumtourmaker.utils.QueryConstants.SORT_BY;
 import static com.leafyjava.pannellumtourmaker.utils.QueryConstants.SORT_ORDER;
 
 @RestController
-@RequestMapping("/api/v1/public/guest/tasks")
+@RequestMapping("/api/v1/tasks")
 public class TaskRestController {
 
     private TaskService taskService;
