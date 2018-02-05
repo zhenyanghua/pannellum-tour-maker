@@ -92,8 +92,6 @@ function doDeleteScene() {
 		var sceneId = viewer.getScene();
 		$.ajax(apiUrl + "/tours/" + tour.name + "/scenes/" + sceneId, {
 			method: "DELETE",
-			contentType: "application/json",
-			dataType: 'json',
 			headers: checkAuthHeaders()
 		}).done(function () {
 			window.location.reload();
@@ -701,7 +699,7 @@ function initSceneMarkers(tour) {
         style: new ol.style.Style({
             image: new ol.style.Icon({
                 scale: 0.24,
-                src: '/img/bullseye.png'
+                src: serverPath + '/img/bullseye.png'
             })
         })
     });
@@ -729,7 +727,7 @@ function initSceneMarkers(tour) {
 			styles.push(new ol.style.Style({
 				geometry: new ol.geom.Point(end),
 				image: new ol.style.Icon({
-					src: '../img/thin-arrow-red.png',
+					src: serverPath + '/img/thin-arrow-red.png',
 					anchor: [1.3, 0.5],
 					rotateWithView: true,
 					rotation: -rotation
@@ -755,7 +753,7 @@ function initSceneMarkers(tour) {
 		style: new ol.style.Style({
 			image: new ol.style.Icon({
 				scale: 0.3,
-				src: '/img/bullseye.png'
+				src: serverPath + '/img/bullseye.png'
 			})
 		})
 	});
@@ -830,7 +828,7 @@ function updateNorthFace() {
 			style: new ol.style.Style({
 				image: new ol.style.Icon({
 					scale: 0.6,
-					src: '/img/arrow.png',
+					src: serverPath + '/img/arrow.png',
 					rotation: rotationInRadian
 				})
 			})

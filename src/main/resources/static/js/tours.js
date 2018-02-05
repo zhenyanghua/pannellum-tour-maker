@@ -41,8 +41,6 @@ function doDeleteTour() {
 
 	$.ajax(apiUrl + "/tours/" + selectedTourName, {
 		method: "DELETE",
-		contentType: "application/json",
-		dataType: 'json',
 		headers: checkAuthHeaders()
 	}).done(function () {
 		selectedTourName = undefined;

@@ -83,3 +83,14 @@ security:
     resource:
       jwt:
         key-value: prod-signature
+---
+spring:
+  profiles: docker
+  data:
+    mongodb:
+      uri: mongodb://one-mongo:27017/panorama
+  rabbitmq:
+    host: one-rabbit
+    port: 5672
+    username: guest
+    password: guest

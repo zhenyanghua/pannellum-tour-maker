@@ -16,10 +16,34 @@ of deployment using **the web application only** or **the full solution using
 docker-compose** on a fresh installed Ubuntu 16.04.
 
 ## Use the web application only
+### Development Deployment
+```
+docker build -t localhost:5000/pannellum-tour-maker .
+docker push localhost:5000/pannellum-tour-maker
+
+docker run -it -e "SPRING_DATA_MONGODB_URI=mongodb://172.17.0.3:27017/panorama" \
+               -e "SPRING_RABBITMQ_HOST=172.17.0.2" \
+               -e "SPRING_RABBITMQ_PORT=5672" \
+               -e "SPRING_RABBITMQ_USERNAME=guest" \
+               -e "SPRING_RABBITMQ_PASSWORD=guest" \
+               -e "APPLICATION_BASEURL=http://localhost:8080/tour-editor" \
+    -v /Users/hua/IdeaProjects/pannellum-tour-maker:/home/pannellum-tour-maker \
+    --name tour-editor \
+    -p 8091:8091 \
+    -d \
+    localhost:5000/pannellum-tour-maker
+```
+
 ### Requirements for Docker Deployment 
 1. docker-ce
 2. MongoDB 3
 3. RabbitMQ 3
+
+Build the docker image
+```
+docker build -t downhillski/pannellum-tour-maker .
+docker push downhillski/pannellum-tour-maker
+```
 
 Pull the latest tour editor software
 ```

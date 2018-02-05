@@ -17,6 +17,9 @@ public class HomeController {
     @Value("${spring.application.path}")
     private String serverPath;
 
+    @Value("${application.baseUrl}")
+    private String baseUrl;
+
     private TourService tourService;
 
     @Autowired
@@ -31,7 +34,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String index() {
-        return "redirect:" + serverPath + "/tours";
+        return "redirect:" + baseUrl + "/tours";
     }
 
     @GetMapping("/tours")
