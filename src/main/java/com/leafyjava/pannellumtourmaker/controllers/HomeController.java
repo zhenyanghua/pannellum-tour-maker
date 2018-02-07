@@ -45,7 +45,7 @@ public class HomeController {
     @GetMapping("/tours/{tour}")
     public String tourEdit(@PathVariable(value = "tour") String tour) {
         if (tourService.findOne(tour) == null) {
-            return "redirect:/tours";
+            return "redirect:" + baseUrl + "/tours";
         }
 
         return "tour-edit";

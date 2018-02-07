@@ -3,18 +3,13 @@ package com.leafyjava.pannellumtourmaker.storage.configs;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.nio.file.Paths;
+
 @ConfigurationProperties("storage")
 public class StorageProperties {
 
     @Value("${application.upload.directory}")
     private String location;
-
-    @Value("${application.upload.tours}")
-    private String tourLocation;
-
-    @Value("${application.upload.equirectangular}")
-    private String equirectangularLocation;
-
 
     public String getLocation() {
         return location;
@@ -25,18 +20,10 @@ public class StorageProperties {
     }
 
     public String getTourLocation() {
-        return tourLocation;
-    }
-
-    public void setTourLocation(final String tourLocation) {
-        this.tourLocation = tourLocation;
+        return Paths.get(location).resolve("tours").toString();
     }
 
     public String getEquirectangularLocation() {
-        return equirectangularLocation;
-    }
-
-    public void setEquirectangularLocation(final String equirectangularLocation) {
-        this.equirectangularLocation = equirectangularLocation;
+        return Paths.get(location).resolve("equirectangular").toString();
     }
 }

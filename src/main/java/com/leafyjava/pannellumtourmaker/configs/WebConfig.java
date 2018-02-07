@@ -7,6 +7,8 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import java.nio.file.Paths;
+
 @Configuration
 public class WebConfig extends WebMvcConfigurerAdapter{
 
@@ -22,7 +24,7 @@ public class WebConfig extends WebMvcConfigurerAdapter{
     @Override
     public void addResourceHandlers(final ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/" + TOURS + "/**")
-            .addResourceLocations("file://" + storageProperties.getTourLocation() + "/");
+            .addResourceLocations(Paths.get(storageProperties.getTourLocation()).toUri().toString());
         registry.addResourceHandler("/tour-editor/webjars/**")
             .addResourceLocations("/webjars/");
         registry.addResourceHandler("/tour-editor/js/**")

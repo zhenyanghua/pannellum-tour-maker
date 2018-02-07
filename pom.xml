@@ -26,7 +26,21 @@
 		<thymeleaf.version>3.0.8.RELEASE</thymeleaf.version>
 		<thymeleaf-layout-dialect.version>2.2.2</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-springsecurity4.version>3.0.2.RELEASE</thymeleaf-extras-springsecurity4.version>
+
+		<spring-cloud.version>Edgware.SR1</spring-cloud.version>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<dependencies>
 		<dependency>
@@ -41,6 +55,14 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-config</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-config-client</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -83,11 +105,6 @@
 			<artifactId>jackson-dataformat-xml</artifactId>
 			<version>2.9.2</version>
 		</dependency>
-		<!--<dependency>-->
-			<!--<groupId>de.flapdoodle.embed</groupId>-->
-			<!--<artifactId>de.flapdoodle.embed.mongo</artifactId>-->
-			<!--<scope>runtime</scope>-->
-		<!--</dependency>-->
 
 		<!-- JavaScript -->
 		<dependency>
@@ -121,12 +138,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
 
 	<build>
@@ -135,27 +146,6 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-			<!--<plugin>-->
-				<!--<groupId>com.spotify</groupId>-->
-				<!--<artifactId>dockerfile-maven-plugin</artifactId>-->
-				<!--<version>1.3.6</version>-->
-				<!--<executions>-->
-					<!--<execution>-->
-						<!--<id>default</id>-->
-						<!--<goals>-->
-							<!--<goal>build</goal>-->
-							<!--<goal>push</goal>-->
-						<!--</goals>-->
-					<!--</execution>-->
-				<!--</executions>-->
-				<!--<configuration>-->
-					<!--<repository>downhillski/pannellum-tour-maker</repository>-->
-					<!--<tag>${project.version}</tag>-->
-					<!--<buildArgs>-->
-						<!--<JAR_FILE>${project.build.finalName}.jar</JAR_FILE>-->
-					<!--</buildArgs>-->
-				<!--</configuration>-->
-			<!--</plugin>-->
 		</plugins>
 	</build>
 

@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: tour-editor
+  profiles:
+    active:
+      dev
+  cloud:
+    config:
+      uri: http://localhost:8888

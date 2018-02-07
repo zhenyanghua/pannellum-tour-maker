@@ -1,14 +1,29 @@
 #!/bin/bash
-set -x
 
-docker run -it -e "SPRING_DATA_MONGODB_URI=mongodb://172.17.0.3:27017/panorama" \
-               -e "SPRING_RABBITMQ_HOST=172.17.0.4" \
-               -e "SPRING_RABBITMQ_PORT=5672" \
-               -e "SPRING_RABBITMQ_USERNAME=guest" \
-               -e "SPRING_RABBITMQ_PASSWORD=guest" \
-               -e "APPLICATION_BASEURL=http://tour-editor.leafyjava.com/editor" \
-    -v /data:/home/pannellum-tour-maker \
-    --name tour-editor \
-    -p 8080:8080 \
-    -d \
-    downhillski/pannellum-tour-maker
+echo "********************************************************"
+echo "Waiting for the configuration server to start on port $CONFIGSERVER_PORT"
+echo "********************************************************"
+while ! `nc -z config-server $CONFIGSERVER_PORT `; do sleep 3; done
+echo ">>>>>>>>>>>> Configuration Server has started"
+
+echo "********************************************************"
+echo "Waiting for the MongoDB server to start on port $MONGO_PORT"
+echo "********************************************************"
+while ! `nc -z one-mongo $MONGO_PORT`; do sleep 3; done
+echo ">>>>>>>>>>>> MongoDB Server has started"
+
+echo "********************************************************"
+echo "Waiting for the RabbitMQ server to start on port $RABBIT_PORT"
+echo "********************************************************"
+while ! `nc -z one-rabbit $RABBIT_PORT`; do sleep 3; done
+echo ">>>>>>>>>>>> RabbitMQ Server has started"
+
+
+echo "********************************************************"
+echo "Starting Tour Editor Server with Configuration Service :  $CONFIGSERVER_URI";
+echo "********************************************************"
+java -Dspring.cloud.config.uri=$CONFIGSERVER_URI \
+     -Dspring.profiles.active=$PROFILE \
+     -Dapplication.baseUrl=$APP_BASE_URL/tour-editor \
+     -Djava.security.egd=file:/dev/./urandom \
+     -jar /tour-editor.jar
