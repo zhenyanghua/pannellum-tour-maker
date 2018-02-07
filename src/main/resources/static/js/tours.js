@@ -5,16 +5,18 @@ var $tourNameInput = $("#tour-name");
 
 var selectedTourName;
 
-getTours();
+configXhr.then(function (value) {
+	getTours();
 
-$(".modal").modal({
-	dismissible: false,
-	complete: resetInput
+	$(".modal").modal({
+		dismissible: false,
+		complete: resetInput
+	});
+
+	$deleteTourYes.click(doDeleteTour);
+
+	$tourNameInput.keyup(validateName);
 });
-
-$deleteTourYes.click(doDeleteTour);
-
-$tourNameInput.keyup(validateName);
 
 function resetInput() {
 	$tourNameInput.val(null);

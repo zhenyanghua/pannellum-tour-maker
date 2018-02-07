@@ -1,11 +1,13 @@
 var $taskList = $("#task-list-container");
 var $lastUpdate = $("#last-updated");
 
-getTasks();
+configXhr.then(function (value) {
+	getTasks();
 
-$("#refresh-btn").click(getTasks);
+	$("#refresh-btn").click(getTasks);
 
-setInterval(getTasks, 10000);
+	setInterval(getTasks, 10000);
+});
 
 function getTasks() {
 	$.ajax({

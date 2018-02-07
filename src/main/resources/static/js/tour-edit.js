@@ -28,7 +28,9 @@ var defaultPreviewSettings = {
     "type": "multires"
 };
 
-getTour();
+configXhr.then(function () {
+	getTour();
+});
 
 function getTour() {
 	$.ajax({
