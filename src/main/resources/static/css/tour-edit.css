@@ -96,8 +96,26 @@
 .ol-touch .place-marker {
     top: 80px;
 }
+
 .place-marker.active button{
-    background-color: #E57373;
+    color: #fafafa !important;
+    background-color: #0089ec !important;
+}
+
+.place-marker i {
+    font-size: 1.5rem;
+}
+
+.ol-control button:hover,
+.ol-control button:focus {
+    text-decoration: none;
+    background-color: #f5f5f5;
+}
+
+.ol-control button {
+    color: black;
+    background-color: #fafafa;
+    border: 1px solid #e7e7e7;
 }
 
 .available-scene:hover {
