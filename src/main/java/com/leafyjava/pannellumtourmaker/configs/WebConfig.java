@@ -1,6 +1,8 @@
 package com.leafyjava.pannellumtourmaker.configs;
 
 import com.leafyjava.pannellumtourmaker.storage.configs.StorageProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -11,6 +13,8 @@ import java.nio.file.Paths;
 
 @Configuration
 public class WebConfig extends WebMvcConfigurerAdapter{
+
+    private Logger logger = LoggerFactory.getLogger(WebConfig.class);
 
     public static final String TOURS = "resources/tours";
 
@@ -23,6 +27,8 @@ public class WebConfig extends WebMvcConfigurerAdapter{
 
     @Override
     public void addResourceHandlers(final ResourceHandlerRegistry registry) {
+        logger.debug(Paths.get(storageProperties.getTourLocation()).toUri()
+            .toString());
         registry.addResourceHandler("/" + TOURS + "/**")
             .addResourceLocations(Paths.get(storageProperties.getTourLocation()).toUri().toString());
         registry.addResourceHandler("/tour-editor/webjars/**")

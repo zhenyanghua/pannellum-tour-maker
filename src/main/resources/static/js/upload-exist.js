@@ -2,6 +2,7 @@ var $progressBar = $('.progress');
 var $determinateBar = $progressBar.find('.determinate');
 var $uploadButton = $('#photo-upload');
 var $abortButton = $('#abort');
+var $selectTourName = $('#select-tour-name');
 var xhrUpload;
 
 configXhr.then(function (value) {
@@ -16,7 +17,6 @@ configXhr.then(function (value) {
 
 	$('select').change(function(){ $(this).valid(); })
 		.material_select();
-	var $selectTourName = $('#select-tour-name');
 
 	getTourNames();
 

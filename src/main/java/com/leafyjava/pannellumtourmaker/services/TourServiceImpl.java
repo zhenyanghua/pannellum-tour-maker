@@ -69,6 +69,9 @@ public class TourServiceImpl implements TourService{
     @Value("${application.tile-generate-script}")
     private String generateScript;
 
+    @Value("${application.system-command}")
+    private String systemCommand;
+
     private StorageService storageService;
     private StorageProperties storageProperties;
     private TourRepository tourRepository;
@@ -235,12 +238,9 @@ public class TourServiceImpl implements TourService{
             }
         }
 
-        String[] cmd = {
-            "/bin/bash",
-            "-c",
-            "python " + generateScript  + " -o " + output +
-                " -n " + nona + " " + path
-        };
+        String cmd =
+            systemCommand + " python \"" + generateScript  + "\" -o \"" + output +
+                "\" -n \"" + nona + "\" \"" + path + "\"";
         try {
             Process process = Runtime.getRuntime().exec(cmd);
             int result = process.waitFor();
@@ -297,7 +297,11 @@ public class TourServiceImpl implements TourService{
                 scene.setPhotoMeta(metaMap.get(sceneId));
             }
 
-            String basePath = baseUrl + "/" + scenePath.toString().replace(storageProperties.getTourLocation(), TOURS);
+            String basePath = baseUrl + "/" + scenePath.toString()
+                .replace(storageProperties.getTourLocation(), TOURS)
+                .replace("\\", "/");
+
+            logger.debug("Base Path: " + basePath);
 
             scene.getMultiRes().setBasePath(basePath);
             scene.setHotSpots(new ArrayList<>());
