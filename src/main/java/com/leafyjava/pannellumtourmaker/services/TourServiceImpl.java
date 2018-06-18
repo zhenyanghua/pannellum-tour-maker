@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,6 +38,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +55,8 @@ import static com.leafyjava.pannellumtourmaker.utils.FileConstants.MULTIRES;
 public class TourServiceImpl implements TourService{
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private Environment environment;
 
     @Value("${application.baseUrl}")
     private String baseUrl;
@@ -77,9 +81,11 @@ public class TourServiceImpl implements TourService{
     private TourRepository tourRepository;
 
     @Autowired
-    public TourServiceImpl(final StorageService storageService,
+    public TourServiceImpl(final Environment environment,
+                           final StorageService storageService,
                            final StorageProperties storageProperties,
                            final TourRepository tourRepository) {
+        this.environment = environment;
         this.storageService = storageService;
         this.storageProperties = storageProperties;
         this.tourRepository = tourRepository;
@@ -238,9 +244,15 @@ public class TourServiceImpl implements TourService{
             }
         }
 
-        String cmd =
-            systemCommand + " python \"" + generateScript  + "\" -o \"" + output +
+        String cmd;
+        if (Arrays.asList(environment.getActiveProfiles()).contains("dev")) {
+            cmd = systemCommand + " python " + generateScript  + " -o " + output +
+                " -n " + nona + " " + path;
+        } else {
+            cmd = systemCommand + " python \"" + generateScript  + "\" -o \"" + output +
                 "\" -n \"" + nona + "\" \"" + path + "\"";
+        }
+
         try {
             Process process = Runtime.getRuntime().exec(cmd);
             int result = process.waitFor();
@@ -248,6 +260,14 @@ public class TourServiceImpl implements TourService{
                 if (tempFile != null) {
                     FileUtils.moveDirectory(tempFile, outputFile);
                 }
+
+                int len;
+                if ((len = process.getErrorStream().available()) > 0) {
+                    byte[] buf = new byte[len];
+                    process.getErrorStream().read(buf);
+                    System.err.println("Command error:\t\""+new String(buf)+"\"");
+                }
+
                 throw new ExternalCommandException("Command failed: " + String.join(" ", cmd));
             }
         } catch (IOException | InterruptedException e) {
