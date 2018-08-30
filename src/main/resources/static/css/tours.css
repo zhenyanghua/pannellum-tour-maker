@@ -5,10 +5,12 @@
 #tour-list-container .card .card-image div {
     max-height: 150px;
 }
-.preview {
+.preview-no-map {
     background-image: url("../img/panorama.png");
+}
+.preview {
     background-position: center;
-    background-size: 150px 150px;
+    background-size: cover;
     background-repeat: no-repeat;
     height: 150px;
 }

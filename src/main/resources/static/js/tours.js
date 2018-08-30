@@ -63,8 +63,9 @@ function getTours() {
 	}).done(function (tours) {
 		tours.forEach(function (tour) {
 			var preview = tour.mapPath ?
-				$("<img>").attr("src", tour.mapPath) :
-				$("<div>").addClass("preview");
+				$("<div>").addClass("preview").css("background-image", "url(" + tour.mapPath + ")") :
+				$("<div>").addClass("preview preview-no-map");
+
 			$tourList.append($("<div>").addClass("col s12 m4")
 				.append($("<div>").addClass("card").attr('id', "tour-list-item-" +tour.name)
 					.append($("<div>").addClass("card-image")
