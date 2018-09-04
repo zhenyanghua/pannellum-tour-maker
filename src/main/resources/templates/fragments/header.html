@@ -31,7 +31,7 @@
         <nav>
             <div class="nav-wrapper blue">
                 <a class="brand-logo" th:href="@{${serverPath} + '/'}">
-                    <img th:src="@{${serverPath} + '/img/logo.jpg'}" alt="LeafyJava Logo" /> Panorama Tour Editor
+                    <img th:src="@{${serverPath} + '/img/logo.png'}" alt="LeafyJava Logo" /> <span>Panorama Tour Editor</span>
                 </a>
                 <ul class="right">
                     <li th:class="${#httpServletRequest.getRequestURI() ==  (serverPath + '/tours') ? 'active' : ''}">

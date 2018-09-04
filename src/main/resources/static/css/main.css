@@ -27,6 +27,12 @@ main {
 .brand-logo {
     margin-left: 1em;
 }
+.brand-logo img {
+    height: 60px;
+}
+.brand-logo span {
+    vertical-align: text-bottom;
+}
 
 .capitalize {
     text-transform: capitalize;
