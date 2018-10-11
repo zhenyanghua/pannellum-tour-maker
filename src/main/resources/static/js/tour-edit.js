@@ -475,7 +475,7 @@ function addMetaToHotSpots(tour) {
             Object.assign(hs, {
                 "cssClass": "custom-hotspot",
                 "createTooltipFunc": tooltipFunc,
-                "createTooltipArgs": scene.id + "|" + scene.id
+                "createTooltipArgs": hs.sceneId + "|" + hs.sceneId
             });
         });
     });
