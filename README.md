@@ -119,6 +119,9 @@ docker-compose up -d
 docker-compose down
 ```
 
+# Browser Compatibility
+
+Test are run in <img alt="Browserstack" src="Browserstack-logo@2x.png" width="100px"/>
 
 # Resources
 Here shows how to setup the RabbitMQ and MongoDB using docker
@@ -131,6 +134,5 @@ docker run -d --hostname localhost --name my-rabbit -p 5672:5672 -p 15672:15672 
 docker run -d --name my-mongo -p 27017:27017 mongo
 ```
 
-# Big To Do
-1. Add Security
-2. provide a way to save files from application directory to externally mounted storage, such as Google Cloud Storage and AWS S3 Storage
+# To Do
+1. provide a way to save files from application directory to externally mounted storage, such as Google Cloud Storage and AWS S3 Storage
