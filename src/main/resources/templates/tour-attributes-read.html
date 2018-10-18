@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <link rel="stylesheet" th:href="@{${serverPath} + '/css/tours.css'}"/>
+    <title>Tours</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="container">
+        <h5 class="card-panel red-text text-lighten-2" th:text="${tour.name}" ></h5>
+        <div class="row">
+            <div class="input-field col s12">
+                <input readonly id="alias" type="text" class="validate" th:value="${tour.alias}">
+                <label for="alias">Alias</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                <input readonly id="group" type="text" class="validate"
+                       th:value="${group != null ? group.name : null}">
+                <label for="group">Group</label>
+            </div>
+        </div>
+        <div class="row right-align">
+            <a class="btn waves-effect waves-light blue" th:href="@{attributes/edit}">Edit
+                <i class="material-icons right">edit</i>
+            </a>
+            <a class="btn waves-effect waves-light blue-grey lighten-5 black-text"
+               th:href="@{${serverPath} + '/tours'}">
+                <i class="material-icons">arrow_back</i>
+            </a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

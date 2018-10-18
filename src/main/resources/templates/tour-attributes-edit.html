@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <link rel="stylesheet" th:href="@{${serverPath} + '/css/tours.css'}"/>
+    <title>Tours</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="container">
+        <h5 class="card-panel red-text text-lighten-2" th:text="${tour.name}" />
+        <div class="row">
+            <form class="col s12" th:object="${tour}" th:method="PUT"
+                  th:action="@{${serverPath} + '/tours/' + ${tour.name} + '/attributes'}">
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input id="alias" type="text" class="validate" th:field="*{alias}">
+                        <label for="alias">Alias</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <select th:field="*{groupName}" th:name="group">
+                            <option th:value="${null}"
+                                    th:text="${'Choose a group'}"
+                                    th:selected="${true}"
+                                    disabled></option>
+                            <option th:each="group: ${groups}"
+                                    th:value="${group.name}"
+                                    th:text="${group.alias}"></option>
+                        </select>
+                        <label>Group</label>
+                    </div>
+                </div>
+                <div class="row right-align">
+                    <button class="btn waves-effect waves-light blue" type="submit">Save
+                        <i class="material-icons right">save</i>
+                    </button>
+                    <a class="btn waves-effect waves-light blue-grey lighten-5 black-text"
+                       th:href="@{${serverPath} + '/tours/' + ${tour.name} + '/attributes'}">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

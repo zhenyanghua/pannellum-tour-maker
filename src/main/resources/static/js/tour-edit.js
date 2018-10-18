@@ -8,6 +8,7 @@ var $deleteSceneBtn = $("#delete-scene-btn");
 var $saveTourBtn = $("#save-tour-btn");
 var $modalDeleteScene = $("#modal-delete-scene");
 var $deleteSceneYes = $("#delete-scene-yes");
+var $tourName = $("#tour-name");
 
 var tour;
 var scenes = {};
@@ -40,6 +41,7 @@ function getTour() {
 		headers: checkAuthHeaders()
 	}).done(function (data) {
 		tour = data;
+		setTourName(tour);
 		switchTour(tour);
 	}).fail(function(xhr) {
 		handleAuthError(xhr,
@@ -53,6 +55,10 @@ function getTour() {
 function getTourNameFromPath() {
 	var segments = location.pathname.split('/');
 	return segments[segments.length - 1];
+}
+
+function setTourName(tour) {
+	$tourName.text(tour.alias || tour.name);
 }
 
 function setToFirstScene() {

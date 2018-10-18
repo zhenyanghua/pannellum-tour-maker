@@ -5,7 +5,9 @@ html,body {
 }
 
 main {
+    position: absolute;
     display: flex;
+    display: -ms-flex;
     height: calc(100% - 64px);
     width: 100%;
 }
@@ -24,13 +26,14 @@ main {
     font-weight: 300;
 }
 
-.brand-logo {
+nav .brand-logo {
     margin-left: 1em;
+    display: flex;
 }
-.brand-logo img {
+nav .brand-logo img {
     height: 60px;
 }
-.brand-logo span {
+nav .brand-logo span {
     vertical-align: text-bottom;
 }
 
@@ -48,6 +51,18 @@ code {
 nav ul.dropdown-content {
     width: auto !important;
 }
+
+.options-right {
+    float: right;
+    cursor: pointer;
+}
+.options-right:hover {
+    color: #f44336;
+}
+.options-right:active {
+    color: #d32f2f;
+}
+
 @media only screen and (max-width: 992px) {
     nav .brand-logo {
          left: inherit;

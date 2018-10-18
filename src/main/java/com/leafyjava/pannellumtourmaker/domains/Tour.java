@@ -10,9 +10,11 @@ import java.util.stream.Collectors;
 public class Tour {
     @Id
     private String name;
+    private String alias;
     private String firstScene;
     private String mapPath;
     private Set<Scene> scenes;
+    private String groupName;
 
     public String getName() {
         return name;
@@ -20,6 +22,14 @@ public class Tour {
 
     public void setName(final String name) {
         this.name = name;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(final String alias) {
+        this.alias = alias;
     }
 
     public String getMapPath() {
@@ -56,5 +66,13 @@ public class Tour {
             .collect(Collectors.toSet());
 
         scenes.forEach(scene -> scene.deleteHotSpots(sceneId));
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(final String groupName) {
+        this.groupName = groupName;
     }
 }

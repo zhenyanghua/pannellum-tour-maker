@@ -2,6 +2,7 @@
 <html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta charset="UTF-8">
     <title layout:title-pattern="$LAYOUT_TITLE - $CONTENT_TITLE">Leafy Java</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -9,8 +10,10 @@
     <link rel="stylesheet" type="text/css" th:href="@{${serverPath} + '/css/main.css'}"/>
     <script th:src="@{${serverPath} + '/webjars/jquery/3.2.1/jquery.min.js'}"></script>
     <script th:src="@{${serverPath} + '/webjars/materializecss/0.100.2/js/materialize.min.js'}"></script>
+    <script th:src="@{${serverPath} + '/js/polyfill.js'}"></script>
     <script th:src="@{${serverPath} + '/js/config.js'}"></script>
     <script th:src="@{${serverPath} + '/js/common.js'}"></script>
+    <script th:src="@{${serverPath} + '/js/ui-init.js'}"></script>
 </head>
 <body>
     <th:block th:replace="fragments/header :: header" />
