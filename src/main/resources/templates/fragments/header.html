@@ -34,6 +34,9 @@
                     <img th:src="@{${serverPath} + '/img/logo.png'}" alt="LeafyJava Logo" /> <span>Panorama Tour Editor</span>
                 </a>
                 <ul class="right">
+                    <li th:class="${#httpServletRequest.getRequestURI() ==  (serverPath + '/groups') ? 'active' : ''}">
+                        <a th:href="@{${serverPath} + '/groups'}">Groups</a>
+                    </li>
                     <li th:class="${#httpServletRequest.getRequestURI() ==  (serverPath + '/tours') ? 'active' : ''}">
                         <a th:href="@{${serverPath} + '/tours'}">Tours</a>
                     </li>

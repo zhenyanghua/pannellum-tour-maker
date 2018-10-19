@@ -54,6 +54,11 @@ public class TourRestController {
         return tourService.findAllTours();
     }
 
+    @GetMapping("/basic")
+    public List<Tour> getToursBasic() {
+        return tourService.findAllToursWithBasic();
+    }
+
     @GetMapping("/names")
     public List<String> getTourNames() {
         return tourService.findAllTourNames();
@@ -63,7 +68,8 @@ public class TourRestController {
     public void uploadNewTour(@RequestParam("name") String name,
                            @RequestParam("file") MultipartFile tourFile,
                            @RequestParam(value = "map", required = false) MultipartFile mapFile,
-                           @RequestParam(value = "northOffset", required = false, defaultValue = "0") Integer northOffset) {
+                           @RequestParam(value = "northOffset", required = false, defaultValue = "0")
+                                      Integer northOffset) {
         if (!Pattern.matches("[a-zA-Z\\d]*", name)) {
             throw new InvalidTourException("Tour name can only contain letters and numbers. " +
                 "No special characters or space is allowed.");
@@ -180,6 +186,10 @@ public class TourRestController {
         tourMessage.setTask(task);
 
         asyncTourService.sendToToursDeleteFiles(tourMessage);
+    }
+
+    enum TourView {
+        BASIC
     }
 
 }

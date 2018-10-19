@@ -10,4 +10,8 @@ public interface TourGroupService {
     TourGroup findOne(String groupName);
     Page<TourGroup> findAll(Pageable pageable);
     List<TourGroup> findAll();
+    boolean existsByGroupName(String groupName);
+    TourGroup insert(TourGroup tourGroup);
+    TourGroup update(TourGroup tourGroup);
+    void delete(String groupName);
 }

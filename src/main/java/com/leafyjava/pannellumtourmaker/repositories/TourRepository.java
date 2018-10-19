@@ -2,9 +2,11 @@ package com.leafyjava.pannellumtourmaker.repositories;
 
 import com.leafyjava.pannellumtourmaker.domains.Tour;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.mongodb.repository.Query;
 
-@Repository
+import java.util.List;
+
 public interface TourRepository extends MongoRepository<Tour, String> {
-
+    @Query(value = "{}", fields = "{ 'name': 1, 'alias': 1, 'groupName': 1 }")
+    List<Tour> findAllWithBasic();
 }

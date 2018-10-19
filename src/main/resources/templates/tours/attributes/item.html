@@ -12,13 +12,13 @@
         <h5 class="card-panel red-text text-lighten-2" th:text="${tour.name}" ></h5>
         <div class="row">
             <div class="input-field col s12">
-                <input readonly id="alias" type="text" class="validate" th:value="${tour.alias}">
+                <input readonly id="alias" type="text" th:value="${tour.alias}">
                 <label for="alias">Alias</label>
             </div>
         </div>
         <div class="row">
             <div class="input-field col s12">
-                <input readonly id="group" type="text" class="validate"
+                <input readonly id="group" type="text"
                        th:value="${group != null ? group.name : null}">
                 <label for="group">Group</label>
             </div>

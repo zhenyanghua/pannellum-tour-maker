@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <link rel="stylesheet" th:href="@{${serverPath} + '/css/tours.css'}"/>
+    <title>Groups - Item</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+    <div class="container">
+        <h5 class="card-panel red-text text-lighten-2">View a Group</h5>
+        <div class="row">
+            <form class="col s12" th:object="${group}"
+                  th:method="DELETE"
+                  th:action="@{${serverPath} + '/groups/' + ${group.name}}">
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input readonly id="name" type="text" th:field="*{name}">
+                        <label for="name">Name</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input readonly id="alias" type="text" th:field="*{alias}">
+                        <label for="alias">Alias</label>
+                    </div>
+                </div>
+                <div class="row right-align">
+                    <a class="btn waves-effect waves-light blue"
+                       th:href="@{${serverPath} + '/groups/' + ${group.name} + '/edit'}">Edit</a>
+                    <button class="btn waves-effect waves-light red" type="submit">Delete</button>
+                    <a class="btn waves-effect waves-light blue-grey lighten-5 black-text"
+                       th:href="@{${serverPath} + '/groups'}">
+                        <i class="material-icons">arrow_back</i>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

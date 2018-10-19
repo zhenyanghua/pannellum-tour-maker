@@ -186,6 +186,11 @@ public class TourServiceImpl implements TourService{
     }
 
     @Override
+    public List<Tour> findAllToursWithBasic() {
+        return tourRepository.findAllWithBasic();
+    }
+
+    @Override
     public List<String> findAllTourNames() {
         return tourRepository.findAll().stream().map(Tour::getName).collect(Collectors.toList());
     }

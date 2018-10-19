@@ -21,11 +21,7 @@
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
-                        <select th:field="*{groupName}" th:name="group">
-                            <option th:value="${null}"
-                                    th:text="${'Choose a group'}"
-                                    th:selected="${true}"
-                                    disabled></option>
+                        <select th:field="*{groupName}" th:name="groupName">
                             <option th:each="group: ${groups}"
                                     th:value="${group.name}"
                                     th:text="${group.alias}"></option>

@@ -24,12 +24,12 @@ public class HomeController {
 
     @GetMapping("/upload")
     public String upload() {
-        return "upload";
+        return "upload/new";
     }
 
     @GetMapping("/upload-exist")
     public String uploadExist() {
-        return "upload-exist";
+        return "upload/exist";
     }
 
     @GetMapping("/login")

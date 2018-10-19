@@ -56,7 +56,7 @@ function doDeleteTour() {
 function getTours() {
 	$tourList.empty();
 	$.ajax({
-		url: apiUrl + "/tours/",
+		url: apiUrl + "/tours/basic",
 		type: 'GET',
 		dataType: 'json',
 		headers: checkAuthHeaders()

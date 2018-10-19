@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TourGroupRepository extends MongoRepository<TourGroup, String> {
-
+    boolean existsTourGroupByName(String name);
 }

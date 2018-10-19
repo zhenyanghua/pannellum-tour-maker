@@ -41,7 +41,7 @@ public class TourController {
             return "redirect:" + baseUrl + "/tours";
         }
 
-        return "tour-edit";
+        return "tours/edit";
     }
 
     @GetMapping("/{tour}/attributes")
@@ -59,7 +59,7 @@ public class TourController {
         model.addAttribute("tour", tour);
         model.addAttribute("group", group);
 
-        return "tour-attributes-read";
+        return "tours/attributes/item";
     }
 
     @PutMapping("/{tour}/attributes")
@@ -88,7 +88,7 @@ public class TourController {
         model.addAttribute("groups", groups);
         
 
-        return "tour-attributes-edit";
+        return "tours/attributes/edit";
     }
 
 

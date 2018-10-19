@@ -34,4 +34,24 @@ public class TourGroupServiceImpl implements TourGroupService {
         return tourGroupRepository.findAll(
             new Sort(Sort.Direction.ASC, "alias"));
     }
+
+    @Override
+    public boolean existsByGroupName(final String groupName) {
+        return tourGroupRepository.existsTourGroupByName(groupName);
+    }
+
+    @Override
+    public TourGroup insert(final TourGroup tourGroup) {
+        return tourGroupRepository.insert(tourGroup);
+    }
+
+    @Override
+    public TourGroup update(final TourGroup tourGroup) {
+        return tourGroupRepository.save(tourGroup);
+    }
+
+    @Override
+    public void delete(final String groupName) {
+        tourGroupRepository.delete(groupName);
+    }
 }
