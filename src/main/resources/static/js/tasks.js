@@ -1,5 +1,6 @@
 var $taskList = $("#task-list-container");
 var $lastUpdate = $("#last-updated");
+var $preloader = $("#preloader");
 
 configXhr.then(function (value) {
 	getTasks();
@@ -10,12 +11,14 @@ configXhr.then(function (value) {
 });
 
 function getTasks() {
+	$preloader.show();
 	$.ajax({
 		url: apiUrl + "/tasks?page=0&size=5&sortBy=createdDateTime&sortOrder=desc",
 		type: 'GET',
 		dataType: 'json',
 		headers: checkAuthHeaders()
 	}).done(function (tasks) {
+		$preloader.hide();
 		if (tasks.length === 0) {
 			$taskList.addClass('hide');
 		} else {

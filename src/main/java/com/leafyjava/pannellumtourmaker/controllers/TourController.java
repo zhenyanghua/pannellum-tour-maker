@@ -32,7 +32,7 @@ public class TourController {
 
     @GetMapping()
     public String tours() {
-        return "tours";
+        return "tours/list";
     }
 
     @GetMapping("/{tour}")

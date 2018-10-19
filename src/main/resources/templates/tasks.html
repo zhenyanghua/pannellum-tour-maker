@@ -10,13 +10,11 @@
 <div layout:fragment="content" th:remove="tag">
     <div class="container">
         <h5 class="card-panel red-text text-lighten-2">Tasks</h5>
+        <th:block th:replace="fragments/preloader :: preloader('preloader')" />
         <div id="task-list-container" class="row hide">
-            <p class="teal-text text-lighten-2">
+            <p class="blue-text">
                 <span>Most recent 5 tasks</span>
                 <em id="last-updated"></em>
-                <a id="refresh-btn" class="btn-floating btn waves-effect waves-light teal">
-                    <i class="material-icons">refresh</i>
-                </a>
             </p>
 
             <table class="highlight">
@@ -32,6 +30,11 @@
                 </thead>
                 <tbody></tbody>
             </table>
+        </div>
+        <div class="fixed-action-btn">
+            <a id="refresh-btn" class="btn-floating btn-large waves-effect waves-light blue pulse">
+                <i class="material-icons">refresh</i>
+            </a>
         </div>
     </div>
 

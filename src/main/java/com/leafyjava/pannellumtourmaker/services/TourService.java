@@ -23,6 +23,8 @@ public interface TourService {
 
     List<Tour> findAllToursWithBasic();
 
+    List<Tour> findToursByGroupWithBasic(String groupName);
+
     List<String> findAllTourNames();
 
     Tour findOne(String name);

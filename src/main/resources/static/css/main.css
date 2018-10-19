@@ -63,6 +63,36 @@ nav ul.dropdown-content {
     color: #d32f2f;
 }
 
+/* label focus color */
+.input-field input:focus + label {
+    color: #2196f3 !important;
+}
+/* label underline focus color */
+.input-field input:focus {
+    border-bottom: 1px solid #2196f3 !important;
+    box-shadow: 0 1px 0 0 #2196f3 !important
+}
+input[type=range]::-webkit-slider-thumb {
+    background-color: #2196f3;
+}
+input[type=range]::-moz-range-thumb {
+    background-color: #2196f3;
+}
+input[type=range]::-ms-thumb {
+    background-color: #2196f3;
+}
+/* These are to edit the thumb and the text inside the thumb */
+input[type=range] + .thumb {
+    background-color: #dedede;
+}
+input[type=range] + .thumb.active .value {
+    color: #2196f3;
+}
+/* Select Dropdown*/
+ul.dropdown-content.select-dropdown li span {
+    color: #2196f3;
+}
+
 @media only screen and (max-width: 992px) {
     nav .brand-logo {
          left: inherit;

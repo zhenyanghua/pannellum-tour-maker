@@ -5,6 +5,10 @@
 #tour-list-container .card .card-image div {
     max-height: 150px;
 }
+
+#tour-preloader {
+
+}
 .preview-no-map {
     background-image: url("../img/panorama.png");
 }

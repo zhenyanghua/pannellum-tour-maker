@@ -191,6 +191,11 @@ public class TourServiceImpl implements TourService{
     }
 
     @Override
+    public List<Tour> findToursByGroupWithBasic(String groupName) {
+        return tourRepository.findByGroupNameWithBasic(groupName);
+    }
+
+    @Override
     public List<String> findAllTourNames() {
         return tourRepository.findAll().stream().map(Tour::getName).collect(Collectors.toList());
     }

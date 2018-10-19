@@ -10,10 +10,11 @@
     <link rel="stylesheet" type="text/css" th:href="@{${serverPath} + '/css/main.css'}"/>
     <script th:src="@{${serverPath} + '/webjars/jquery/3.2.1/jquery.min.js'}"></script>
     <script th:src="@{${serverPath} + '/webjars/materializecss/0.100.2/js/materialize.min.js'}"></script>
-    <script th:src="@{${serverPath} + '/js/polyfill.js'}"></script>
-    <script th:src="@{${serverPath} + '/js/config.js'}"></script>
-    <script th:src="@{${serverPath} + '/js/common.js'}"></script>
-    <script th:src="@{${serverPath} + '/js/ui-init.js'}"></script>
+    <script th:src="@{${serverPath} + '/js/shared/polyfill.js'}"></script>
+    <script th:src="@{${serverPath} + '/js/shared/utils.js'}"></script>
+    <script th:src="@{${serverPath} + '/js/shared/config.js'}"></script>
+    <script th:src="@{${serverPath} + '/js/shared/common.js'}"></script>
+    <script th:src="@{${serverPath} + '/js/shared/ui-init.js'}"></script>
 </head>
 <body>
     <th:block th:replace="fragments/header :: header" />

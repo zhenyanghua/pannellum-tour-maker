@@ -2,6 +2,7 @@ var $tourList = $("#tour-list-container");
 var $modalDeleteTour = $("#modal-delete-tour");
 var $deleteTourYes = $("#delete-tour-yes");
 var $tourNameInput = $("#tour-name");
+var $tourPreloader = $("#preloader");
 
 var selectedTourName;
 
@@ -55,12 +56,18 @@ function doDeleteTour() {
 
 function getTours() {
 	$tourList.empty();
+	var url = apiUrl + "/tours/basic";
+	var params = getRequestParamsFromSearch(window.location.search);
+	if (params.group) {
+		url += "?group=" + params.group;
+	}
 	$.ajax({
-		url: apiUrl + "/tours/basic",
+		url: url,
 		type: 'GET',
 		dataType: 'json',
 		headers: checkAuthHeaders()
 	}).done(function (tours) {
+		$tourPreloader.hide();
 		tours.forEach(function (tour) {
 			var preview = tour.mapPath ?
 				$("<div>").addClass("preview").css("background-image", "url(" + tour.mapPath + ")") :
@@ -73,7 +80,7 @@ function getTours() {
 					.append($("<div>").addClass("card-content")
 						.append($("<span>").addClass("card-title red-text text-lighten-2").text(tour.alias || tour.name)))
 					.append($("<div>").addClass("card-action")
-						.append($("<a>").addClass('btn-floating blue tooltipped').attr("href", serverPath + "/tours/" + tour.name)
+						.append($("<a>").addClass('btn-floating blue tooltipped pulse').attr("href", serverPath + "/tours/" + tour.name)
 							.attr('data-position', 'top').attr('data-delay', 50).attr('data-tooltip', 'Edit Tour')
 							.append($("<i>").addClass('material-icons').text("panorama")))
 						.append($("<a>").addClass('btn-floating blue tooltipped').attr("href", serverPath + "/tours/" + tour.name + "/attributes")

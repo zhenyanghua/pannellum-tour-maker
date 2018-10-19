@@ -55,8 +55,12 @@ public class TourRestController {
     }
 
     @GetMapping("/basic")
-    public List<Tour> getToursBasic() {
-        return tourService.findAllToursWithBasic();
+    public List<Tour> getToursBasic(
+        @RequestParam(value = "group", required = false) String groupName) {
+        if (groupName == null) {
+            return tourService.findAllToursWithBasic();
+        }
+        return tourService.findToursByGroupWithBasic(groupName);
     }
 
     @GetMapping("/names")

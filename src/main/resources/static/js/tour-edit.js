@@ -226,7 +226,7 @@ function loadSceneConfig() {
 function loadHotSpotSettings(hotspot) {
     return $("<form>")
         .append($("<div>").addClass('row center-align')
-            .append($("<a>").addClass("waves-effect waves-light btn")
+            .append($("<a>").addClass("waves-effect waves-light btn blue")
                 .text("Set Pitch & Yaw to Center")
                 .append($("<i>").addClass("material-icons left").text("adjust"))
                 .click(function(){useCurrentCenter(hotspot)})))

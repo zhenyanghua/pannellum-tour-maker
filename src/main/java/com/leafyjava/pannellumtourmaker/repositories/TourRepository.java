@@ -9,4 +9,7 @@ import java.util.List;
 public interface TourRepository extends MongoRepository<Tour, String> {
     @Query(value = "{}", fields = "{ 'name': 1, 'alias': 1, 'groupName': 1 }")
     List<Tour> findAllWithBasic();
+
+    @Query(value = "{ 'groupName': ?0 }", fields = "{ 'name': 1, 'alias': 1, 'groupName': 1 }")
+    List<Tour> findByGroupNameWithBasic(String groupName);
 }

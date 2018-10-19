@@ -9,7 +9,8 @@
 <body>
 <div layout:fragment="content" th:remove="tag">
     <div class="container">
-        <h5 class="card-panel red-text text-lighten-2">Available Tours</h5>
+        <h5 class="card-panel red-text text-lighten-2">Available Tours!!</h5>
+        <th:block th:replace="fragments/preloader :: preloader('preloader')" />
         <div id="tour-list-container" class="row"></div>
     </div>
     <!-- Modal Structure -->
