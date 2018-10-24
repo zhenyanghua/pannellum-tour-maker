@@ -19,6 +19,9 @@ public class MvcAccessDeniedHandler implements AccessDeniedHandler {
     @Value("${application.domain}")
     private String domain;
 
+    @Value("${spring.application.path}")
+    private String path;
+
     @Override
     public void handle(final HttpServletRequest request, final HttpServletResponse response, final AccessDeniedException accessDeniedException) throws IOException, ServletException {
         String user = "Guest user";
@@ -28,6 +31,6 @@ public class MvcAccessDeniedHandler implements AccessDeniedHandler {
         }
         LOGGER.warn(String.format("%s attempted to access the protected URL: %s",
             user, request.getRequestURI()));
-        response.sendRedirect(String.format("%s/um/login?from=/tour-editor/tours", domain));
+        response.sendRedirect(String.format("%s/access-denied", path));
     }
 }

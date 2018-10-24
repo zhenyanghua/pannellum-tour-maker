@@ -21,10 +21,15 @@ import javax.servlet.Filter;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+    private final MongoOperations mongoOperations;
+    private final AbstractMongoSessionConverter sessionConverter;
+
     @Autowired
-    private MongoOperations mongoOperations;
-    @Autowired
-    private AbstractMongoSessionConverter sessionConverter;
+    public WebSecurityConfig(final MongoOperations mongoOperations,
+                             final AbstractMongoSessionConverter sessionConverter) {
+        this.mongoOperations = mongoOperations;
+        this.sessionConverter = sessionConverter;
+    }
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {

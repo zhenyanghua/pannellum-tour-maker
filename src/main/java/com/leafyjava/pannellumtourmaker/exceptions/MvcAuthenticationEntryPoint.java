@@ -19,6 +19,9 @@ public class MvcAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Value("${application.domain}")
     private String domain;
 
+    @Value("${spring.application.path}")
+    private String path;
+
     @Override
     public void commence(final HttpServletRequest request, final HttpServletResponse response, final AuthenticationException authException) throws IOException, ServletException {
         String user = "Guest user";
@@ -28,6 +31,6 @@ public class MvcAuthenticationEntryPoint implements AuthenticationEntryPoint {
         }
         LOGGER.warn(String.format("%s attempted to access the protected URL: %s",
             user, request.getRequestURI()));
-        response.sendRedirect(String.format("%s/um/login?from=/tour-editor/tours", domain));
+        response.sendRedirect(String.format("%s/login?from=%s%s", domain, path, request.getRequestURI()));
     }
 }

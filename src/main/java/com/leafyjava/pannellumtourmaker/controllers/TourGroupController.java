@@ -29,12 +29,10 @@ public class TourGroupController {
     private String path;
 
     private TourGroupService tourGroupService;
-    private String baseUrl;
 
     @Autowired
     public TourGroupController(final TourGroupService tourGroupService) {
         this.tourGroupService = tourGroupService;
-        baseUrl = domain + path;
     }
 
     @GetMapping()
@@ -73,7 +71,7 @@ public class TourGroupController {
         if (!tourGroupService.existsByGroupName(groupName)) {
             redirectAttributes.addFlashAttribute("error",
                 String.format("Group name '%s' doesn't exist.", groupName));
-            return "redirect:" + baseUrl + "/groups/" + groupName;
+            return String.format("redirect:%s%s/groups/%s", domain, path, groupName);
         }
 
         TourGroup group = tourGroupService.findOne(groupName);
@@ -89,10 +87,13 @@ public class TourGroupController {
         if (tourGroupService.existsByGroupName(tourGroup.getName())) {
             redirectAttributes.addFlashAttribute("error",
                 String.format("Group name '%s' was taken.", tourGroup.getName()));
-            return "redirect:" + baseUrl + "/groups/create";
+
+            return String.format("redirect:%s%s/groups/create", domain, path);
         }
+
         TourGroup group = tourGroupService.insert(tourGroup);
-        return "redirect:" + baseUrl + "/groups/" + group.getName();
+
+        return String.format("redirect:%s%s/groups/%s", domain, path, group.getName());
     }
 
     @PutMapping("{name}")
@@ -102,18 +103,19 @@ public class TourGroupController {
         if (!groupName.equals(tourGroup.getName())) {
             redirectAttributes.addFlashAttribute("error",
                 "Bad request - group name doesn't match");
-            return "redirect:" + baseUrl + "/groups/" + groupName + "/edit";
+
+            return String.format("redirect:%s%s/groups/%s/edit", domain, path, groupName);
         }
 
         if (!tourGroupService.existsByGroupName(groupName)) {
             redirectAttributes.addFlashAttribute("error",
                 String.format("Group name '%s' doesn't exist.", groupName));
-            return "redirect:" + baseUrl + "/groups/" + groupName + "/edit";
+            return String.format("redirect:%s%s/groups/%s/edit", domain, path, groupName);
         }
 
         tourGroupService.update(tourGroup);
 
-        return "redirect:" + baseUrl + "/groups/" + groupName;
+        return String.format("redirect:%s%s/groups/%s", domain, path, groupName);
     }
 
     @DeleteMapping("{name}")
@@ -122,12 +124,13 @@ public class TourGroupController {
         if (!tourGroupService.existsByGroupName(groupName)) {
             redirectAttributes.addFlashAttribute("error",
                 String.format("Group name '%s' doesn't exist.", groupName));
-            return "redirect:" + baseUrl + "/groups/" + groupName;
+
+            return String.format("redirect:%s%s/groups/%s", domain, path, groupName);
         }
 
         tourGroupService.delete(groupName);
 
-        return "redirect:" + baseUrl + "/groups";
+        return String.format("redirect:%s%s/groups", domain, path);
     }
 
 }

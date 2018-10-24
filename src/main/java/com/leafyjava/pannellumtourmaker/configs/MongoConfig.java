@@ -33,6 +33,4 @@ public class MongoConfig extends AbstractMongoConfiguration {
     public MongoTemplate mongoTemplate() throws Exception {
         return new MongoTemplate(mongoDbFactory());
     }
-
-
 }

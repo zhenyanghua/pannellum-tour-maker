@@ -7,7 +7,7 @@ import org.springframework.session.data.mongo.JdkMongoSessionConverter;
 import org.springframework.session.data.mongo.config.annotation.web.http.EnableMongoHttpSession;
 
 @Configuration
-@EnableMongoHttpSession
+//@EnableMongoHttpSession
 public class HttpSessionConfig {
     @Bean
     public AbstractMongoSessionConverter jdkMongoSessionConverter() {

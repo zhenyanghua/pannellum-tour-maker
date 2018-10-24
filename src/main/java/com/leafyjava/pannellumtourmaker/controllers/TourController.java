@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -27,24 +28,28 @@ public class TourController {
 
     private TourService tourService;
     private TourGroupService tourGroupService;
-    private String baseUrl;
 
     public TourController(final TourService tourService,
                           final TourGroupService tourGroupService) {
         this.tourService = tourService;
         this.tourGroupService = tourGroupService;
-        baseUrl = domain + path;
     }
 
     @GetMapping()
-    public String tours() {
+    public String tours(@RequestParam(value = "group", required = false) String groupName,
+                        Model model) {
+        if (groupName != null) {
+            TourGroup group = tourGroupService.findOne(groupName);
+            model.addAttribute("group", group);
+        }
+
         return "tours/list";
     }
 
     @GetMapping("/{tour}")
     public String tourEdit(@PathVariable(value = "tour") String tourName) {
         if (tourService.findOne(tourName) == null) {
-            return "redirect:" + baseUrl + "/tours";
+            return String.format("redirect:%s%s/tours", domain, path);
         }
 
         return "tours/edit";
@@ -56,7 +61,7 @@ public class TourController {
         Tour tour = tourService.findOne(tourName);
 
         if (tour == null) {
-            return "redirect:" + baseUrl + "/tours";
+            return String.format("redirect:%s%s/tours", domain, path);
         }
 
         TourGroup group = tour.getGroupName() != null ?
@@ -73,7 +78,7 @@ public class TourController {
                                        @ModelAttribute Tour tour) {
         tourService.save(tour);
 
-        return "redirect:" + baseUrl + "/tours/" + tourName + "/attributes";
+        return String.format("redirect:%s%s/tours/%s/attributes", domain, path, tourName);
     }
 
     @GetMapping("/{tour}/attributes/edit")
@@ -82,7 +87,7 @@ public class TourController {
         Tour tour = tourService.findOne(tourName);
 
         if (tour == null) {
-            return "redirect:" + baseUrl + "/tours";
+            return String.format("redirect:%s%s/tours", domain, path);
         }
 
         TourGroup group = tour.getGroupName() != null ?

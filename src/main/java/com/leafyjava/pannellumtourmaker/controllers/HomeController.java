@@ -15,15 +15,9 @@ public class HomeController {
     @Value("${spring.application.path}")
     private String path;
 
-    private String baseUrl;
-
-    public HomeController() {
-        baseUrl = domain + path;
-    }
-
     @GetMapping("/")
     public String index() {
-        return "redirect:" + baseUrl + "/tours";
+        return String.format("redirect:%s%s/tours", domain, path);
     }
 
     @GetMapping("/tasks")
