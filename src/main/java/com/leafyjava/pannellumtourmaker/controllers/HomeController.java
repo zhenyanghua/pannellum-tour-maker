@@ -9,8 +9,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 @ControllerAdvice
 public class HomeController {
 
-    @Value("${application.baseUrl}")
+    @Value("${application.domain}")
+    private String domain;
+
+    @Value("${spring.application.path}")
+    private String path;
+
     private String baseUrl;
+
+    public HomeController() {
+        baseUrl = domain + path;
+    }
 
     @GetMapping("/")
     public String index() {

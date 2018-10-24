@@ -1,9 +1,13 @@
 package com.leafyjava.pannellumtourmaker.configs;
 
 import com.leafyjava.pannellumtourmaker.storage.configs.StorageProperties;
+import org.apache.tomcat.util.http.LegacyCookieProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
+import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -48,5 +52,15 @@ public class WebConfig extends WebMvcConfigurerAdapter{
             .allowedOrigins("*")
             .allowedMethods("*");
         super.addCorsMappings(registry);
+    }
+
+    @Bean
+    public EmbeddedServletContainerCustomizer customizer() {
+        return container -> {
+            if (container instanceof TomcatEmbeddedServletContainerFactory) {
+                TomcatEmbeddedServletContainerFactory tomcat = (TomcatEmbeddedServletContainerFactory) container;
+                tomcat.addContextCustomizers(context -> context.setCookieProcessor(new LegacyCookieProcessor()));
+            }
+        };
     }
 }

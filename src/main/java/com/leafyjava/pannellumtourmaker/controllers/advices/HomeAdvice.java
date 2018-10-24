@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 public class HomeAdvice {
 
     @Value("${spring.application.path}")
-    private String serverPath;
+    private String path;
 
     @ModelAttribute
     public void addAttributes(Model model) {
-        model.addAttribute("serverPath", serverPath);
+        model.addAttribute("serverPath", path);
     }
 }

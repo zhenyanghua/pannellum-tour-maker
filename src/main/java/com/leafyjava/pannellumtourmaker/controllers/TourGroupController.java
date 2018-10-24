@@ -22,14 +22,19 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/groups")
 public class TourGroupController {
 
-    @Value("${application.baseUrl}")
-    private String baseUrl;
+    @Value("${application.domain}")
+    private String domain;
+
+    @Value("${spring.application.path}")
+    private String path;
 
     private TourGroupService tourGroupService;
+    private String baseUrl;
 
     @Autowired
     public TourGroupController(final TourGroupService tourGroupService) {
         this.tourGroupService = tourGroupService;
+        baseUrl = domain + path;
     }
 
     @GetMapping()

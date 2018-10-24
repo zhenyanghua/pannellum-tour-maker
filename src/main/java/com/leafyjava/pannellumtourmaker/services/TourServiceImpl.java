@@ -54,12 +54,13 @@ import static com.leafyjava.pannellumtourmaker.utils.FileConstants.MULTIRES;
 @Service
 public class TourServiceImpl implements TourService{
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger LOGGER = LoggerFactory.getLogger(TourServiceImpl.class);
 
-    private Environment environment;
+    @Value("${application.domain}")
+    private String domain;
 
-    @Value("${application.baseUrl}")
-    private String baseUrl;
+    @Value("${spring.application.path}")
+    private String path;
 
     @Value("${application.nona}")
     private String nona;
@@ -79,6 +80,8 @@ public class TourServiceImpl implements TourService{
     private StorageService storageService;
     private StorageProperties storageProperties;
     private TourRepository tourRepository;
+    private Environment environment;
+    private String baseUrl;
 
     @Autowired
     public TourServiceImpl(final Environment environment,
@@ -89,6 +92,7 @@ public class TourServiceImpl implements TourService{
         this.storageService = storageService;
         this.storageProperties = storageProperties;
         this.tourRepository = tourRepository;
+        baseUrl = domain + path;
     }
 
     @Override
@@ -308,7 +312,7 @@ public class TourServiceImpl implements TourService{
                 .resolve(tourName).resolve(MULTIRES).resolve(FilenameUtils.getBaseName(path.toString())).resolve("preview.png");
             ImageIO.write(resizeImagePng, "png", output.toFile());
         } catch (IOException e) {
-            logger.error("Failed to create preview image for " + path);
+            LOGGER.error("Failed to create preview image for " + path);
         }
     }
 
@@ -331,7 +335,7 @@ public class TourServiceImpl implements TourService{
                 .replace(storageProperties.getTourLocation(), TOURS)
                 .replace("\\", "/");
 
-            logger.debug("Base Path: " + basePath);
+            LOGGER.debug("Base Path: " + basePath);
 
             scene.getMultiRes().setBasePath(basePath);
             scene.setHotSpots(new ArrayList<>());
@@ -352,7 +356,7 @@ public class TourServiceImpl implements TourService{
 
 
         } catch (ImageReadException | IOException e) {
-            logger.warn("Failed to read meta data from image: " + file.getName());
+            LOGGER.warn("Failed to read meta data from image: " + file.getName());
         }
     }
 

@@ -18,16 +18,22 @@ import java.util.List;
 @Controller
 @RequestMapping("/tours")
 public class TourController {
-    @Value("${application.baseUrl}")
-    private String baseUrl;
+
+    @Value("${application.domain}")
+    private String domain;
+
+    @Value("${spring.application.path}")
+    private String path;
 
     private TourService tourService;
     private TourGroupService tourGroupService;
+    private String baseUrl;
 
     public TourController(final TourService tourService,
                           final TourGroupService tourGroupService) {
         this.tourService = tourService;
         this.tourGroupService = tourGroupService;
+        baseUrl = domain + path;
     }
 
     @GetMapping()
