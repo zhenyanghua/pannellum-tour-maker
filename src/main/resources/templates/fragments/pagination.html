@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<body>
+    <ul class="pagination" layout:fragment="pagination(page)" th:if="${page.totalPages} > 1">
+        <li th:class="${page.first} ? 'disabled' : 'waves-effect'">
+            <a th:href="${page.first} ? @{'#'} : @{''(terms=${param.terms},
+                page=${page.number - 1},
+                size=${page.size})}">
+                <i class="material-icons">chevron_left</i>
+            </a>
+        </li>
+        <li class="item"
+           th:each="i: ${#numbers.sequence(1, page.totalPages)}"
+           th:classappend="${page.number == i - 1} ? 'active' : 'waves-effect'">
+            <a th:text="${i}"
+               th:href="@{''(terms=${param.terms},
+                   page=${i - 1},
+                   size=${page.size})}"></a>
+        </li>
+        <li th:class="${page.last} ? 'disabled' : 'waves-effect'">
+            <a th:href="${page.last} ? @{'#'} : @{''(terms=${param.terms},
+                page=${page.number + 1},
+                size=${page.size})}">
+                <i class="material-icons">chevron_right</i>
+            </a>
+        </li>
+    </ul>
+</body>
+</html>

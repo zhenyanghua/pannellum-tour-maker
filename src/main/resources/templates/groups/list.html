@@ -11,6 +11,9 @@
     <div class="container">
         <h5 class="card-panel red-text text-lighten-2">Groups</h5>
         <div class="row">
+            <div layout:insert="~{fragments/pagination :: pagination(${pagedGroups})}" th:remove="tag"></div>
+        </div>
+        <div class="row">
             <div class="col s12 m6" th:each="group:${pagedGroups.content}">
                 <div class="card">
                     <div class="card-content">

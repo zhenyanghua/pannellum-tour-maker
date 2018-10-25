@@ -88,11 +88,14 @@ input[type=range] + .thumb {
 input[type=range] + .thumb.active .value {
     color: #2196f3;
 }
-/* Select Dropdown*/
+/* Select Dropdown */
 ul.dropdown-content.select-dropdown li span {
     color: #2196f3;
 }
-
+/* Pagination active */
+.pagination li.active {
+    background-color: #2196f3;
+}
 @media only screen and (max-width: 992px) {
     nav .brand-logo {
          left: inherit;
