@@ -3,7 +3,7 @@ var $logout = $("#logout");
 
 $logout.click(function () {
 	$.post(authServer + "/sessions/destroy");
-	document.cookie = "_s=; expires=Thu, 01 Jan 1970 00:00:00 GMT;path='/'";
+	document.cookie = "_s=; expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
 	sessionStorage.clear();
 });
 
