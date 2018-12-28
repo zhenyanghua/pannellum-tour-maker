@@ -14,7 +14,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.5.17.RELEASE</version>
+		<version>1.5.18.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
@@ -27,7 +27,7 @@
 		<thymeleaf-layout-dialect.version>2.2.2</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-springsecurity4.version>3.0.2.RELEASE</thymeleaf-extras-springsecurity4.version>
 
-		<spring-cloud.version>Edgware.SR4</spring-cloud.version>
+		<spring-cloud.version>Edgware.SR5</spring-cloud.version>
 	</properties>
 
 	<dependencyManagement>

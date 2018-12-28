@@ -18,7 +18,7 @@ import java.nio.file.Paths;
 @Configuration
 public class WebConfig extends WebMvcConfigurerAdapter{
 
-    private Logger logger = LoggerFactory.getLogger(WebConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebConfig.class);
 
     public static final String TOURS = "resources/tours";
 
@@ -31,18 +31,18 @@ public class WebConfig extends WebMvcConfigurerAdapter{
 
     @Override
     public void addResourceHandlers(final ResourceHandlerRegistry registry) {
-        logger.debug(Paths.get(storageProperties.getTourLocation()).toUri()
-            .toString());
+        String tourLocation = Paths.get(storageProperties.getTourLocation()).toUri().toString();
+        LOGGER.info(tourLocation);
         registry.addResourceHandler("/" + TOURS + "/**")
-            .addResourceLocations(Paths.get(storageProperties.getTourLocation()).toUri().toString());
-        registry.addResourceHandler("/tour-editor/webjars/**")
+            .addResourceLocations(tourLocation);
+        registry.addResourceHandler("/app/webjars/**")
             .addResourceLocations("/webjars/");
-        registry.addResourceHandler("/tour-editor/js/**")
-            .addResourceLocations("/js/");
-        registry.addResourceHandler("/tour-editor/css/**")
-            .addResourceLocations("/css/");
-        registry.addResourceHandler("/tour-editor/img/**")
-            .addResourceLocations("/img/");
+        registry.addResourceHandler("/app/js/**")
+            .addResourceLocations("classpath:/static/js/");
+        registry.addResourceHandler("/app/css/**")
+            .addResourceLocations("classpath:/static/css/");
+        registry.addResourceHandler("/app/img/**")
+            .addResourceLocations("classpath:/static/img/");
         super.addResourceHandlers(registry);
     }
 

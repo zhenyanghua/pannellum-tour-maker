@@ -18,6 +18,9 @@ import org.springframework.session.data.mongo.AbstractMongoSessionConverter;
 
 import javax.servlet.Filter;
 
+import static com.leafyjava.pannellumtourmaker.utils.RoleConstants.ROLE_ADMIN;
+import static com.leafyjava.pannellumtourmaker.utils.RoleConstants.ROLE_EDITOR;
+
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
@@ -33,12 +36,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
-        http.antMatcher("/**")
+        http.antMatcher("/app/**")
                 .addFilterBefore(sessionFilter(), SecurityContextPersistenceFilter.class)
                 .authorizeRequests()
-                .antMatchers("/js/**", "/css/**", "/img/**").permitAll()
-                .antMatchers("/groups/**", "/tours/**", "/tasks/**", "/upload*")
-                    .hasAnyRole("EDITOR", "ADMIN")
+                .antMatchers("/app/js/**", "/app/css/**", "/app/img/**").permitAll()
+                .anyRequest().hasAnyRole(ROLE_EDITOR, ROLE_ADMIN)
+            .and()
+                .antMatcher("/resources/**")
+                .addFilterBefore(sessionFilter(), SecurityContextPersistenceFilter.class)
+                .authorizeRequests()
+                .anyRequest().hasAnyRole(ROLE_EDITOR, ROLE_ADMIN)
             .and()
                 .exceptionHandling()
                     .authenticationEntryPoint(authenticationEntryPoint())

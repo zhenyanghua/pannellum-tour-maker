@@ -85,7 +85,7 @@ configXhr.then(function (value) {
 					xhrUpload = upload();
 
 					function upload() {
-						return $.ajax(servletPath + apiUrl + "/tours", options)
+						return $.ajax(apiUrl + "/tours", options)
 							.done(function (response, status, xhr) {
 								if (xhr.status === 200) {
 									Materialize.toast('<span>Photos were successfully uploaded to the server. ' +

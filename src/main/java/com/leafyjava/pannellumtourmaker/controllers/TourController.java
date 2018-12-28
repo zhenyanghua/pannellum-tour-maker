@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @Controller
-@RequestMapping("/tours")
+@RequestMapping("/app/tours")
 public class TourController {
 
     @Value("${application.domain}")
