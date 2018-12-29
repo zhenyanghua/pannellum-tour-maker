@@ -1,9 +1,10 @@
 var servletPath = "/zuul";
-var serverPath = "/tour-editor";
+var rootPath = "/tour-editor";
+var serverPath = rootPath + "/app";
 var userManagement = "/um";
 var authServer = "/auth-server";
 var configServer = "/config-server";
-var apiUrl = serverPath + "/api/v1";
+var apiUrl = rootPath + "/api/v1";
 
 // externalized properties from authServer
 var clientId, clientSecret;

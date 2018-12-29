@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @ControllerAdvice
 @RequestMapping("/app")
-public class HomeAdvice {
+public class AppAdvice {
 
     @Value("${spring.application.path}")
     private String path;

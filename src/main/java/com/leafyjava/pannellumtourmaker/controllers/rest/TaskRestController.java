@@ -1,4 +1,4 @@
-package com.leafyjava.pannellumtourmaker.controllers;
+package com.leafyjava.pannellumtourmaker.controllers.rest;
 
 import com.leafyjava.pannellumtourmaker.domains.Task;
 import com.leafyjava.pannellumtourmaker.services.TaskService;
