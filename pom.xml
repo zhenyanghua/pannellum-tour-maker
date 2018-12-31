@@ -115,8 +115,6 @@
 			<groupId>com.leafyjava.library</groupId>
 			<artifactId>commons</artifactId>
 			<version>1.0.0</version>
-			<type>jar</type>
-			<scope>provided</scope>
 		</dependency>
 
 		<!-- JavaScript -->
