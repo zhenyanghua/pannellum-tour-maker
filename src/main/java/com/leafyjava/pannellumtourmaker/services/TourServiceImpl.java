@@ -81,7 +81,6 @@ public class TourServiceImpl implements TourService{
     private StorageProperties storageProperties;
     private TourRepository tourRepository;
     private Environment environment;
-    private String baseUrl;
 
     @Autowired
     public TourServiceImpl(final Environment environment,
@@ -92,7 +91,6 @@ public class TourServiceImpl implements TourService{
         this.storageService = storageService;
         this.storageProperties = storageProperties;
         this.tourRepository = tourRepository;
-        baseUrl = domain + path;
     }
 
     @Override
@@ -181,7 +179,7 @@ public class TourServiceImpl implements TourService{
     public String getMapPath(String tourName, File mapFile) {
         if (mapFile == null) return null;
 
-        return baseUrl + "/" + TOURS + "/" + tourName + "/" + "map." + FilenameUtils.getExtension(mapFile.getName());
+        return domain + path + "/" + TOURS + "/" + tourName + "/" + "map." + FilenameUtils.getExtension(mapFile.getName());
     }
 
     @Override
@@ -331,7 +329,7 @@ public class TourServiceImpl implements TourService{
                 scene.setPhotoMeta(metaMap.get(sceneId));
             }
 
-            String basePath = baseUrl + "/" + scenePath.toString()
+            String basePath = domain + path + "/" + scenePath.toString()
                 .replace(storageProperties.getTourLocation(), TOURS)
                 .replace("\\", "/");
 

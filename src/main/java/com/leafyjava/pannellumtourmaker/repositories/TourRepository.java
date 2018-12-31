@@ -7,9 +7,9 @@ import org.springframework.data.mongodb.repository.Query;
 import java.util.List;
 
 public interface TourRepository extends MongoRepository<Tour, String> {
-    @Query(value = "{}", fields = "{ 'name': 1, 'alias': 1, 'groupName': 1 }")
+    @Query(value = "{}", fields = "{ 'name': 1, 'alias': 1, 'groupName': 1, 'mapPath': 1 }")
     List<Tour> findAllWithBasic();
 
-    @Query(value = "{ 'groupName': ?0 }", fields = "{ 'name': 1, 'alias': 1, 'groupName': 1 }")
+    @Query(value = "{ 'groupName': ?0 }", fields = "{ 'name': 1, 'alias': 1, 'groupName': 1, 'mapPath': 1 }")
     List<Tour> findByGroupNameWithBasic(String groupName);
 }
