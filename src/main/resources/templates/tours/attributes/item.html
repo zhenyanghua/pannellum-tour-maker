@@ -19,7 +19,7 @@
         <div class="row">
             <div class="input-field col s12">
                 <input readonly id="group" type="text"
-                       th:value="${group != null ? group.name : null}">
+                       th:value="${group != null ? (group.alias != null ? group.alias : group.name) : null}">
                 <label for="group">Group</label>
             </div>
         </div>

@@ -25,11 +25,17 @@ public class MvcAuthenticationEntryPoint implements AuthenticationEntryPoint {
     public void commence(final HttpServletRequest request, final HttpServletResponse response, final AuthenticationException authException) throws IOException {
         String user = "Guest user";
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
         if (authentication != null) {
             user = authentication.getName();
         }
+
         LOGGER.warn(String.format("%s attempted to access the protected URL: %s",
             user, request.getRequestURI()));
-        response.sendRedirect(String.format("%s/login?from=%s%s", domain, path, request.getRequestURI()));
+
+
+        String redirectTo = String.format("%s/login?from=%s%s", domain, path, request.getRequestURI());
+
+        response.sendRedirect(redirectTo);
     }
 }

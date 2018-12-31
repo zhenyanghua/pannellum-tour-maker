@@ -1,23 +1,21 @@
 package com.leafyjava.pannellumtourmaker.controllers;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import static com.leafyjava.pannellumtourmaker.controllers.advices.AppAdvice.SERVER_PATH;
 
 @Controller
 @RequestMapping("/app")
 public class AppController {
 
-    @Value("${application.domain}")
-    private String domain;
-
-    @Value("${spring.application.path}")
-    private String path;
-
     @GetMapping()
-    public String index() {
-        return String.format("redirect:%s%s/app/tours", domain, path);
+    public String index(Model model) {
+        String serverPath = model.asMap().get(SERVER_PATH).toString();
+
+        return String.format("redirect:%s/tours", serverPath);
     }
 
     @GetMapping("/tasks")

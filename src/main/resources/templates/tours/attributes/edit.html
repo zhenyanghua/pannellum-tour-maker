@@ -24,7 +24,7 @@
                         <select th:field="*{groupName}" th:name="groupName">
                             <option th:each="group: ${groups}"
                                     th:value="${group.name}"
-                                    th:text="${group.alias}"></option>
+                                    th:text="${group.alias != null ? group.alias : group.name}"></option>
                         </select>
                         <label>Group</label>
                     </div>

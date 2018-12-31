@@ -30,6 +30,9 @@ public class MvcAccessDeniedHandler implements AccessDeniedHandler {
         }
         LOGGER.warn(String.format("%s attempted to access the protected URL: %s",
             user, request.getRequestURI()));
-        response.sendRedirect(String.format("%s/access-denied", path));
+
+        String serverPath = domain + path + "/app";
+
+        response.sendRedirect(String.format("%s/access-denied", serverPath));
     }
 }

@@ -16,15 +16,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
+import static com.leafyjava.pannellumtourmaker.controllers.advices.AppAdvice.SERVER_PATH;
+
 @Controller
 @RequestMapping("/app/tours")
 public class TourController {
-
-    @Value("${application.domain}")
-    private String domain;
-
-    @Value("${spring.application.path}")
-    private String path;
 
     private TourService tourService;
     private TourGroupService tourGroupService;
@@ -47,9 +43,11 @@ public class TourController {
     }
 
     @GetMapping("/{tour}")
-    public String tourEdit(@PathVariable(value = "tour") String tourName) {
+    public String tourEdit(@PathVariable(value = "tour") String tourName, Model model) {
         if (tourService.findOne(tourName) == null) {
-            return String.format("redirect:%s%s/tours", domain, path);
+            String serverPath = model.asMap().get(SERVER_PATH).toString();
+
+            return String.format("redirect:%s/tours", serverPath);
         }
 
         return "tours/edit";
@@ -61,7 +59,9 @@ public class TourController {
         Tour tour = tourService.findOne(tourName);
 
         if (tour == null) {
-            return String.format("redirect:%s%s/tours", domain, path);
+            String serverPath = model.asMap().get(SERVER_PATH).toString();
+
+            return String.format("redirect:%s/tours", serverPath);
         }
 
         TourGroup group = tour.getGroupName() != null ?
@@ -75,10 +75,13 @@ public class TourController {
 
     @PutMapping("/{tour}/attributes")
     public String updateTourAttributes(@PathVariable(value = "tour") String tourName,
-                                       @ModelAttribute Tour tour) {
+                                       @ModelAttribute Tour tour,
+                                       Model model) {
         tourService.save(tour);
 
-        return String.format("redirect:%s%s/tours/%s/attributes", domain, path, tourName);
+        String serverPath = model.asMap().get(SERVER_PATH).toString();
+
+        return String.format("redirect:%s/tours/%s/attributes", serverPath, tourName);
     }
 
     @GetMapping("/{tour}/attributes/edit")
@@ -87,7 +90,9 @@ public class TourController {
         Tour tour = tourService.findOne(tourName);
 
         if (tour == null) {
-            return String.format("redirect:%s%s/tours", domain, path);
+            String serverPath = model.asMap().get(SERVER_PATH).toString();
+
+            return String.format("redirect:%s/tours", serverPath);
         }
 
         TourGroup group = tour.getGroupName() != null ?
